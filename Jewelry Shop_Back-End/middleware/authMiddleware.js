@@ -23,7 +23,7 @@ const checkToken = (req, res, next) => {
     } else {
       next();
       return;
-    }
+    } 
   } catch (exception) {
     res.status(HttpStatusCode.BAD_REQUEST).json({
       message: exception.message,

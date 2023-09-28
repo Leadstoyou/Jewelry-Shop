@@ -1,10 +1,10 @@
 import { validationResult } from "express-validator";
 
-import { userRepository } from "../repositories/index.js";
+import { userRepository } from "../repositories/indexRepository.js";
 
 import HttpStatusCode from "../exceptions/HttpStatusCode.js";
 
-const login = async (req, res) => {
+const userLoginController = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res
@@ -13,7 +13,7 @@ const login = async (req, res) => {
   }
   const { userEmail, userPassword } = req.body;
   try {
-    const existingUser = await userRepository.login({
+    const existingUser = await userRepository.userLoginController({
       userEmail,
       userPassword,
     });
@@ -27,7 +27,7 @@ const login = async (req, res) => {
   }
 };
 
-const register = async (req, res) => {
+const userRegisterController = async (req, res) => {
   const {
     userName,
     userEmail,
@@ -37,12 +37,10 @@ const register = async (req, res) => {
     userAddress,
     userAge,
     userAvatar,
-    userRole,
-    isActive,
   } = req.body;
 
   try {
-    const user = await userRepository.register({
+    const user = await userRepository.userRegisterController({
       userName,
       userEmail,
       userPassword,
@@ -51,8 +49,6 @@ const register = async (req, res) => {
       userAddress,
       userAge,
       userAvatar,
-      userRole: userRole ?? 1,
-      isActive: isActive ?? true,
     });
     res
       .status(HttpStatusCode.CREATE_OK)
@@ -64,11 +60,11 @@ const register = async (req, res) => {
   }
 };
 
-const changePassword = async (req, res) => {
+const userChangePasswordController = async (req, res) => {
   const { userEmail, oldPassword, newPassword } = req.body;
   try {
-    const updatedUser = await userRepository.changePassword({
-        userEmail,
+    const updatedUser = await userRepository.userChangePasswordController({
+      userEmail,
       oldPassword,
       newPassword,
     });
@@ -83,8 +79,48 @@ const changePassword = async (req, res) => {
   }
 };
 
+const userUpdateProfileController = async (req, res) => {
+  const {
+    userEmail,
+    userName,
+    userPhoneNumber,
+    userGender,
+    userAddress,
+    userAge,
+    userAvatar,
+  } = req.body;
+
+  try {
+    const updatedUser = await userRepository.userUpdateProfileController({
+      userEmail,
+      userName,
+      userPhoneNumber,
+      userGender,
+      userAddress,
+      userAge,
+      userAvatar,
+    });
+
+    if (!updatedUser) {
+      return res
+        .status(HttpStatusCode.NOT_FOUND)
+        .json({ message: "User not found" });
+    }
+
+    return res
+      .status(HttpStatusCode.OK)
+      .json({ message: "Profile updated", data: updatedUser });
+  } catch (exception) {
+    return res
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .json({ message: exception.toString() });
+  }
+}
+
 export default {
-  login,
-  register,
-  changePassword,
+ userLoginController,
+ userRegisterController,
+ userChangePasswordController,
+ userUpdateProfileController
 };
+

@@ -1,29 +1,23 @@
 import express from "express";
 import { body } from "express-validator";
-import { userController } from "../controllers/index.js";
+import { userController } from "../controllers/indexController.js";
 
 const router = express.Router();
 
-router.get("/", userController.getAllUser);
-
-router.get("/:id", userController.getDetailUser);
+router.get("/", (req, res) => {
+  res.send("Hello user Shop");
+});
 
 router.post(
   "/login",
-  body("email").isEmail(),
-  body("password").isLength({ min: 5 }),
-  userController.login
+  body("userEmail").isEmail(),
+  userController.userLoginController
 );
 
-router.post("/register", userController.register);
+router.post("/register", userController.userRegisterController);
 
-router.post(
-  "/changepassword",
-  body("oldPassword").isLength({ min: 5 }), 
-  body("newPassword").isLength({ min: 5 }),
-  userController.changePassword
-);
+router.post("/changePassword", userController.userChangePasswordController);
 
-
+router.post("/updateProfile", userController.userUpdateProfileController);
 
 export default router;

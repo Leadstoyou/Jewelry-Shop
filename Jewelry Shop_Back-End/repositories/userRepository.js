@@ -1,12 +1,12 @@
-import { User } from "../models/index.js";
+import { User } from "../models/indexModel.js";
 import Exception from "../exceptions/Exception.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const login = async ({ email, password }) => {
-  const existingUser = await User.findOne({ email }).exec();
+const userLoginController = async ({ userEmail, userPassword }) => {
+  const existingUser = await User.findOne({ userEmail }).exec();
   if (existingUser) {
-    const isMatched = await bcrypt.compare(password, existingUser.password);
+    const isMatched = await bcrypt.compare(userPassword, existingUser.userPassword);
     if (isMatched) {
       const token = jwt.sign(
         {
@@ -31,7 +31,7 @@ const login = async ({ email, password }) => {
   }
 };
 
-const register = async ({
+const userRegisterController = async ({
   userName,
   userEmail,
   userPassword,
@@ -40,10 +40,8 @@ const register = async ({
   userAddress,
   userAge,
   userAvatar,
-  userRole,
-  isActive,
 }) => {
-  const existingUser = await User.findOne({ email }).exec();
+  const existingUser = await User.findOne({ userEmail }).exec();
   if (!!existingUser) {
     throw new Exception(Exception.USER_EXIST);
   }
@@ -60,8 +58,8 @@ const register = async ({
     userAddress,
     userAge,
     userAvatar,
-    userRole: userRole ?? 1,
-    isActive: isActive ?? true,
+    userRole: 1,
+    isActive: false,
   });
   return {
     ...newUser._doc,
@@ -69,10 +67,14 @@ const register = async ({
   };
 };
 
-const changePassword = async ({ userEmail, oldPassword, newPassword }) => {
+const userChangePasswordController = async ({
+  userEmail,
+  oldPassword,
+  newPassword,
+}) => {
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
-    const isMatched = await bcrypt.compare(oldPassword, existingUser.password);
+    const isMatched = await bcrypt.compare(oldPassword, existingUser.userPassword);
     if (!isMatched) {
       throw new Exception(Exception.WRONG_OLD_PASSWORD);
     }
@@ -90,8 +92,45 @@ const changePassword = async ({ userEmail, oldPassword, newPassword }) => {
       userPassword: "Not show",
     };
   } catch (exception) {
-    throw new Exception(Exception.INPUT_STUDENT_ERROR);
+    throw new Exception(Exception.INPUT_DATA_ERROR);
   }
 };
 
-export default { login, register, changePassword };
+const userUpdateProfileController = async ({
+  userEmail,
+  userName,
+  userPhoneNumber,
+  userGender,
+  userAddress,
+  userAge,
+  userAvatar,
+}) => {
+  try {
+    const existingUser = await User.findOneAndUpdate(
+      { userEmail },
+      {
+        ...(userName && { userName }),
+        ...(userPhoneNumber && { userPhoneNumber }),
+        ...(userGender &&
+          ["Male", "Female"].includes(userGender) && { userGender }),
+        ...(userAddress && { userAddress }),
+        ...(userAge > 0 && { userAge }),
+        ...(userAvatar && { userAvatar }),
+      },
+      { new: true }
+    ).exec();
+    return {
+      ...existingUser._doc,
+      userPassword: "Not shown",
+    };
+  } catch (error) {
+    throw new Exception(Exception.INPUT_ERROR, { message: error.message });
+  }
+};
+
+export default {
+  userLoginController,
+  userRegisterController,
+  userChangePasswordController,
+  userUpdateProfileController,
+};
