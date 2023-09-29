@@ -20,4 +20,9 @@ router.post("/changePassword", userController.userChangePasswordController);
 
 router.post("/updateProfile", userController.userUpdateProfileController);
 
+router.post("/updateRole", userController.userUpdateRoleController);
+
+router.post("/updateStatus", userController.userUpdateStatusController);
+
+
 export default router;

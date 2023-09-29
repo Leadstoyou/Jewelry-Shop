@@ -2,6 +2,7 @@ import { validationResult } from "express-validator";
 
 import { userRepository } from "../repositories/indexRepository.js";
 
+import { userService } from "../services/indexService.js";
 import HttpStatusCode from "../exceptions/HttpStatusCode.js";
 
 const userLoginController = async (req, res) => {
@@ -13,7 +14,7 @@ const userLoginController = async (req, res) => {
   }
   const { userEmail, userPassword } = req.body;
   try {
-    const existingUser = await userRepository.userLoginController({
+    const existingUser = await userRepository.userLoginRepository({
       userEmail,
       userPassword,
     });
@@ -40,7 +41,7 @@ const userRegisterController = async (req, res) => {
   } = req.body;
 
   try {
-    const user = await userRepository.userRegisterController({
+    const user = await userRepository.userRegisterRepository({
       userName,
       userEmail,
       userPassword,
@@ -63,7 +64,7 @@ const userRegisterController = async (req, res) => {
 const userChangePasswordController = async (req, res) => {
   const { userEmail, oldPassword, newPassword } = req.body;
   try {
-    const updatedUser = await userRepository.userChangePasswordController({
+    const updatedUser = await userRepository.userChangePasswordRepository({
       userEmail,
       oldPassword,
       newPassword,
@@ -91,7 +92,7 @@ const userUpdateProfileController = async (req, res) => {
   } = req.body;
 
   try {
-    const updatedUser = await userRepository.userUpdateProfileController({
+    const updatedUser = await userRepository.userUpdateProfileRepository({
       userEmail,
       userName,
       userPhoneNumber,
@@ -115,12 +116,61 @@ const userUpdateProfileController = async (req, res) => {
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
       .json({ message: exception.toString() });
   }
-}
-
-export default {
- userLoginController,
- userRegisterController,
- userChangePasswordController,
- userUpdateProfileController
 };
 
+const userUpdateRoleController = async (req, res) => {
+  const { userEmail, newRole } = req.body;
+
+  try {
+    const userRole = req.user.userRole;
+    const updatedUser = await userRepository.userUpdateRoleRepository({
+      userEmail,
+      newRole,
+      userRole,
+    });
+
+    if (!updatedUser) {
+      return res
+        .status(HttpStatusCode.NOT_FOUND)
+        .json({ message: "User not found" });
+    }
+
+    return res
+      .status(HttpStatusCode.OK)
+      .json({ message: "Role updated", data: updatedUser });
+  } catch (exception) {
+    return res
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .json({ message: exception.toString() });
+  }
+};
+
+const userUpdateStatusController = async (req, res) => {
+  const { userEmail, newStatus } = req.body;
+
+  try {
+    const userRole = req.user.userRole;
+    const updatedUser = await userRepository.userUpdateStatusRepository({
+      userEmail,
+      newStatus,
+      userRole,
+    });
+
+    return res
+      .status(HttpStatusCode.OK)
+      .json({ message: "Status updated", data: updatedUser });
+  } catch (exception) {
+    return res
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .json({ message: exception.toString() });
+  }
+};
+
+export default {
+  userLoginController,
+  userRegisterController,
+  userChangePasswordController,
+  userUpdateProfileController,
+  userUpdateRoleController,
+  userUpdateStatusController
+};

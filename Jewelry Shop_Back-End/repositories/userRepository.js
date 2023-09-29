@@ -3,10 +3,13 @@ import Exception from "../exceptions/Exception.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const userLoginController = async ({ userEmail, userPassword }) => {
+const userLoginRepository = async ({ userEmail, userPassword }) => {
   const existingUser = await User.findOne({ userEmail }).exec();
   if (existingUser) {
-    const isMatched = await bcrypt.compare(userPassword, existingUser.userPassword);
+    const isMatched = await bcrypt.compare(
+      userPassword,
+      existingUser.userPassword
+    );
     if (isMatched) {
       const token = jwt.sign(
         {
@@ -14,7 +17,6 @@ const userLoginController = async ({ userEmail, userPassword }) => {
         },
         process.env.JWT_SECRET,
         {
-          // expiresIn: '60' //1 minutes
           expiresIn: "30 days",
         }
       );
@@ -31,7 +33,7 @@ const userLoginController = async ({ userEmail, userPassword }) => {
   }
 };
 
-const userRegisterController = async ({
+const userRegisterRepository = async ({
   userName,
   userEmail,
   userPassword,
@@ -58,8 +60,8 @@ const userRegisterController = async ({
     userAddress,
     userAge,
     userAvatar,
-    userRole: 1,
-    isActive: false,
+    userRole: 2,
+    isActive: true,
   });
   return {
     ...newUser._doc,
@@ -67,14 +69,17 @@ const userRegisterController = async ({
   };
 };
 
-const userChangePasswordController = async ({
+const userChangePasswordRepository = async ({
   userEmail,
   oldPassword,
   newPassword,
 }) => {
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
-    const isMatched = await bcrypt.compare(oldPassword, existingUser.userPassword);
+    const isMatched = await bcrypt.compare(
+      oldPassword,
+      existingUser.userPassword
+    );
     if (!isMatched) {
       throw new Exception(Exception.WRONG_OLD_PASSWORD);
     }
@@ -96,7 +101,7 @@ const userChangePasswordController = async ({
   }
 };
 
-const userUpdateProfileController = async ({
+const userUpdateProfileRepository = async ({
   userEmail,
   userName,
   userPhoneNumber,
@@ -121,6 +126,53 @@ const userUpdateProfileController = async ({
     ).exec();
     return {
       ...existingUser._doc,
+    };
+  } catch (error) {
+    throw new Exception(Exception.INPUT_ERROR, { message: error.message });
+  }
+};
+
+const userUpdateRoleRepository = async ({ userEmail, newRole, userRole }) => {
+  try {
+    if (userRole !== 0) {
+      throw new Exception(Exception.PERMISSION_DENIED);
+    }
+    const updatedUser = await User.findOneAndUpdate(
+      { userEmail },
+      { userRole: newRole },
+      { new: true }
+    ).exec();
+
+    return {
+      ...updatedUser.toObject(),
+      userPassword: "Not shown",
+    };
+  } catch (error) {
+    throw new Exception(Exception.INPUT_ERROR, { message: error.message });
+  }
+};
+
+const userUpdateStatusRepository = async ({
+  userEmail,
+  newStatus,
+  userRole,
+}) => {
+  try {
+    if (userRole !== 0) {
+      throw new Exception(Exception.PERMISSION_DENIED);
+    }
+    const updatedUser = await User.findOneAndUpdate(
+      { userEmail },
+      { isActive: newStatus },
+      { new: true }
+    ).exec();
+
+    if (!updatedUser) {
+      throw new Exception(Exception.USER_NOT_FOUND);
+    }
+
+    return {
+      ...updatedUser.toObject(),
       userPassword: "Not shown",
     };
   } catch (error) {
@@ -129,8 +181,10 @@ const userUpdateProfileController = async ({
 };
 
 export default {
-  userLoginController,
-  userRegisterController,
-  userChangePasswordController,
-  userUpdateProfileController,
+  userLoginRepository,
+  userRegisterRepository,
+  userChangePasswordRepository,
+  userUpdateProfileRepository,
+  userUpdateRoleRepository,
+  userUpdateStatusRepository
 };
