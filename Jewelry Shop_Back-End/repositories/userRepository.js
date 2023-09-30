@@ -22,6 +22,7 @@ const userLoginController = async ({ userEmail, userPassword }) => {
         ...existingUser.toObject(),
         password: "Not show",
         token,
+        
       };
     } else {
       throw new Exception(Exception.WRONG_EMAIL_AND_PASSWORD);
