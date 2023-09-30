@@ -1,7 +1,8 @@
 import { User } from "../models/indexModel.js";
 import Exception from "../constant/Exception.js";
+import constants from "../constant/constants.js";
 import bcrypt from "bcrypt";
-import { jwtService } from "../services/indexService.js"
+import { jwtService, cloudinaryService } from "../services/indexService.js";
 
 const userLoginRepository = async ({ userEmail, userPassword }) => {
   return new Promise(async (resolve, reject) => {
@@ -67,7 +68,7 @@ const userRegisterRepository = async ({
         userGender,
         userAddress,
         userAge,
-        userAvatar,
+        userAvatar: "https://th.bing.com/th/id/R.1257e9bf1162dab4f055837ac569b081?rik=G2s3vNi9Oa7%2bGg&pid=ImgRaw&r=0",
         userRole: 2,
         isActive: true,
       });
@@ -79,7 +80,7 @@ const userRegisterRepository = async ({
       reject(exception);
     }
   });
-}; 
+};
 
 const userChangePasswordRepository = async ({
   userEmail,
@@ -126,6 +127,13 @@ const userUpdateProfileRepository = async ({
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
+      let userAvtUrl = null;
+      if (userAvatar) {
+        userAvtUrl = await cloudinaryService.uploadProductImageToCloudinary(
+          userAvatar,
+          constants.CLOUDINARY_USER_AVATAR_IMG
+        );
+      }
       const existingUser = await User.findOneAndUpdate(
         { userEmail },
         {
@@ -135,7 +143,7 @@ const userUpdateProfileRepository = async ({
             ["Male", "Female"].includes(userGender) && { userGender }),
           ...(userAddress && { userAddress }),
           ...(userAge > 0 && { userAge }),
-          ...(userAvatar && { userAvatar }),
+          ...(userAvtUrl && { userAvatar: userAvtUrl }),
         },
         { new: true }
       ).exec();
@@ -174,7 +182,11 @@ const userUpdateRoleRepository = async ({ userEmail, newRole, userRole }) => {
   });
 };
 
-const userUpdateStatusRepository = async ({ userEmail, newStatus, userRole }) => {
+const userUpdateStatusRepository = async ({
+  userEmail,
+  newStatus,
+  userRole,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (userRole !== 0) {

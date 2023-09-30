@@ -4,7 +4,7 @@ import { userRepository } from "../repositories/indexRepository.js";
 
 import { jwtService } from "../services/indexService.js"
 
-import HttpStatusCode from "../exceptions/HttpStatusCode.js";
+import HttpStatusCode from "../constant/HttpStatusCode.js";
 
 const userLoginController = async (req, res) => {
   const errors = validationResult(req);
@@ -21,7 +21,7 @@ const userLoginController = async (req, res) => {
     });
 
     res.cookie('accessToken', existingUser.accessToken, {
-      maxAge: 30 * 24 * 60 * 60,
+      maxAge: 30 * 24 * 60 * 60, 
       httpOnly: true, 
       secure: false ,
       sameSite: 'Strict',
