@@ -48,7 +48,6 @@ const refreshTokenServices = (token) => {
     }
   });
 };
-
 export default {
   generalAccessToken,
   generalRefreshToken,
