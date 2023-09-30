@@ -7,7 +7,6 @@ import Badge from "@mui/material/Badge";
 import React from "react";
 import videoFile from "../assets/video.mp4"; // Import the video file using ES6 module syntax
 const Container = styled.div`
-  background-color: #d5d3d3;
   position: relative;
   height: 70px;
   width: 100vw;
@@ -17,7 +16,7 @@ const Container = styled.div`
   padding-left: 5vw;
   padding-right: 5vw;
   box-sizing: border-box;
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0);
   z-index: 5;
 `;
 const Logo = styled.h1``;
@@ -73,7 +72,7 @@ const Video = styled.video`
   mix-blend-mode: darken;
   object-fit: cover;
   opacity: 1;
-  z-index:2;
+  z-index: 2;
   box-sizing: border-box;
 `;
 
@@ -84,17 +83,16 @@ const Icon = styled.span`
   }
 `;
 const Nav = styled.div`
-  position: fixed; 
-  top: 0; 
+  position: fixed;
+  top: 0;
   width: 100%;
-  background-color: white; 
-  z-index: 1; 
+  background-color: white;
+  z-index: 1;
 `;
 const Navbar = () => {
   return (
     <Nav>
       <Container>
-        <Video src={videoFile} muted autoPlay loop></Video>
         <Logo>Jewelry</Logo>
         <Right>
           <InputController>
