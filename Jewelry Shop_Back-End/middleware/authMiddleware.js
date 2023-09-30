@@ -10,10 +10,9 @@ const checkToken = (req, res, next) => {
     return;
   }
 
-  //get and validate token
   const token = req.headers?.authorization.split(" ")[1];
   try {
-    const jwtObject = jwt.verify(token, process.env.JWT_SECRET);
+    const jwtObject = jwt.verify(token, process.env.ACCESS_TOKEN);
     const isExpired = Date.now() >= jwtObject.exp * 1000;
     if (isExpired) {
       res.status(HttpStatusCode.BAD_REQUEST).json({

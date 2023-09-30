@@ -44,7 +44,7 @@ export default mongoose.model(
       type: Number,
       validate: {
         validator: (value) => value > 0,
-        message: "Age must be greater than 0", 
+        message: "Age must be greater than 0",
       },
       required: true,
     },
@@ -54,10 +54,12 @@ export default mongoose.model(
     },
     userRole: {
       type: Number,
+      default: 2,
       required: true,
     },
     isActive: {
       type: Boolean,
+      default: true,
       required: true,
     },
   })
