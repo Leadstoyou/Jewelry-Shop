@@ -1,5 +1,6 @@
 import mongoose, { Schema, ObjectId } from "mongoose";
 import isEmail from "validator/lib/isEmail.js";
+import validator from "validator";
 
 export default mongoose.model(
   "User",
@@ -50,7 +51,11 @@ export default mongoose.model(
     },
     userAvatar: {
       type: String,
-      required: false,
+      required: true,
+      validate: {
+        validator: validator.isURL,
+        message: "Invalid URL for product image",
+      },
     },
     userRole: {
       type: Number,
@@ -62,5 +67,9 @@ export default mongoose.model(
       default: true,
       required: true,
     },
-  })
+  },
+  {
+    timestamps: true,
+  }
+  )
 );

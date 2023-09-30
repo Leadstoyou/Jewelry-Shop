@@ -1,4 +1,4 @@
-import HttpStatusCode from "../exceptions/HttpStatusCode.js";
+import HttpStatusCode from "../constant/HttpStatusCode.js";
 import jwt from "jsonwebtoken";
 
 const checkToken = (req, res, next) => {

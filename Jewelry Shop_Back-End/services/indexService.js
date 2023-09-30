@@ -1,4 +1,5 @@
 
 import jwtService from "./jwtService.js";
+import cloudinaryService from "./cloudinaryService.js";
 
-export { jwtService };
+export { jwtService,cloudinaryService };

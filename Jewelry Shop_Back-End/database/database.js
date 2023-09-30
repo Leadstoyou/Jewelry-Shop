@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Exception from "../exceptions/Exception.js";
+import Exception from "../constant/Exception.js";
 
 const connect = async () => {
   try {

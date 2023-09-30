@@ -4,7 +4,7 @@ import { userRepository } from "../repositories/indexRepository.js";
 
 import { jwtService } from "../services/indexService.js"
 
-import HttpStatusCode from "../exceptions/HttpStatusCode.js";
+import HttpStatusCode from "../constant/HttpStatusCode.js";
 
 const userLoginController = async (req, res) => {
   const errors = validationResult(req);
