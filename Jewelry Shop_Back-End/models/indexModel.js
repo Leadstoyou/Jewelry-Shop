@@ -1,3 +1,3 @@
 import User from "./userModel.js";
-
-export { User };
+import Product from "./productModel.js";
+export { User, Product };
