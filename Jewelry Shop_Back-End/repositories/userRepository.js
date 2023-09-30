@@ -1,5 +1,5 @@
 import { User } from "../models/indexModel.js";
-import Exception from "../exceptions/Exception.js";
+import Exception from "../constant/Exception.js";
 import bcrypt from "bcrypt";
 import { jwtService } from "../services/indexService.js"
 
