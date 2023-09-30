@@ -3,8 +3,8 @@ import cloudinaryConfig from "../config/config.js";
 
 cloudinary.config(cloudinaryConfig.cloudinary);
 
-function uploadProductImageToCloudinary(imagePath, folder, callback) {
-  cloudinary.uploader.upload(
+const uploadProductImageToCloudinary = async (imagePath, folder, callback) => {
+  await cloudinary.uploader.upload(
     imagePath,
     {
       folder: folder,
@@ -13,18 +13,14 @@ function uploadProductImageToCloudinary(imagePath, folder, callback) {
       if (error) {
         console.error("Error uploading image to Cloudinary:", error);
       } else {
-        console.log(
-          "Image uploaded successfully. Public URL:",
-          result.secure_url
-        );
+        return result.secure_url;
       }
-
       if (callback) {
         callback(error, result);
       }
     }
   );
-}
+};
 
 export default {
   uploadProductImageToCloudinary,
