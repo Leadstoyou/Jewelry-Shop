@@ -2,7 +2,8 @@ import { validationResult } from "express-validator";
 
 import { userRepository } from "../repositories/indexRepository.js";
 
-import { userService } from "../services/indexService.js";
+import { jwtService } from "../services/indexService.js"
+
 import HttpStatusCode from "../exceptions/HttpStatusCode.js";
 
 const userLoginController = async (req, res) => {
@@ -18,6 +19,14 @@ const userLoginController = async (req, res) => {
       userEmail,
       userPassword,
     });
+
+    res.cookie('accessToken', existingUser.accessToken, {
+      maxAge: 30 * 24 * 60 * 60,
+      httpOnly: true, 
+      secure: false ,
+      sameSite: 'Strict',
+    });
+
     res
       .status(HttpStatusCode.OK)
       .json({ message: "Login user success", data: existingUser });
@@ -27,6 +36,41 @@ const userLoginController = async (req, res) => {
       .json({ message: exception.toString() });
   }
 };
+
+const refreshAccessTokenController = async (req, res) => {
+  const { refreshToken } = req.body;
+  try {
+    const result = await jwtService.refreshTokenServices(refreshToken);
+    if (result.status === "OK") {
+      res.status(HttpStatusCode.OK).json({
+        message: "Access token renewed successfully",
+        accessToken: result.accessToken,
+      });
+    } else {
+      res.status(HttpStatusCode.BAD_REQUEST).json({
+        message: "Unable to renew access token",
+      });
+    }
+  } catch (exception) {
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      message: exception.toString(),
+    });
+  }
+};
+
+const userLogoutController = async (req, res) => {
+  try {
+      res.clearCookie('refreshToken')
+      return res.status(HttpStatusCode.OK).json({
+          status: 'OK',
+          message: 'Logout successfully'
+      })
+  } catch (error) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+          message: error
+      })
+  }
+}
 
 const userRegisterController = async (req, res) => {
   const {
@@ -172,5 +216,7 @@ export default {
   userChangePasswordController,
   userUpdateProfileController,
   userUpdateRoleController,
-  userUpdateStatusController
+  userUpdateStatusController,
+  refreshAccessTokenController,
+  userLogoutController
 };

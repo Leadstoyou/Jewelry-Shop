@@ -16,12 +16,12 @@ const generalAccessToken = async (payload) => {
 const generalRefreshToken = async (payload) => {
   const refreshToken = jwt.sign(
     {
-        data: payload,
-      },
-      process.env.REFRESH_TOKEN,
-      {
-        expiresIn: "60 days",
-      }
+      data: payload,
+    },
+    process.env.REFRESH_TOKEN,
+    {
+      expiresIn: "60 days",
+    }
   );
   return refreshToken;
 };
