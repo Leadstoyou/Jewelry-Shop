@@ -1,6 +1,4 @@
-body {
-    background-color: white;
-}
+
 
 a{
     text-decoration: none;
@@ -13,24 +11,22 @@ a:hover{
 }
 .containers {
     background-color: white;
-    margin-top: 22vh;
-    position: relative;
-     padding: 0 20px;
-    width: 300px;
-    height: 160px;
-    align-items: center;
-    justify-content: center;
-    left: 50%;
-    transform: translate(-50%);
+    padding: 0 20px;
+    width: max-width;
+    height: max-height;
+    position: absolute;
+    top: 20%;
+    left: 35%;
     
 }
+
 
 form {
     margin-left: 10px;
 
 }
 
-input[type="text"] ,input[type="password"] {
+.password ,.email {
     border: 1px solid transparent;
     background: #ededed;
     color: #666666;
@@ -38,13 +34,13 @@ input[type="text"] ,input[type="password"] {
     font-weight: 500;
     margin-bottom: 12px;
     height: 30px;
-    width: 80%;
+    width: 232px;
     
 }
 
 input[type="submit"] {
     height: 40px;
-    width: 95%;
+    width: 272px;
     line-height: 55px;
     text-transform: uppercase;
     font-weight: 600;

@@ -34,7 +34,7 @@ function Login() {
         <Container>
           <Navbar />
           <Logins />
-         <Footer/>
+    
           </Container>
       )}
    </>

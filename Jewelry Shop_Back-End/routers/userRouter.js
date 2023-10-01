@@ -14,10 +14,18 @@ router.post(
   userController.userLoginController
 );
 
+router.post("/logout", userController.userLogoutController);
+
 router.post("/register", userController.userRegisterController);
 
-router.post("/changePassword", userController.userChangePasswordController);
+router.put("/changePassword", userController.userChangePasswordController);
 
-router.post("/updateProfile", userController.userUpdateProfileController);
+router.put("/updateProfile", userController.userUpdateProfileController);
+
+router.put("/updateRole", userController.userUpdateRoleController);
+
+router.put("/updateStatus", userController.userUpdateStatusController);
+
+router.post("/refreshToken", userController.refreshAccessTokenController);
 
 export default router;

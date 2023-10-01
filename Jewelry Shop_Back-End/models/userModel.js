@@ -1,5 +1,6 @@
 import mongoose, { Schema, ObjectId } from "mongoose";
 import isEmail from "validator/lib/isEmail.js";
+import validator from "validator";
 
 export default mongoose.model(
   "User",
@@ -44,21 +45,31 @@ export default mongoose.model(
       type: Number,
       validate: {
         validator: (value) => value > 0,
-        message: "Age must be greater than 0", 
+        message: "Age must be greater than 0",
       },
       required: true,
     },
     userAvatar: {
       type: String,
-      required: false,
+      required: true,
+      validate: {
+        validator: validator.isURL,
+        message: "Invalid URL for product image",
+      },
     },
     userRole: {
       type: Number,
+      default: 2,
       required: true,
     },
     isActive: {
       type: Boolean,
+      default: true,
       required: true,
     },
-  })
+  },
+  {
+    timestamps: true,
+  }
+  )
 );

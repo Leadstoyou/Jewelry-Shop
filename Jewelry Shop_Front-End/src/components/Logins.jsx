@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "../style/Login.css";
+import { useNavigate, Link } from "react-router-dom";
+import "../style/Login.scss";
 import axios from "axios";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; 
 
 const Logins = () => {
   const [email, setEmail] = useState("");
@@ -20,36 +22,32 @@ const Logins = () => {
         });
 
         if (response.status === 200) {
-         
           console.log("Login successful");
           navigate("/"); 
         } else {
-       
-          console.error("Login failed");
+          toast.error("Login failed");
         }
       } catch (error) {
-        
         console.error("An error occurred:", error);
       }
     }
   };
 
   const validate = () => {
-    
     const passwordRegex = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/;
 
-    if (email === "" || email === null ||!email.includes("@")) {
-      alert("Email is required");
+    if (email === "" || email === null || !email.includes("@")) {
+      toast.error('Email is required');
       return false;
     }
 
     if (password === "" || password === null) {
-      alert("Please enter a password");
+      toast.error("Please enter a password");
       return false;
     }
 
     if (!password.match(passwordRegex)) {
-      alert("Password must contain at least one number and one letter.");
+      toast.error("Password must contain at least one number and one letter.");
       return false;
     }
 
@@ -58,13 +56,14 @@ const Logins = () => {
 
   return (
     <div className="containers">
+
       <div className="header-page">
         <h1>Đăng nhập</h1>
       </div>
       <form onSubmit={handleSubmit}>
-        <div className="email">
+        <div >
           <input
-            required
+          className="email"
             type="text"
             placeholder="Email"
             size={30}
@@ -73,9 +72,9 @@ const Logins = () => {
           />
         </div>
 
-        <div className="password">
+        <div >
           <input
-            required
+            className="password"
             type="password"
             size={30}
             placeholder="Mật khẩu"
@@ -84,17 +83,18 @@ const Logins = () => {
           />
         </div>
         <div className="note">
-          <a href="http://localhost:5173">
-            <span>Quên mật khẩu</span>{" "}
-          </a>
-          ? hoặc
-          <a href="http://localhost:5173/register">
-            <span>Đăng kí</span>{" "}
-          </a>
+          <span>
+            <Link to="/">Quên mật khẩu</Link>
+          </span>
+          ?
+          <span>
+            <Link to="/register">Đăng kí</Link>
+          </span>
         </div>
         <div className="action_button">
           <input type="submit" value={"Đăng Nhập"} className="btn" />
         </div>
+        <ToastContainer position="top-right"  autoClose ='1000' /> 
       </form>
     </div>
   );
