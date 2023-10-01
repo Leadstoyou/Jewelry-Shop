@@ -168,7 +168,7 @@ const userRegisterRepository = async ({
   userAge,
   userAvatar,
   userRole = 2,
-  isActive = true,
+  isActive = false,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
