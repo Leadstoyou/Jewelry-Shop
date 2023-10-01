@@ -6,22 +6,15 @@ dotenv.config(); //must have
 import { cartRouter, productRouter, userRouter } from "./routers/indexRouter.js";
 import connect from "./database/database.js";
 import checkToken from "./middleware/authMiddleware.js";
-<<<<<<< Updated upstream
-=======
+
 import cookieParser from "cookie-parser";
 
-const app = express();
-app.use(cookieParser()); 
-// app.use(checkToken); 
-
-app.use(express.json());
-
->>>>>>> Stashed changes
 const port = process.env.PORT;
 
 const app = express();
 const v1Router = express.Router(); 
 
+v1Router.use(cookieParser()); 
 
 v1Router.use(checkToken); 
 v1Router.use(express.json());

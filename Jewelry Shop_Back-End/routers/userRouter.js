@@ -36,11 +36,13 @@ router.put("/updateStatus", userController.userUpdateStatusController);
 
 router.post("/refreshToken", userController.refreshAccessTokenController);
 
-router.get("/search/:name", userController.userSearchbyNameController);
+// router.get("/search/:name", userController.userSearchbyNameController);
 
-router.use(routeUnknown);
+// router.use(routeUnknown);
 router.get("/forgotPassword", userController.userForgotPasswordController);
 
 router.put("/resetPassword", userController.userResetPasswordController);
+
+router.post("/verify/:userEmail", userController.verifyEmailController);
 
 export default router;

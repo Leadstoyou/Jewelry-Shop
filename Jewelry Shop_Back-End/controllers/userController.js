@@ -95,6 +95,7 @@ const refreshAccessTokenController = async (req, res) => {
 
 const userLogoutController = async (req, res) => {
   const cookie = req.cookies;
+  console.log(req.cookies);
   if (!cookie || !cookie.refreshToken) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       message: "No refresh token in cookies",
@@ -147,6 +148,22 @@ const userRegisterController = async (req, res) => {
     res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
       .json({ message: exception.toString() });
+  }
+};
+
+const verifyEmailController = async (req, res) => {
+  const { userEmail } = req.params;
+
+  try {
+    const result = await userRepository.verifyEmailRepository(userEmail);
+    return res.status(HttpStatusCode.OK).json({
+      success: result.success,
+      message: result.message,
+    });
+  } catch (exception) {
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      message: exception.toString(),
+    });
   }
 };
 
@@ -315,4 +332,5 @@ export default {
   userLogoutController,
   userForgotPasswordController,
   userResetPasswordController,
+  verifyEmailController
 };
