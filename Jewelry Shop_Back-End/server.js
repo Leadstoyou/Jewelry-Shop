@@ -5,7 +5,7 @@ dotenv.config(); //must have
 
 import { cartRouter, productRouter, userRouter } from "./routers/indexRouter.js";
 import connect from "./database/database.js";
-import checkToken from "./middleware/authMiddleware.js";
+// import checkToken from "./middleware/authMiddleware.js";
 
 import cookieParser from "cookie-parser";
 
@@ -15,8 +15,7 @@ const app = express();
 const v1Router = express.Router(); 
 
 v1Router.use(cookieParser()); 
-
-v1Router.use(checkToken); 
+// v1Router.use(checkToken); 
 v1Router.use(express.json());
 
 v1Router.use("/users", userRouter);
