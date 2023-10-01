@@ -1,55 +1,39 @@
 import jwt from "jsonwebtoken";
 
-const generalAccessToken = async (payload) => {
+const generalAccessToken = async (userId, userEmail, userRole) => {
   const accessToken = jwt.sign(
     {
-      data: payload,
+      userId: userId,
+      userEmail: userEmail,
+      userRole: userRole,
     },
     process.env.ACCESS_TOKEN,
     {
-      expiresIn: "10 days",
+      expiresIn: "1d",
     }
   );
   return accessToken;
 };
 
-const generalRefreshToken = async (payload) => {
+const generalRefreshToken = async (userId) => {
   const refreshToken = jwt.sign(
     {
-      data: payload,
+      userId: userId
     },
     process.env.REFRESH_TOKEN,
     {
-      expiresIn: "60 days",
+      expiresIn: "30 days",
     }
   );
   return refreshToken;
 };
 
-const refreshTokenServices = (token) => {
-  return new Promise((resolve, reject) => {
-    try {
-      jwt.verify(token, process.env.REFRESH_TOKEN, async (err, payload) => {
-        if (err) {
-          resolve({
-            status: "ERROR",
-            message: "The authentication",
-          });
-        }
-        const accessToken = await generalAccessToken(payload);
-        resolve({
-          status: "OK",
-          message: "SUCCESS",
-          accessToken,
-        });
-      });
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
+const refreshToken = async () => {
+
+}
+
 export default {
   generalAccessToken,
   generalRefreshToken,
-  refreshTokenServices,
+  refreshToken
 };

@@ -2,9 +2,45 @@ import { validationResult } from "express-validator";
 
 import { userRepository } from "../repositories/indexRepository.js";
 
-import { jwtService } from "../services/indexService.js";
-
 import HttpStatusCode from "../constant/HttpStatusCode.js";
+import { User } from "../models/indexModel.js";
+
+const userGetAllUsersController = async (req, res) => {
+  try {
+    const allUsers = await userRepository.userGetAllUsersRepository();
+    res.status(200).json({
+      message: "Get all users successfully",
+      data: allUsers,
+    });
+  } catch (error) {
+    res.status(400).json({ message: exception.message });
+  }
+};
+
+const userSearchController = async (req, res) => {
+  let { page = 1, size = 6, searchString = "", searchRole = 2 } = req.query;
+  size = size >= 6 ? 6 : size;
+  try {
+    const searchRoleNumber = parseInt(searchRole);
+
+    let filteredUsers = await userRepository.userSearchRepository({
+      size,
+      page,
+      searchString,
+      searchRole,
+    });
+    res.status(200).json({
+      message: "Get search successfully",
+      size,
+      page,
+      searchString: searchString,
+      searchRole: searchRoleNumber,
+      data: filteredUsers,
+    });
+  } catch (exception) {
+    res.status(400).json({ message: exception.message });
+  }
+};
 
 const userLoginController = async (req, res) => {
   const errors = validationResult(req);
@@ -20,16 +56,18 @@ const userLoginController = async (req, res) => {
       userPassword,
     });
 
-    res.cookie("accessToken", existingUser.accessToken, {
-      maxAge: 30 * 24 * 60 * 60,
+    res.cookie("refreshToken", existingUser.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       secure: false,
       sameSite: "Strict",
     });
 
-    res
-      .status(HttpStatusCode.OK)
-      .json({ message: "Login user success", data: existingUser });
+    res.status(HttpStatusCode.OK).json({
+      message: "Login user success",
+      status: "OK",
+      data: existingUser,
+    });
   } catch (exception) {
     res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
@@ -38,37 +76,39 @@ const userLoginController = async (req, res) => {
 };
 
 const refreshAccessTokenController = async (req, res) => {
-  const { refreshToken } = req.body;
-  try {
-    const result = await jwtService.refreshTokenServices(refreshToken);
-    if (result.status === "OK") {
-      res.status(HttpStatusCode.OK).json({
-        message: "Access token renewed successfully",
-        accessToken: result.accessToken,
-      });
-    } else {
-      res.status(HttpStatusCode.BAD_REQUEST).json({
-        message: "Unable to renew access token",
-      });
-    }
-  } catch (exception) {
-    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-      message: exception.toString(),
+  const cookie = req.cookies;
+  if (!cookie || !cookie.refreshToken) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      message: "No refresh token in cookies",
     });
+  }
+  try {
+    const result = await userRepository.refreshTokenRepository(
+      cookie.refreshToken
+    );
+
+    return res.status(HttpStatusCode.OK).json(result);
+  } catch (error) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: error });
   }
 };
 
 const userLogoutController = async (req, res) => {
+  const cookie = req.cookies;
+  if (!cookie || !cookie.refreshToken) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      message: "No refresh token in cookies",
+    });
+  }
   try {
-    res.clearCookie("refreshToken");
+    await userRepository.userLogoutRepository(cookie.refreshToken);
+    res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+    res.clearCookie("accessToken", { httpOnly: true, secure: true });
     return res.status(HttpStatusCode.OK).json({
-      status: "OK",
-      message: "Logout successfully",
+      message: "Logout successful",
     });
   } catch (error) {
-    return res.status(HttpStatusCode.BAD_REQUEST).json({
-      message: error,
-    });
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: error });
   }
 };
 
@@ -77,13 +117,18 @@ const userRegisterController = async (req, res) => {
     userName,
     userEmail,
     userPassword,
+    confirmPassword,
     userPhoneNumber,
     userGender,
     userAddress,
     userAge,
     userAvatar,
   } = req.body;
-
+  if (userPassword !== confirmPassword) {
+    return res.status(HttpStatusCode.BAD_REQUEST).json({
+      message: "Password and confirm password do not match.",
+    });
+  }
   try {
     const user = await userRepository.userRegisterRepository({
       userName,
@@ -106,7 +151,12 @@ const userRegisterController = async (req, res) => {
 };
 
 const userChangePasswordController = async (req, res) => {
-  const { userEmail, oldPassword, newPassword } = req.body;
+  const { userEmail, oldPassword, newPassword,confirmPassword } = req.body;
+  if (newPassword !== confirmPassword) {
+    return res.status(HttpStatusCode.BAD_REQUEST).json({
+      message: "Password and confirm password do not match.",
+    });
+  }
   try {
     const updatedUser = await userRepository.userChangePasswordRepository({
       userEmail,
@@ -164,7 +214,6 @@ const userUpdateProfileController = async (req, res) => {
 
 const userUpdateRoleController = async (req, res) => {
   const { userEmail, newRole } = req.body;
-
   try {
     const userRole = req.user.userRole;
     const updatedUser = await userRepository.userUpdateRoleRepository({
@@ -178,7 +227,6 @@ const userUpdateRoleController = async (req, res) => {
         .status(HttpStatusCode.NOT_FOUND)
         .json({ message: "User not found" });
     }
-
     return res
       .status(HttpStatusCode.OK)
       .json({ message: "Role updated", data: updatedUser });
@@ -191,7 +239,6 @@ const userUpdateRoleController = async (req, res) => {
 
 const userUpdateStatusController = async (req, res) => {
   const { userEmail, newStatus } = req.body;
-
   try {
     const userRole = req.user.userRole;
     const updatedUser = await userRepository.userUpdateStatusRepository({
@@ -210,43 +257,54 @@ const userUpdateStatusController = async (req, res) => {
   }
 };
 
-const userSearchbyNameController = async (req, res) => {
-  try {
-    const { name } = req.params;
-    const searchResult = await userRepository.searchUsers({
-      username: name,
-      onlyName: true,
+const userForgotPasswordController = async (req, res) => {
+  const { userEmail } = req.query;
+
+  if (!userEmail) {
+    return res.status(HttpStatusCode.BAD_REQUEST).json({
+      message: "Missing email",
     });
-    return res
-      .status(HttpStatusCode.OK)
-      .json({ message: "Search completed", data: searchResult });
+  }
+
+  try {
+    await userRepository.userForgotPasswordRepository(userEmail);
+    return res.status(HttpStatusCode.OK).json({
+      success: true,
+      message: "Password reset instructions sent to your email.",
+    });
   } catch (exception) {
-    return res
-      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json({ message: exception.toString() });
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      message: exception.toString(),
+    });
   }
 };
 
-const userSearchByNameAddressEmailController = async (req, res) => {
-  try {
-    const { name } = req.params;
-
-    const searchResult = await userRepository.searchUsers({
-      username: name,
-      onlyName: false,
+const userResetPasswordController = async (req, res) => {
+  const { newPassword, token } = req.body;
+  if (!newPassword || !token) {
+    return res.status(HttpStatusCode.BAD_REQUEST).json({
+      message: "Missing email",
     });
-
-    return res
-      .status(HttpStatusCode.OK)
-      .json({ message: "Search completed", data: searchResult });
+  }
+  try {
+    const result = await userRepository.userResetPasswordRepository(
+      token,
+      newPassword
+    );
+    return res.status(HttpStatusCode.OK).json({
+      success: result.success,
+      message: result.message,
+    });
   } catch (exception) {
-    return res
-      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json({ message: exception.toString() });
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      message: exception.toString(),
+    });
   }
 };
 
 export default {
+  userGetAllUsersController,
+  userSearchController,
   userLoginController,
   userRegisterController,
   userChangePasswordController,
@@ -255,6 +313,6 @@ export default {
   userUpdateStatusController,
   refreshAccessTokenController,
   userLogoutController,
-  userSearchbyNameController,
-  userSearchByNameAddressEmailController,
+  userForgotPasswordController,
+  userResetPasswordController,
 };

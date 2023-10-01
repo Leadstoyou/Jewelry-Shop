@@ -4,7 +4,10 @@ import jwt from "jsonwebtoken";
 const checkToken = (req, res, next) => {
   if (
     req.url.toLowerCase().trim() == "/users/login".toLowerCase().trim() ||
-    req.url.toLowerCase().trim() == "/users/register".toLowerCase().trim()
+    req.url.toLowerCase().trim() == "/users/register".toLowerCase().trim() ||
+    req.url.toLowerCase().trim() == "/users/refreshToken".toLowerCase().trim() ||
+    req.url.toLowerCase().trim() == "/users/logout".toLowerCase().trim()  ||
+    req.url.toLowerCase().trim() == "/users/forgotPassword".toLowerCase().trim()  
   ) {
     next();
     return;
@@ -15,9 +18,10 @@ const checkToken = (req, res, next) => {
     const isExpired = Date.now() >= jwtObject.exp * 1000;
     if (isExpired) {
       res.status(HttpStatusCode.BAD_REQUEST).json({
+        success: false,
         message: "Token is expired",
       });
-      res.end();
+      return;
     } else {
       next();
       return;
