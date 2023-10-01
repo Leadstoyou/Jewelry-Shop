@@ -3,7 +3,7 @@ import express from "express";
 import * as dotenv from "dotenv";
 dotenv.config(); //must have
 
-import { productRouter, userRouter } from "./routers/indexRouter.js";
+import { cartRouter, productRouter, userRouter } from "./routers/indexRouter.js";
 import connect from "./database/database.js";
 import checkToken from "./middleware/authMiddleware.js";
 <<<<<<< Updated upstream
@@ -28,7 +28,7 @@ v1Router.use(express.json());
 
 v1Router.use("/users", userRouter);
 v1Router.use("/products", productRouter);
-
+v1Router.use("/cart", cartRouter);
 app.use('/api/v1', v1Router);
 
 app.get("/", (req, res) => {

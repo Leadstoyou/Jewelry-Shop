@@ -1,4 +1,4 @@
 import userController from "./userController.js";
 import productController from "./productController.js";
-
-export { userController, productController };
+import cartController from "./cartController.js";
+export { cartController, userController, productController };
