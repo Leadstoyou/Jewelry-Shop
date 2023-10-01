@@ -3,19 +3,22 @@ import express from "express";
 import * as dotenv from "dotenv";
 dotenv.config(); //must have
 
-import { userRouter } from "./routers/indexRouter.js";
+import { productRouter, userRouter } from "./routers/indexRouter.js";
 import connect from "./database/database.js";
 import checkToken from "./middleware/authMiddleware.js";
-
-const app = express();
-
-app.use(checkToken); 
-
-app.use(express.json());
-
 const port = process.env.PORT;
 
-app.use("/users", userRouter);
+const app = express();
+const v1Router = express.Router(); 
+
+
+v1Router.use(checkToken); 
+v1Router.use(express.json());
+
+v1Router.use("/users", userRouter);
+v1Router.use("/products", productRouter);
+
+app.use('/api/v1', v1Router);
 
 app.get("/", (req, res) => {
   res.send("Hello Jewelry Shop");

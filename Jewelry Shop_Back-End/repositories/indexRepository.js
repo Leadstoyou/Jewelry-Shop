@@ -1,3 +1,3 @@
 import userRepository from "./userRepository.js";
-
-export { userRepository };
+import productRepository from "./productRepository.js";
+export { userRepository ,productRepository};

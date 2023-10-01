@@ -5,13 +5,13 @@ export default mongoose.model(
   "Product",
   new Schema(
     {
-      id: { type: ObjectId, required: true },
+      id: { type: ObjectId},
       productName: {
         type: String,
         required: true,
         validate: {
-          validator: (value) => validator.isLength(value, { min: 2, max: 50 }),
-          message: "productName must be between 2 and 50 characters",
+          validator: (value) => validator.isLength(value, { min: 2, max: 200 }),
+          message: "productName must be between 2 and 200 characters",
         },
       },
       productDescription: {
@@ -19,8 +19,8 @@ export default mongoose.model(
         required: true,
         validate: {
           validator: (value) =>
-            validator.isLength(value, { min: 10, max: 500 }),
-          message: "productDescription must be between 10 and 500 characters",
+            validator.isLength(value, { min: 0, max: 5000 }),
+          message: "productDescription must be between 0 and 5000 characters",
         },
       },
       productQuantity: {
@@ -29,6 +29,25 @@ export default mongoose.model(
         validate: {
           validator: (value) => validator.isInt(String(value)),
           message: "productQuantity must be an integer",
+        },
+      },
+      productPrice: {
+        type: Number,
+        required: true,
+        validate: {
+          validator: (value) => validator.isFloat(String(value)),
+          message: "productPrice must be a floating-point number",
+        },
+      },
+      productColors : {
+        type: [String],
+        required: true,
+        validate: {
+          validator: (value) =>
+            value.every((color) =>
+              validator.isLength(color, { min: 1, max: 20 })
+            ),
+          message: "Each product color must be between 1 and 20 characters",
         },
       },
       productSizes: {
@@ -77,6 +96,7 @@ export default mongoose.model(
           message: "Invalid URL for product image",
         },
       },
+      isDeleted: { type: Boolean, default: false },
     },
     {
       timestamps: true,
