@@ -7,7 +7,7 @@ const Container = styled.div`
   position: relative;
   padding: 0 20px;
   width: 300px;
-  height: 400px;
+  height: 450px;
   border: 1px solid rgb(203, 195, 195);
   align-items: center;
   justify-content: center;
@@ -47,10 +47,10 @@ const EmailInput = styled(Input)`
 border: 1px solid transparent;
 background: #ededed;
 color: black;
-padding: 5px 20px;
+padding: 10px 10px;
 margin-bottom: 12px; 
-width: 232px;
-height:30px
+width: 268px;
+height:15px
 `;
 
 const Button = styled.input`
@@ -83,6 +83,7 @@ const Register = () => {
             Nữ
           </label>
         </RadioContainer>
+        <Input required type="text" placeholder="Số điện thoại" />
         <Input type="text" placeholder="Tuổi" />
         <EmailInput type="email" placeholder="Email" /> 
         <Input type="password" placeholder="Mật khẩu" />
