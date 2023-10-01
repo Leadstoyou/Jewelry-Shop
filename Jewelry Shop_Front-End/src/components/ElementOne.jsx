@@ -7,25 +7,40 @@ import "aos/dist/aos.css";
 const Container = styled.div`
   margin-top: 10vh;
 `;
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  margin-left: 30px;
+  margin-right: 30px;
+  display: grid;
+  grid-template-columns: 70% 30%;
+`;
 const Left = styled.div`
+ 
+  margin-left : 20px;
+  margin-right: 20px;
+  display: grid;
+  grid-template-columns: 30% 30% 30%;
+  gap: 3vw;
+  align-items: center;
+  justify-content: space-between;
+`;
+const Right = styled.div`
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 5vw;
+  flex-direction:  column;
+  gap: 30px;
 `;
-const Right = styled.div``;
 const ImageController = styled.div`
-  width: 40vw;
-  height: 60vh;
+  width: 100%;
+  height: 30vh;
 `;
 const Image = styled.img`
-  width: 40vw;
-  height: 60vh;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 `;
 const Title = styled.div`
+  z-index: 100;
   position: relative;
   display: inline; /* Set display to inline */
 
@@ -35,20 +50,23 @@ const Title = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    border-bottom: 1px solid #cf8989; /* Adjust the thickness and color as needed */
+    border-bottom: 1px solid #cf8989; 
   }
-  &:hover{
+   &:hover {
     &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-bottom: 1px solid red; 
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-bottom: 1px solid red;
     }
-  }
+  } 
 `;
-const LeftItem = styled.div``;
+const LeftItem = styled.div`
+  margin-top: 20px;
+  margin-bottom: 10px;
+`;
 const Controller = styled.div`
   border: 1px solid #d6d2d2;
   padding-bottom: 20px;
@@ -58,6 +76,20 @@ const Controller = styled.div`
   box-sizing: border-box;
   &:hover {
     opacity: 0.8;
+  }
+`;
+
+const TextRight = styled.h2`
+  font-weight: bolder;
+`;
+
+const ButtonRight = styled.button`
+  border: none;
+  background-color: black;
+  color: white;
+  padding: 10px;
+  &:hover{
+    background-color: #3f3f3f;
   }
 `;
 
@@ -80,6 +112,10 @@ const ElementOne = ({ item }) => {
             </Controller>
           ))}
         </Left>
+        <Right>
+          <TextRight>Hơn cả một món quà</TextRight>
+          <ButtonRight>Xem ngay</ButtonRight>
+        </Right>
       </Wrapper>
     </Container>
   );

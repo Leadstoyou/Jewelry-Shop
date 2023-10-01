@@ -1,28 +1,24 @@
 import styled from "styled-components";
-import Navbar from "../components/Navbar";
-import Categories from "../components/Categories";
-import Slider from "../components/Slider";
-import ElementOne from "../components/ElementOne";
-import ListProduct from "../components/ListProduct";
-import Album from "../components/Album";
 
+import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import RiseLoader from "react-spinners/RiseLoader";
+import CollectionsHeader from "../components/collections/CollectionsHeader";
 import { useEffect, useState } from "react";
-
-// const Container = styled.div``;
+import CollectionsCategory from "../components/collections/CollectionsCategory";
 const Spinner = styled.div`
   height: 100%;
   flex-direction: column;
   display: flex;
   align-items: center;
   justify-content: center;
-`
-const Container = styled.div`
-  font-family: 'Jost', sans-serif;
 `;
+const Container = styled.div`
+  font-family: "Jost", sans-serif;
+`;
+const Index = styled.div``;
 
-function Homepage() {
+const Collections = () => {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(true);
@@ -33,22 +29,28 @@ function Homepage() {
   return (
     <>
       {loading ? (
-        <Container  style={{ height: '100vh',display: 'flex', flexDirection: 'column',alignItems: 'center',justifyContent: 'center'}}>
+        <Container
+          style={{
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <RiseLoader color={"#575855"} size={30} loading={loading} />
         </Container>
       ) : (
         <Container>
           <Navbar />
-          <Categories />
-          <Slider />
-          <ElementOne />
-          <ListProduct />
-          <Album />
-          <Footer />
-          </Container>
-      )}
-   </>
-  );
-}
 
-export default Homepage;
+          <CollectionsHeader />
+          <CollectionsCategory />
+          <Footer />
+        </Container>
+      )}
+    </>
+  );
+};
+
+export default Collections;

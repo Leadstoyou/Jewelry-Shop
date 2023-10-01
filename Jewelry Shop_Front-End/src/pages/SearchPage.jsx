@@ -5,9 +5,11 @@ import Slider from "../components/Slider";
 import ElementOne from "../components/ElementOne";
 import ListProduct from "../components/ListProduct";
 import Album from "../components/Album";
-
 import Footer from "../components/Footer";
 import RiseLoader from "react-spinners/RiseLoader";
+import Aos from "aos";
+import "aos/dist/aos.css";
+import SearchpageBody from '../components/searchpage/SearchpageBody'
 import { useEffect, useState } from "react";
 
 // const Container = styled.div``;
@@ -17,12 +19,13 @@ const Spinner = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`
+`;
 const Container = styled.div`
-  font-family: 'Jost', sans-serif;
+   font-family: 'Jost', sans-serif;
 `;
 
-function Homepage() {
+function SearchPage() {
+  
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(true);
@@ -33,22 +36,29 @@ function Homepage() {
   return (
     <>
       {loading ? (
-        <Container  style={{ height: '100vh',display: 'flex', flexDirection: 'column',alignItems: 'center',justifyContent: 'center'}}>
+        <Container 
+          style={{
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <RiseLoader color={"#575855"} size={30} loading={loading} />
         </Container>
       ) : (
         <Container>
           <Navbar />
-          <Categories />
-          <Slider />
-          <ElementOne />
-          <ListProduct />
-          <Album />
+          
+          <SearchpageBody />
+        
           <Footer />
-          </Container>
+          
+        </Container>
       )}
-   </>
+    </>
   );
 }
 
-export default Homepage;
+export default SearchPage;
