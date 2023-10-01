@@ -5,9 +5,16 @@ import routeUnknown from "../middleware/routeMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.send("Hello user Shop");
-});
+function hasParams(req, res, next) {
+  const { page, size, searchString } = req.query;
+  if (page || size || searchString) {
+    return userController.userSearchController(req, res, next);
+  } else {
+    return userController.userGetAllUsersController(req, res, next);
+  }
+}
+
+router.get("/", hasParams);
 
 router.post(
   "/login",
@@ -15,7 +22,7 @@ router.post(
   userController.userLoginController
 );
 
-router.post("/logout", userController.userLogoutController);
+router.get("/logout", userController.userLogoutController);
 
 router.post("/register", userController.userRegisterController);
 
@@ -32,5 +39,8 @@ router.post("/refreshToken", userController.refreshAccessTokenController);
 router.get("/search/:name", userController.userSearchbyNameController);
 
 router.use(routeUnknown);
+router.get("/forgotPassword", userController.userForgotPasswordController);
+
+router.put("/resetPassword", userController.userResetPasswordController);
 
 export default router;

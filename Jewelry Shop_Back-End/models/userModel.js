@@ -1,10 +1,11 @@
 import mongoose, { Schema, ObjectId } from "mongoose";
 import isEmail from "validator/lib/isEmail.js";
 import validator from "validator";
+// import CryptoJS from "crypto-js";
+import crypto from "crypto";
 
-export default mongoose.model(
-  "User",
-  new Schema({
+const userSchema = new Schema(
+  {
     id: { type: ObjectId },
     userName: {
       type: String,
@@ -64,12 +65,35 @@ export default mongoose.model(
     },
     isActive: {
       type: Boolean,
-      default: true,
+      default: false,
       required: true,
+    },
+    refreshToken: {
+      type: String,
+    },
+    userPasswordChangedAt: {
+      type: String,
+    },
+    userPasswordResetToken: {
+      type: String,
+    },
+    userPasswordResetExpires: {
+      type: String,
     },
   },
   {
     timestamps: true,
   }
-  )
 );
+
+userSchema.methods = {
+  createPasswordChangedToken: function () {
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    this.userPasswordResetToken = crypto.createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+    this.userPasswordResetExpires = Date.now() + 15 * 60 * 60 * 1000;
+    return resetToken;
+  },
+};
+export default mongoose.model("User", userSchema);
