@@ -49,6 +49,8 @@ const userRegisterRepository = async ({
   userAddress,
   userAge,
   userAvatar,
+  userRole = 2,
+  isActive = true,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -68,9 +70,17 @@ const userRegisterRepository = async ({
         userGender,
         userAddress,
         userAge,
+<<<<<<< HEAD
         userAvatar: "https://th.bing.com/th/id/R.1257e9bf1162dab4f055837ac569b081?rik=G2s3vNi9Oa7%2bGg&pid=ImgRaw&r=0",
         userRole: 2,
         isActive: true,
+=======
+        userAvatar:
+          userAvatar ||
+          "https://th.bing.com/th/id/R.1257e9bf1162dab4f055837ac569b081?rik=G2s3vNi9Oa7%2bGg&pid=ImgRaw&r=0",
+        userRole,
+        isActive,
+>>>>>>> main
       });
       resolve({
         ...newUser._doc,
@@ -124,10 +134,17 @@ const userUpdateProfileRepository = async ({
   userAddress,
   userAge,
   userAvatar,
+  userRole,
+  isActive,
 }) => {
   return new Promise(async (resolve, reject) => {
+<<<<<<< HEAD
     try {
       let userAvtUrl = null;
+=======
+    let userAvtUrl = null;
+    try {
+>>>>>>> main
       if (userAvatar) {
         userAvtUrl = await cloudinaryService.uploadProductImageToCloudinary(
           userAvatar,
@@ -144,6 +161,11 @@ const userUpdateProfileRepository = async ({
           ...(userAddress && { userAddress }),
           ...(userAge > 0 && { userAge }),
           ...(userAvtUrl && { userAvatar: userAvtUrl }),
+<<<<<<< HEAD
+=======
+          ...(userRole && { userRole }),
+          ...(isActive && { isActive }),
+>>>>>>> main
         },
         { new: true }
       ).exec();
@@ -151,6 +173,12 @@ const userUpdateProfileRepository = async ({
         ...existingUser._doc,
       });
     } catch (error) {
+<<<<<<< HEAD
+=======
+      if (userAvtUrl) {
+        cloudinaryService.deleteImageFromCloudinary(userAvtUrl);
+      }
+>>>>>>> main
       reject(new Exception(Exception.INPUT_ERROR, { message: error.message }));
     }
   });
@@ -210,6 +238,38 @@ const userUpdateStatusRepository = async ({
       reject(new Exception(Exception.INPUT_ERROR, { message: error.message }));
     }
   });
+<<<<<<< HEAD
+=======
+};
+const searchUsers = async ({ username, onlyName }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const query = {
+        $or: [
+          { userName: new RegExp(username, "i") },
+          ...(onlyName
+            ? []
+            : [
+                { userAddress: new RegExp(username, "i") },
+                { userEmail: new RegExp(username, "i") },
+              ]),
+        ],
+      };
+
+      const searchResult = await User.find(query).exec();
+      if (searchResult.length === 0) {
+        throw new Exception(Exception.USER_NOT_FOUND);
+      }
+
+      const formattedResults = searchResult.map((result) => {
+        return { ...result.toObject(), userPassword: "Not shown" };
+      });
+      resolve(formattedResults);
+    } catch (error) {
+      reject(new Exception(Exception.INPUT_ERROR, { message: error.message }));
+    }
+  });
+>>>>>>> main
 };
 
 export default {
@@ -219,4 +279,8 @@ export default {
   userUpdateProfileRepository,
   userUpdateRoleRepository,
   userUpdateStatusRepository,
+<<<<<<< HEAD
+=======
+  searchUsers,
+>>>>>>> main
 };

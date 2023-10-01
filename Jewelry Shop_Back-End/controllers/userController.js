@@ -2,7 +2,11 @@ import { validationResult } from "express-validator";
 
 import { userRepository } from "../repositories/indexRepository.js";
 
+<<<<<<< HEAD
 import { jwtService } from "../services/indexService.js"
+=======
+import { jwtService } from "../services/indexService.js";
+>>>>>>> main
 
 import HttpStatusCode from "../constant/HttpStatusCode.js";
 
@@ -20,11 +24,19 @@ const userLoginController = async (req, res) => {
       userPassword,
     });
 
+<<<<<<< HEAD
     res.cookie('accessToken', existingUser.accessToken, {
       maxAge: 30 * 24 * 60 * 60, 
       httpOnly: true, 
       secure: false ,
       sameSite: 'Strict',
+=======
+    res.cookie("accessToken", existingUser.accessToken, {
+      maxAge: 30 * 24 * 60 * 60,
+      httpOnly: true,
+      secure: false,
+      sameSite: "Strict",
+>>>>>>> main
     });
 
     res
@@ -60,6 +72,7 @@ const refreshAccessTokenController = async (req, res) => {
 
 const userLogoutController = async (req, res) => {
   try {
+<<<<<<< HEAD
       res.clearCookie('refreshToken')
       return res.status(HttpStatusCode.OK).json({
           status: 'OK',
@@ -71,6 +84,19 @@ const userLogoutController = async (req, res) => {
       })
   }
 }
+=======
+    res.clearCookie("refreshToken");
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: "Logout successfully",
+    });
+  } catch (error) {
+    return res.status(HttpStatusCode.BAD_REQUEST).json({
+      message: error,
+    });
+  }
+};
+>>>>>>> main
 
 const userRegisterController = async (req, res) => {
   const {
@@ -210,6 +236,45 @@ const userUpdateStatusController = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
+=======
+const userSearchbyNameController = async (req, res) => {
+  try {
+    const { name } = req.params;
+    const searchResult = await userRepository.searchUsers({
+      username: name,
+      onlyName: true,
+    });
+    return res
+      .status(HttpStatusCode.OK)
+      .json({ message: "Search completed", data: searchResult });
+  } catch (exception) {
+    return res
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .json({ message: exception.toString() });
+  }
+};
+
+const userSearchByNameAddressEmailController = async (req, res) => {
+  try {
+    const { name } = req.params;
+
+    const searchResult = await userRepository.searchUsers({
+      username: name,
+      onlyName: false,
+    });
+
+    return res
+      .status(HttpStatusCode.OK)
+      .json({ message: "Search completed", data: searchResult });
+  } catch (exception) {
+    return res
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .json({ message: exception.toString() });
+  }
+};
+
+>>>>>>> main
 export default {
   userLoginController,
   userRegisterController,
@@ -218,5 +283,11 @@ export default {
   userUpdateRoleController,
   userUpdateStatusController,
   refreshAccessTokenController,
+<<<<<<< HEAD
   userLogoutController
+=======
+  userLogoutController,
+  userSearchbyNameController,
+  userSearchByNameAddressEmailController,
+>>>>>>> main
 };

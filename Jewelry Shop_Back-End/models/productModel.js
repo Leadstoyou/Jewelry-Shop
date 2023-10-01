@@ -5,13 +5,22 @@ export default mongoose.model(
   "Product",
   new Schema(
     {
+<<<<<<< HEAD
       id: { type: ObjectId, required: true },
+=======
+      id: { type: ObjectId},
+>>>>>>> main
       productName: {
         type: String,
         required: true,
         validate: {
+<<<<<<< HEAD
           validator: (value) => validator.isLength(value, { min: 2, max: 50 }),
           message: "productName must be between 2 and 50 characters",
+=======
+          validator: (value) => validator.isLength(value, { min: 2, max: 200 }),
+          message: "productName must be between 2 and 200 characters",
+>>>>>>> main
         },
       },
       productDescription: {
@@ -19,8 +28,13 @@ export default mongoose.model(
         required: true,
         validate: {
           validator: (value) =>
+<<<<<<< HEAD
             validator.isLength(value, { min: 10, max: 500 }),
           message: "productDescription must be between 10 and 500 characters",
+=======
+            validator.isLength(value, { min: 0, max: 5000 }),
+          message: "productDescription must be between 0 and 5000 characters",
+>>>>>>> main
         },
       },
       productQuantity: {
@@ -31,6 +45,28 @@ export default mongoose.model(
           message: "productQuantity must be an integer",
         },
       },
+<<<<<<< HEAD
+=======
+      productPrice: {
+        type: Number,
+        required: true,
+        validate: {
+          validator: (value) => validator.isFloat(String(value)),
+          message: "productPrice must be a floating-point number",
+        },
+      },
+      productColors : {
+        type: [String],
+        required: true,
+        validate: {
+          validator: (value) =>
+            value.every((color) =>
+              validator.isLength(color, { min: 1, max: 20 })
+            ),
+          message: "Each product color must be between 1 and 20 characters",
+        },
+      },
+>>>>>>> main
       productSizes: {
         type: [String],
         required: true,
@@ -77,6 +113,10 @@ export default mongoose.model(
           message: "Invalid URL for product image",
         },
       },
+<<<<<<< HEAD
+=======
+      isDeleted: { type: Boolean, default: false },
+>>>>>>> main
     },
     {
       timestamps: true,
