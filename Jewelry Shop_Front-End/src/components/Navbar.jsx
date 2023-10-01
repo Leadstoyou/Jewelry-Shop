@@ -4,8 +4,8 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PersonIcon from "@mui/icons-material/Person";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Badge from "@mui/material/Badge";
-import React from "react";
-import {useNavigate} from 'react-router-dom'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import videoFile from "../assets/video.mp4"; // Import the video file using ES6 module syntax
 const Container = styled.div`
   background-color: #d5d3d3;
@@ -21,7 +21,14 @@ const Container = styled.div`
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
   z-index: 5;
 `;
-const Logo = styled.h1``;
+const Logo = styled.h1`
+  
+`;
+
+const ControllerLogo = styled.div`
+  cursor: pointer;
+  z-index: 100;
+`
 const Right = styled.div`
   display: flex;
   align-items: center;
@@ -74,53 +81,64 @@ const Video = styled.video`
   mix-blend-mode: darken;
   object-fit: cover;
   opacity: 1;
-  z-index:2;
+  z-index: 2;
   box-sizing: border-box;
 `;
 
 const Icon = styled.span`
   &:hover {
-    background-color: red;
+    width: 100%;
+    height: 100%;
     opacity: 0.5;
   }
 `;
 const Nav = styled.div`
-  position: fixed; 
-  top: 0; 
+  position: fixed;
+  top: 0;
   width: 100%;
-  background-color: white; 
-  z-index: 1; 
+  background-color: white;
+  z-index: 1;
 `;
-
-const LinkController = styled.a`
-  color: inherit;
-`
-
 const Navbar = () => {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Function to handle Enter key press
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      navigate("/search");
+    }
+  };
   return (
     <Nav>
       <Container>
         <Video src={videoFile} muted autoPlay loop></Video>
-        <Logo>Jewelry</Logo>
+        <ControllerLogo onClick={()=>navigate('/')}>
+        <Logo >Jewelry</Logo>
+        </ControllerLogo>
         <Right>
           <InputController>
             <Icon>
               <SearchIcon
+                onClick={() => navigate("/search")}
                 style={{
                   color: "black",
                   backgroundColor: "white",
                   cursor: "pointer",
-                  padding: "6px",
+                  padding: "4px",
                 }}
               />
             </Icon>
-            <Input placeholder="Tìm sản phẩm ..." />
+            <Input
+              placeholder="Tìm sản phẩm ..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyPress}
+            />
           </InputController>
           <ItemController>
             <Item>
-              <LinkController href="https://maps.app.goo.gl/ydjkZg5b7mf6H5tu7">
               <LocationOnIcon />
-              </LinkController>
             </Item>
             <Item>
               <PersonIcon />

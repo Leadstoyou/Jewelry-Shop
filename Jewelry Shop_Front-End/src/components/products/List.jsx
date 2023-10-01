@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import { ProductList } from "../data";
-import Product from "./Product";
+import { ProductPage } from "../../data";
+import Product from "../products/Product";
 import Aos from "aos";
 import "aos/dist/aos.css";
 import ArrowLeftOutlined from "@mui/icons-material/ArrowLeftOutlined";
@@ -40,7 +40,7 @@ const Text = styled.h1`
 `;
 
 const ListItem = styled.div`
-  width: 700%;
+  width: 500%;
   margin-left: 10px;
  
   padding-right: 10px;
@@ -53,7 +53,7 @@ const Wrapper = styled.div`
   transform: translateX(${(props) => props.translateX}px);
 `;
 
-const ListProduct = () => {
+const List = () => {
   const [opa, setOpa] = useState(0);
   const [translateX, setTranslateX] = useState(0);
   const containerRef = useRef(null);
@@ -92,17 +92,17 @@ const ListProduct = () => {
   }, []);
   return (
     <Container
-      data-aos="fade-up"
+      
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       ref={containerRef}
     >
-      <Title>
-        <Text>Top sản phẩm bán chạy</Text>
+      <Title style={{textAlign:'center'}}>
+        <Text>Có thể bạn cũng thích</Text>
       </Title>
       <Wrapper translateX={translateX}>
         <ListItem>
-          {ProductList.map((product) => (
+          {ProductPage.map((product) => (
             <Product key={product.id} props={product} />
           ))}
         </ListItem>
@@ -121,4 +121,4 @@ const ListProduct = () => {
   );
 };
 
-export default ListProduct;
+export default List;
