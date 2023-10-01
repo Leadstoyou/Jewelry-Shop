@@ -1,37 +1,22 @@
 import cloudinaryService from "../services/cloudinaryService.js";
-<<<<<<< HEAD
-
-import constants from "../constant/constants.js";
-=======
 import constants from "../constant/constants.js";
 import { Product } from "../models/indexModel.js";
 import Exception from "../constant/Exception.js";
 import mongoose from "mongoose";
 
->>>>>>> main
 const createNewProduct = async (
   productName,
   productDescription,
   productQuantity,
   productSizes,
-<<<<<<< HEAD
-=======
   productPrice,
   productColors,
->>>>>>> main
   productMaterials,
   productCategory,
   productDiscount,
   productImage
 ) => {
   return new Promise(async (resolve, reject) => {
-<<<<<<< HEAD
-    try {
-    cloudinaryService.uploadProductImageToCloudinary(
-        "https://i.pinimg.com/736x/f4/68/ea/f468ea1e8a22dcac67f8d8fc29b58ca1.jpg",
-        constants.CLOUDINARY_USER_AVATAR_IMG
-    )
-=======
     let productImageUrl;
     try {
       const dupicateProductName = await Product.findOne({ productName }).exec();
@@ -95,15 +80,10 @@ const getAllProducts = async () => {
       const getAllProducts = await Product.find({}).exec();
 
       resolve(getAllProducts);
->>>>>>> main
     } catch (error) {
       reject(error);
     }
   });
-<<<<<<< HEAD
-}
-createNewProduct()
-=======
 };
 const updateProduct = async (
   id,
@@ -193,4 +173,3 @@ export default {
   updateProduct,
   deleteProduct,
 };
->>>>>>> main

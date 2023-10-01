@@ -9,11 +9,7 @@ const uploadProductImageToCloudinary = async (imagePath, folder) => {
       const result = await cloudinary.uploader.upload(imagePath, {
         folder: folder,
       });
-<<<<<<< HEAD
-      
-=======
 
->>>>>>> main
       resolve(result.secure_url);
     } catch (error) {
       console.error("Error uploading image to Cloudinary:", error);
@@ -21,12 +17,6 @@ const uploadProductImageToCloudinary = async (imagePath, folder) => {
     }
   });
 };
-<<<<<<< HEAD
-
-
-export default {
-  uploadProductImageToCloudinary,
-=======
 const deleteImageFromCloudinary = async (publicUrl) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -60,5 +50,4 @@ const getPublicIdFromUrl = (publicUrl) => {
 export default {
   uploadProductImageToCloudinary,
   deleteImageFromCloudinary,
->>>>>>> main
 };

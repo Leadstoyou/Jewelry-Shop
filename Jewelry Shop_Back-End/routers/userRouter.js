@@ -28,12 +28,9 @@ router.put("/updateRole", userController.userUpdateRoleController);
 router.put("/updateStatus", userController.userUpdateStatusController);
 
 router.post("/refreshToken", userController.refreshAccessTokenController);
-<<<<<<< HEAD
-=======
 
 router.get("/search/:name", userController.userSearchbyNameController);
 
 router.use(routeUnknown);
->>>>>>> main
 
 export default router;

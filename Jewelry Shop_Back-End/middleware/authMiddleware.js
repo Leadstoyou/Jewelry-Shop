@@ -9,14 +9,8 @@ const checkToken = (req, res, next) => {
     next();
     return;
   }
-<<<<<<< HEAD
-
-  const token = req.headers?.authorization.split(" ")[1];
-  try {
-=======
   try {
     const token = req.headers?.authorization.split(" ")[1];
->>>>>>> main
     const jwtObject = jwt.verify(token, process.env.ACCESS_TOKEN);
     const isExpired = Date.now() >= jwtObject.exp * 1000;
     if (isExpired) {
