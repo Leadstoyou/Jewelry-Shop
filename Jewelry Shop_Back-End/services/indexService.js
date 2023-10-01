@@ -1,4 +1,5 @@
-import userService from "./userService.js";
-import jwtService from "./jwtService.js";
 
-export { userService, jwtService };
+import jwtService from "./jwtService.js";
+import cloudinaryService from "./cloudinaryService.js";
+
+export { jwtService,cloudinaryService };

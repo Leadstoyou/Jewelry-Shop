@@ -1,7 +1,8 @@
 import { User } from "../models/indexModel.js";
 import Exception from "../constant/Exception.js";
+import constants from "../constant/constants.js";
 import bcrypt from "bcrypt";
-import { jwtService } from "../services/indexService.js"
+import { jwtService, cloudinaryService } from "../services/indexService.js";
 
 const userLoginRepository = async ({ userEmail, userPassword }) => {
   return new Promise(async (resolve, reject) => {
@@ -48,6 +49,8 @@ const userRegisterRepository = async ({
   userAddress,
   userAge,
   userAvatar,
+  userRole = 2,
+  isActive = true,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -67,9 +70,11 @@ const userRegisterRepository = async ({
         userGender,
         userAddress,
         userAge,
-        userAvatar,
-        userRole: 2,
-        isActive: true,
+        userAvatar:
+          userAvatar ||
+          "https://th.bing.com/th/id/R.1257e9bf1162dab4f055837ac569b081?rik=G2s3vNi9Oa7%2bGg&pid=ImgRaw&r=0",
+        userRole,
+        isActive,
       });
       resolve({
         ...newUser._doc,
@@ -79,7 +84,7 @@ const userRegisterRepository = async ({
       reject(exception);
     }
   });
-}; 
+};
 
 const userChangePasswordRepository = async ({
   userEmail,
@@ -123,9 +128,18 @@ const userUpdateProfileRepository = async ({
   userAddress,
   userAge,
   userAvatar,
+  userRole,
+  isActive,
 }) => {
   return new Promise(async (resolve, reject) => {
+    let userAvtUrl = null;
     try {
+      if (userAvatar) {
+        userAvtUrl = await cloudinaryService.uploadProductImageToCloudinary(
+          userAvatar,
+          constants.CLOUDINARY_USER_AVATAR_IMG
+        );
+      }
       const existingUser = await User.findOneAndUpdate(
         { userEmail },
         {
@@ -135,7 +149,9 @@ const userUpdateProfileRepository = async ({
             ["Male", "Female"].includes(userGender) && { userGender }),
           ...(userAddress && { userAddress }),
           ...(userAge > 0 && { userAge }),
-          ...(userAvatar && { userAvatar }),
+          ...(userAvtUrl && { userAvatar: userAvtUrl }),
+          ...(userRole && { userRole }),
+          ...(isActive && { isActive }),
         },
         { new: true }
       ).exec();
@@ -143,6 +159,9 @@ const userUpdateProfileRepository = async ({
         ...existingUser._doc,
       });
     } catch (error) {
+      if (userAvtUrl) {
+        cloudinaryService.deleteImageFromCloudinary(userAvtUrl);
+      }
       reject(new Exception(Exception.INPUT_ERROR, { message: error.message }));
     }
   });
@@ -174,7 +193,11 @@ const userUpdateRoleRepository = async ({ userEmail, newRole, userRole }) => {
   });
 };
 
-const userUpdateStatusRepository = async ({ userEmail, newStatus, userRole }) => {
+const userUpdateStatusRepository = async ({
+  userEmail,
+  newStatus,
+  userRole,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (userRole !== 0) {
@@ -199,6 +222,35 @@ const userUpdateStatusRepository = async ({ userEmail, newStatus, userRole }) =>
     }
   });
 };
+const searchUsers = async ({ username, onlyName }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const query = {
+        $or: [
+          { userName: new RegExp(username, "i") },
+          ...(onlyName
+            ? []
+            : [
+                { userAddress: new RegExp(username, "i") },
+                { userEmail: new RegExp(username, "i") },
+              ]),
+        ],
+      };
+
+      const searchResult = await User.find(query).exec();
+      if (searchResult.length === 0) {
+        throw new Exception(Exception.USER_NOT_FOUND);
+      }
+
+      const formattedResults = searchResult.map((result) => {
+        return { ...result.toObject(), userPassword: "Not shown" };
+      });
+      resolve(formattedResults);
+    } catch (error) {
+      reject(new Exception(Exception.INPUT_ERROR, { message: error.message }));
+    }
+  });
+};
 
 export default {
   userLoginRepository,
@@ -207,4 +259,5 @@ export default {
   userUpdateProfileRepository,
   userUpdateRoleRepository,
   userUpdateStatusRepository,
+  searchUsers,
 };

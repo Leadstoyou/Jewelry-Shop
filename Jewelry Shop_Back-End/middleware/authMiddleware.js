@@ -1,4 +1,4 @@
-import HttpStatusCode from "../exceptions/HttpStatusCode.js";
+import HttpStatusCode from "../constant/HttpStatusCode.js";
 import jwt from "jsonwebtoken";
 
 const checkToken = (req, res, next) => {
@@ -9,9 +9,8 @@ const checkToken = (req, res, next) => {
     next();
     return;
   }
-
-  const token = req.headers?.authorization.split(" ")[1];
   try {
+    const token = req.headers?.authorization.split(" ")[1];
     const jwtObject = jwt.verify(token, process.env.ACCESS_TOKEN);
     const isExpired = Date.now() >= jwtObject.exp * 1000;
     if (isExpired) {
@@ -22,7 +21,7 @@ const checkToken = (req, res, next) => {
     } else {
       next();
       return;
-    } 
+    }
   } catch (exception) {
     res.status(HttpStatusCode.BAD_REQUEST).json({
       message: exception.message,

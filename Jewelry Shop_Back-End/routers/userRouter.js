@@ -1,6 +1,7 @@
 import express from "express";
 import { body } from "express-validator";
 import { userController } from "../controllers/indexController.js";
+import routeUnknown from "../middleware/routeMiddleware.js";
 
 const router = express.Router();
 
@@ -27,5 +28,9 @@ router.put("/updateRole", userController.userUpdateRoleController);
 router.put("/updateStatus", userController.userUpdateStatusController);
 
 router.post("/refreshToken", userController.refreshAccessTokenController);
+
+router.get("/search/:name", userController.userSearchbyNameController);
+
+router.use(routeUnknown);
 
 export default router;
