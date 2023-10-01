@@ -6,6 +6,17 @@ dotenv.config(); //must have
 import { productRouter, userRouter } from "./routers/indexRouter.js";
 import connect from "./database/database.js";
 import checkToken from "./middleware/authMiddleware.js";
+<<<<<<< Updated upstream
+=======
+import cookieParser from "cookie-parser";
+
+const app = express();
+app.use(cookieParser()); 
+// app.use(checkToken); 
+
+app.use(express.json());
+
+>>>>>>> Stashed changes
 const port = process.env.PORT;
 
 const app = express();

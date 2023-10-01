@@ -2,7 +2,58 @@ import { User } from "../models/indexModel.js";
 import Exception from "../constant/Exception.js";
 import constants from "../constant/constants.js";
 import bcrypt from "bcrypt";
-import { jwtService, cloudinaryService } from "../services/indexService.js";
+import {
+  jwtService,
+  cloudinaryService,
+  sendEmailService,
+} from "../services/indexService.js";
+
+import jwt from "jsonwebtoken";
+
+
+const userGetAllUsersRepository = async () => {
+  try {
+    const allUsers = await User.find({});
+    return allUsers;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const userSearchRepository = async ({
+  page,
+  size,
+  searchString,
+  searchRole,
+}) => {
+  page = parseInt(page);
+  size = parseInt(size);
+  const searchRoleNumber = parseInt(searchRole);
+  const matchQuery = {
+    $or: [
+      {
+        userName: { $regex: `.*${searchString}.*`, $options: "i" },
+      },
+      {
+        userEmail: { $regex: `.*${searchString}.*`, $options: "i" },
+      },
+    ],
+  };
+
+  if (searchRole) {
+    matchQuery.userRole = searchRoleNumber;
+  }
+
+  let filteredUsers = await User.aggregate([
+    {
+      $match: matchQuery,
+    },
+    { $skip: (page - 1) * size },
+    { $limit: size },
+  ]);
+
+  return filteredUsers;
+};
 
 const userLoginRepository = async ({ userEmail, userPassword }) => {
   return new Promise(async (resolve, reject) => {
@@ -18,24 +69,91 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
         userPassword,
         existingUser.userPassword
       );
+
       if (!isMatched) {
         resolve({
           status: "ERROR",
           message: Exception.WRONG_EMAIL_AND_PASSWORD,
         });
       }
-      const accessToken = await jwtService.generalAccessToken(existingUser);
-      const refreshToken = await jwtService.generalRefreshToken(existingUser);
+
+      const accessToken = await jwtService.generalAccessToken(
+        existingUser._id,
+        existingUser.userEmail,
+        existingUser.userRole
+      );
+
+      const refreshToken = await jwtService.generalRefreshToken(
+        existingUser._id
+      );
+
+      await User.findByIdAndUpdate(
+        existingUser._id,
+        { refreshToken },
+        { new: true }
+      );
+
+      const {
+        userPassword: removedUserPassword,
+        userRole,
+        ...userData
+      } = existingUser.toObject();
       resolve({
-        ...existingUser.toObject(),
-        password: "Not show",
-        status: "OK",
-        message: "SUCCESS",
+        ...userData,
         accessToken,
         refreshToken,
       });
     } catch (exception) {
       reject(exception);
+    }
+  });
+};
+
+const refreshTokenRepository = async (refreshToken) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const decodedToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
+      const existingUser = await User.findOne({
+        _id: decodedToken.userId,
+        refreshToken,
+      });
+
+      if (!existingUser) {
+        return reject("User not found");
+      }
+
+      const newAccessToken = await jwtService.generalAccessToken(
+        existingUser._id,
+        existingUser.userEmail,
+        existingUser.userRole
+      );
+
+      return resolve({
+        success: true,
+        newAccessToken,
+      });
+    } catch (error) {
+      return reject(error.message);
+    }
+  });
+};
+
+const userLogoutRepository = async (refreshToken) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const updatedUser = await User.findOneAndUpdate(
+        { refreshToken },
+        { refreshToken: "" },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return reject("No user found with the provided refreshToken");
+      }
+
+      return resolve();
+    } catch (error) {
+      return reject(error.message);
     }
   });
 };
@@ -71,11 +189,14 @@ const userRegisterRepository = async ({
         userAddress,
         userAge,
         userAvatar:
-          userAvatar ||
           "https://th.bing.com/th/id/R.1257e9bf1162dab4f055837ac569b081?rik=G2s3vNi9Oa7%2bGg&pid=ImgRaw&r=0",
-        userRole,
-        isActive,
+        userRole: 2,
+        isActive: false,
       });
+      const verificationCodeLink = `<a href=${process.env.URL_SERVER}/users/verify>Click here</a>`;
+      const emailSubject = "Xác minh tài khoản của bạn";
+      const emailBody = `Xin chào ${userName},\n\nVui lòng nhấn vào liên kết sau để xác minh tài khoản của bạn:\n\n${verificationCodeLink}`;
+      sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
       resolve({
         ...newUser._doc,
         userPassword: "Not show",
@@ -252,12 +373,67 @@ const searchUsers = async ({ username, onlyName }) => {
   });
 };
 
+const userForgotPasswordRepository = async (userEmail) => {
+  try {
+    const existingUser = await User.findOne({ userEmail }).exec();
+    if (!existingUser) {
+      throw new Error("User not found");
+    }
+    existingUser.createPasswordChangedToken();
+    await existingUser.save();
+    const resetToken = existingUser.userPasswordResetToken;
+    const emailSubject = "Bạn forgot password";
+    const resetLink = `${process.env.URL_SERVER}/resetPassword/${resetToken}`;
+    const emailBody = `To reset your password, click the following link, link tồn tại trong 15p: ${resetLink}`;
+    await sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
+    return {
+      success: true,
+      message: "Password reset instructions sent to your email.",
+    };
+  } catch (exception) {
+    throw exception;
+  }
+};
+
+const userResetPasswordRepository = async (token, newPassword) => {
+  try {
+    console.log(token);
+    const existingUser = await User.findOne({
+      userPasswordResetToken : token,
+      userPasswordResetExpires: { $gt: Date.now() },
+    }).exec();
+    if (!existingUser) {
+      throw new Error("Invalid user reset token");
+    }
+    const hashedPassword = await bcrypt.hash(
+      newPassword,
+      parseInt(process.env.SALT_ROUNDS)
+    );
+    existingUser.userPassword = hashedPassword;
+    existingUser.userPasswordChangedAt = Date.now();
+    existingUser.userPasswordResetToken = undefined;
+    existingUser.userPasswordResetExpires = undefined;
+    await existingUser.save();
+    return {
+      success: true,
+      message: "Password updated successfully",
+    };
+  } catch (exception) {
+    throw exception;
+  }
+};
+
 export default {
+  userGetAllUsersRepository,
+  userSearchRepository,
   userLoginRepository,
+  userLogoutRepository,
   userRegisterRepository,
   userChangePasswordRepository,
   userUpdateProfileRepository,
   userUpdateRoleRepository,
   userUpdateStatusRepository,
-  searchUsers,
+  refreshTokenRepository,
+  userForgotPasswordRepository,
+  userResetPasswordRepository,
 };
