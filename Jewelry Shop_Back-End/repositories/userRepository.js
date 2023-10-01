@@ -175,6 +175,7 @@ const userRegisterRepository = async ({
       const existingUser = await User.findOne({ userEmail }).exec();
       if (!!existingUser) {
         reject(new Exception(Exception.USER_EXIST));
+        return;
       }
       const hashedPassword = await bcrypt.hash(
         userPassword,

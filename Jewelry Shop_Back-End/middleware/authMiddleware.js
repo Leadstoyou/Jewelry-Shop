@@ -24,11 +24,10 @@ const checkToken = (req, res, next) => {
     const jwtObject = jwt.verify(token, process.env.ACCESS_TOKEN);
     const isExpired = Date.now() >= jwtObject.exp * 1000;
     if (isExpired) {
-      res.status(HttpStatusCode.BAD_REQUEST).json({
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         success: false,
         message: "Token is expired",
       });
-      return;
     } else {
       next();
       return;
