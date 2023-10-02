@@ -44,6 +44,6 @@ router.get("/forgotPassword", userController.userForgotPasswordController);
 
 router.put("/resetPassword", userController.userResetPasswordController);
 
-router.post("/verify/:userEmail", userController.verifyEmailController);
+router.get("/verify/:userEmail", userController.verifyEmailController);
 
 export default router;
