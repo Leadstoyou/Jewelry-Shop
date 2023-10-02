@@ -41,29 +41,37 @@ const userSearchController = async (req, res) => {
 
 const userLoginController = async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
+  console.log(res.status());
+  if (!errors.isEmpty() ) {
     return res
       .status(HttpStatusCode.BAD_REQUEST)
       .json({ errors: errors.array() });
   }
   const { userEmail, userPassword } = req.body;
+  
   try {
     const existingUser = await userRepository.userLoginRepository({
       userEmail,
       userPassword,
     });
 
+    if (existingUser.status === "ERROR") {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: existingUser.message,
+      });
+    }
     res.cookie("accessToken", existingUser.accessToken, {
       maxAge: 3 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "Strict",
     });
 
     res.cookie("refreshToken", existingUser.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "Strict",
     });
 

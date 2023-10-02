@@ -2,7 +2,8 @@ import express from "express";
 import { body } from "express-validator";
 import { userController } from "../controllers/indexController.js";
 import routeUnknown from "../middleware/routeMiddleware.js";
-import checkToken from "../middleware/authMiddleware.js";
+import {checkToken,checkUser} from "../middleware/authMiddleware.js";
+import constants from "../constant/constants.js";
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ function hasParams(req, res, next) {
   }
 }
 
-router.get("/",checkToken, hasParams);
+router.get("/",checkToken,checkUser(constants.ADMIN_ROLE_ID), hasParams);
 
 router.post("/login", body("userEmail").isEmail(), userController.userLoginController);
 
