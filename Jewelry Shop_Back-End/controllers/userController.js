@@ -1,9 +1,6 @@
 import { validationResult } from "express-validator";
-
 import { userRepository } from "../repositories/indexRepository.js";
-
 import HttpStatusCode from "../constant/HttpStatusCode.js";
-import { User } from "../models/indexModel.js";
 
 const userGetAllUsersController = async (req, res) => {
   try {
@@ -12,8 +9,8 @@ const userGetAllUsersController = async (req, res) => {
       message: "Get all users successfully",
       data: allUsers,
     });
-  } catch (error) {
-    res.status(400).json({ message: exception.message });
+  } catch (exception) {
+    res.status(400).json({ message: exception.toString() });
   }
 };
 
@@ -56,6 +53,13 @@ const userLoginController = async (req, res) => {
       userPassword,
     });
 
+    res.cookie("accessToken", existingUser.accessToken, {
+      maxAge: 3 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: false,
+      sameSite: "Strict",
+    });
+
     res.cookie("refreshToken", existingUser.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
@@ -86,16 +90,16 @@ const refreshAccessTokenController = async (req, res) => {
     const result = await userRepository.refreshTokenRepository(
       cookie.refreshToken
     );
-
     return res.status(HttpStatusCode.OK).json(result);
-  } catch (error) {
-    return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: error });
+  } catch (exception) {
+    return res
+      .status(HttpStatusCode.UNAUTHORIZED)
+      .json({ message: exception.toString() });
   }
 };
 
 const userLogoutController = async (req, res) => {
   const cookie = req.cookies;
-  console.log(req.cookies);
   if (!cookie || !cookie.refreshToken) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       message: "No refresh token in cookies",
@@ -103,13 +107,15 @@ const userLogoutController = async (req, res) => {
   }
   try {
     await userRepository.userLogoutRepository(cookie.refreshToken);
-    res.clearCookie("refreshToken", { httpOnly: true, secure: true });
     res.clearCookie("accessToken", { httpOnly: true, secure: true });
+    res.clearCookie("refreshToken", { httpOnly: true, secure: true });
     return res.status(HttpStatusCode.OK).json({
       message: "Logout successful",
     });
-  } catch (error) {
-    return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: error });
+  } catch (exception) {
+    return res
+      .status(HttpStatusCode.UNAUTHORIZED)
+      .json({ message: exception.toString() });
   }
 };
 
@@ -153,7 +159,6 @@ const userRegisterController = async (req, res) => {
 
 const verifyEmailController = async (req, res) => {
   const { userEmail } = req.params;
-
   try {
     const result = await userRepository.verifyEmailRepository(userEmail);
     return res.status(HttpStatusCode.OK).json({
@@ -168,7 +173,7 @@ const verifyEmailController = async (req, res) => {
 };
 
 const userChangePasswordController = async (req, res) => {
-  const { userEmail, oldPassword, newPassword,confirmPassword } = req.body;
+  const { userEmail, oldPassword, newPassword, confirmPassword } = req.body;
   if (newPassword !== confirmPassword) {
     return res.status(HttpStatusCode.BAD_REQUEST).json({
       message: "Password and confirm password do not match.",
@@ -332,5 +337,5 @@ export default {
   userLogoutController,
   userForgotPasswordController,
   userResetPasswordController,
-  verifyEmailController
+  verifyEmailController,
 };
