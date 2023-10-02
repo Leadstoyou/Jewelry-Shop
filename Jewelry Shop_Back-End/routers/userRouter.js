@@ -42,4 +42,6 @@ router.put("/resetPassword", userController.userResetPasswordController);
 
 router.get("/verify/:userEmail", userController.verifyEmailController);
 
+router.use(routeUnknown);
+
 export default router;
