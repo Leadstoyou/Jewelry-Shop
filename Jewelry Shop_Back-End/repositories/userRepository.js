@@ -201,7 +201,7 @@ const userRegisterRepository = async ({
       );
       const verificationCodeLink = `${process.env.URL_SERVER}/verify/${userEmail}`;
       const emailSubject = "Xác minh tài khoản của bạn";
-      const emailBody = `Xin chào ${userName},\n\nVui lòng nhấn vào liên kết sau để xác minh tài khoản của bạn:\n\n${verificationCodeLink}`;
+      const emailBody = `Xin chào ${userName},\n\nVui lòng nhấn vào liên kết sau để xác minh tài khoản của bạn:\n\n <a href="${verificationCodeLink}">Click Here!</a>`;
       sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
       resolve({
         ...newUser._doc,
