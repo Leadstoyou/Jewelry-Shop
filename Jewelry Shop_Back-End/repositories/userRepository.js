@@ -13,9 +13,16 @@ import jwt from "jsonwebtoken";
 const userGetAllUsersRepository = async () => {
   try {
     const allUsers = await User.find({});
-    return allUsers;
-  } catch (error) {
-    throw error;
+    return {
+      success: true,
+      message: "Get all users successfully!",
+      data: allUsers,
+    };
+  } catch (exception) {
+    throw new Exception({
+      success: false,
+      message: exception.message,
+    });
   }
 };
 
@@ -55,104 +62,125 @@ const userSearchRepository = async ({
 };
 
 const userLoginRepository = async ({ userEmail, userPassword }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const existingUser = await User.findOne({ userEmail }).exec();
-      if (!existingUser) {
-        resolve({
-          status: "ERROR",
-          message: Exception.CANNOT_FIND_USER,
-        });
-      }
-      const isMatched = bcrypt.compareSync(
-        userPassword,
-        existingUser.userPassword
-      );
+  try {
+    const existingUser = await User.findOne({ userEmail }).exec();
+    if (!existingUser) {
+      throw new Exception({
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      });
+    }
 
-      if (!isMatched) {
-        resolve({
-          status: "ERROR",
-          message: Exception.WRONG_EMAIL_AND_PASSWORD,
-        });
-      }
+    if (!existingUser.isActive) {
+      throw new Exception({
+        success: false,
+        message: Exception.USER_IS_NOT_ACTIVE,
+      });
+    }
 
-      const accessToken = await jwtService.generalAccessToken(
-        existingUser._id,
-        existingUser.userEmail,
-        existingUser.userRole
-      );
+    const isMatched = bcrypt.compareSync(
+      userPassword,
+      existingUser.userPassword
+    );
+    if (!isMatched) {
+      throw new Exception({
+        success: false,
+        message: Exception.WRONG_EMAIL_AND_PASSWORD,
+      });
+    }
 
-      const refreshToken = await jwtService.generalRefreshToken(
-        existingUser._id
-      );
+    const accessToken = await jwtService.generalAccessToken(
+      existingUser._id,
+      existingUser.userEmail,
+      existingUser.userRole
+    );
+    const refreshToken = await jwtService.generalRefreshToken(existingUser._id);
 
-      await User.findByIdAndUpdate(
-        existingUser._id,
-        { refreshToken },
-        { new: true }
-      );
+    const updatedUser = await User.findByIdAndUpdate(
+      existingUser._id,
+      { refreshToken },
+      { new: true }
+    );
 
-      const {
-        userPassword: removedUserPassword,
-        userRole,
-        ...userData
-      } = existingUser.toObject();
-      resolve({
+    const {
+      userPassword: removedUserPassword,
+      userRole,
+      ...userData
+    } = updatedUser.toObject();
+    return {
+      success: true,
+      message: "Login successfully!",
+      data: {
         ...userData,
         accessToken,
         refreshToken,
-      });
-    } catch (exception) {
-      reject(exception);
-    }
-  });
+      },
+    };
+  } catch (exception) {
+    throw new Exception({
+      success: false,
+      message: exception.message,
+    });
+  }
 };
 
 const refreshTokenRepository = async (refreshToken) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      //
-      const decodedToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
-      const existingUser = await User.findOne({
-        _id: decodedToken.userId,
-        refreshToken,
+  try {
+    const decodedToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
+    const existingUser = await User.findOne({
+      _id: decodedToken.userId,
+      refreshToken,
+    });
+    if (!existingUser) {
+      throw new Exception({
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
       });
-      if (!existingUser) {
-        return reject("User not found");
-      }
-      const newAccessToken = await jwtService.generalAccessToken(
-        existingUser._id,
-        existingUser.userEmail,
-        existingUser.userRole
-      );
-      return resolve({
-        success: true,
-        newAccessToken,
-      });
-    } catch (error) {
-      return reject(error.message);
     }
-  });
+
+    const newAccessToken = await jwtService.generalAccessToken(
+      existingUser._id,
+      existingUser.userEmail,
+      existingUser.userRole
+    );
+
+    return {
+      success: true,
+      message: "Refresh token successfully!",
+      data: newAccessToken,
+    };
+  } catch (exception) {
+    throw new Exception({
+      success: false,
+      message: exception.message,
+    });
+  }
 };
 
 const userLogoutRepository = async (refreshToken) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const updatedUser = await User.findOneAndUpdate(
-        { refreshToken },
-        { refreshToken: "" },
-        { new: true }
-      );
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { refreshToken },
+      { refreshToken: "" },
+      { new: true }
+    );
 
-      if (!updatedUser) {
-        return reject("No user found with the provided refreshToken");
-      }
-
-      return resolve();
-    } catch (error) {
-      return reject(error.message);
+    if (!updatedUser) {
+      throw new Exception({
+        success: false,
+        message: Exception.CANNOT_FIND_REFRESH_TOKEN_IN_USER,
+      });
     }
-  });
+    return {
+      success: true,
+      message: "Logout successfully!",
+    };
+  } catch (exception) {
+    throw new Exception({
+      success: false,
+      message: exception.message,
+    });
+  }
 };
 
 const userRegisterRepository = async ({
@@ -163,70 +191,83 @@ const userRegisterRepository = async ({
   userGender,
   userAddress,
   userAge,
-  userAvatar,
-  userRole,
-  isActive,
 }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const existingUser = await User.findOne({ userEmail }).exec();
-      if (!!existingUser) {
-        reject(new Exception(Exception.USER_EXIST));
-        return;
-      }
-      const hashedPassword = await bcrypt.hash(
-        userPassword,
-        parseInt(process.env.SALT_ROUNDS)
-      );
-      const newUser = await User.create({
-        userName,
-        userEmail,
-        userPassword: hashedPassword,
-        userPhoneNumber,
-        userGender,
-        userAddress,
-        userAge,
-        userAvatar:
-          "https://vnn-imgs-a1.vgcloud.vn/image1.ictnews.vn/_Files/2020/03/17/trend-avatar-1.jpg",
-        userRole: userRole || 2,
-        isActive: false,
+  try {
+    const existingUser = await User.findOne({ userEmail }).exec();
+    if (existingUser) {
+      throw new Exception({
+        success: false,
+        message: Exception.USER_EXIST,
       });
+    }
 
-      const hashedEmail = await bcrypt.hash(
-        userEmail,
-        parseInt(process.env.SALT_ROUNDS)
-      );
+    const hashedPassword = await bcrypt.hash(
+      userPassword,
+      parseInt(process.env.SALT_ROUNDS)
+    );
 
-      const verificationCodeLink = `${process.env.URL_SERVER}/verify/${userEmail}`;
-      const emailSubject = "Xác minh tài khoản của bạn";
-      const emailBody = `Xin chào ${userName},\n\nVui lòng nhấn vào liên kết sau để xác minh tài khoản của bạn:\n\n <a href="${verificationCodeLink}">Click Here!</a>`;
-      sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
-      resolve({
+    const newUser = await User.create({
+      userName,
+      userEmail,
+      userPassword: hashedPassword,
+      userPhoneNumber,
+      userGender,
+      userAddress,
+      userAge,
+      userAvatar:
+        "https://vnn-imgs-a1.vgcloud.vn/image1.ictnews.vn/_Files/2020/03/17/trend-avatar-1.jpg",
+      userRole: 2,
+      isActive: false,
+    });
+
+    const hashedEmail = await bcrypt.hash(
+      userEmail,
+      parseInt(process.env.SALT_ROUNDS)
+    );
+
+    const verificationCodeLink = `${process.env.URL_SERVER}/verify/${userEmail}`;
+    const emailSubject = "Xác minh tài khoản của bạn";
+    const emailBody = `Xin chào ${userName},\n\nVui lòng nhấn vào liên kết sau để xác minh tài khoản của bạn:\n\n <a href="${verificationCodeLink}">Click Here!</a>`;
+    sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
+
+    return {
+      success: true,
+      message: "Register successfully",
+      data: {
         ...newUser._doc,
         userPassword: "Not show",
-      });
-    } catch (exception) {
-      reject(exception);
-    }
-  });
+      },
+    };
+  } catch (exception) {
+    throw new Exception({
+      success: false,
+      message: exception.message,
+    });
+  }
 };
 
 const verifyEmailRepository = async (userEmail) => {
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
-
     if (!existingUser) {
-      throw new Error('User not found');
+      throw new Exception({
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      });
     }
+
     existingUser.isActive = true;
     await existingUser.save();
 
     return {
       success: true,
-      message: 'Email verified successfully',
+      message: "Email verified successfully",
     };
   } catch (exception) {
-    throw exception;
+    throw new Exception({
+      success: false,
+      message: exception.message,
+    });
   }
 };
 
@@ -235,33 +276,51 @@ const userChangePasswordRepository = async ({
   oldPassword,
   newPassword,
 }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const existingUser = await User.findOne({ userEmail }).exec();
-      const isMatched = await bcrypt.compare(
-        oldPassword,
-        existingUser.userPassword
-      );
-      if (!isMatched) {
-        reject(new Exception(Exception.WRONG_OLD_PASSWORD));
-      }
-      const hashedPassword = await bcrypt.hash(
-        newPassword,
-        parseInt(process.env.SALT_ROUNDS)
-      );
-      const updatedUser = await User.findOneAndUpdate(
-        { userEmail },
-        { userPassword: hashedPassword },
-        { new: true }
-      ).exec();
-      resolve({
+  try {
+    const existingUser = await User.findOne({ userEmail }).exec();
+    if (!existingUser) {
+      throw new Exception({
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      });
+    }
+
+    const isMatched = await bcrypt.compare(
+      oldPassword,
+      existingUser.userPassword
+    );
+    if (!isMatched) {
+      throw new Exception({
+        success: false,
+        message: Exception.PASSWORD_NOT_MATCH,
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(
+      newPassword,
+      parseInt(process.env.SALT_ROUNDS)
+    );
+
+    const updatedUser = await User.findOneAndUpdate(
+      { userEmail },
+      { userPassword: hashedPassword },
+      { new: true }
+    ).exec();
+
+    return {
+      success: true,
+      message: "Change password successfully!",
+      data: {
         ...updatedUser.toObject(),
         userPassword: "Not show",
-      });
-    } catch (exception) {
-      reject(exception);
-    }
-  });
+      },
+    };
+  } catch (exception) {
+    throw new Exception({
+      success: false,
+      message: exception.message,
+    });
+  }
 };
 
 const userUpdateProfileRepository = async ({
@@ -275,66 +334,86 @@ const userUpdateProfileRepository = async ({
   userRole,
   isActive,
 }) => {
-  return new Promise(async (resolve, reject) => {
-    let userAvtUrl = null;
-    try {
-      if (userAvatar) {
-        userAvtUrl = await cloudinaryService.uploadProductImageToCloudinary(
-          userAvatar,
-          constants.CLOUDINARY_USER_AVATAR_IMG
-        );
-      }
-      const existingUser = await User.findOneAndUpdate(
-        { userEmail },
-        {
-          ...(userName && { userName }),
-          ...(userPhoneNumber && { userPhoneNumber }),
-          ...(userGender &&
-            ["Male", "Female"].includes(userGender) && { userGender }),
-          ...(userAddress && { userAddress }),
-          ...(userAge > 0 && { userAge }),
-          ...(userAvtUrl && { userAvatar: userAvtUrl }),
-          ...(userRole && { userRole }),
-          ...(isActive && { isActive }),
-        },
-        { new: true }
-      ).exec();
-      resolve({
-        ...existingUser._doc,
-      });
-    } catch (error) {
-      if (userAvtUrl) {
-        cloudinaryService.deleteImageFromCloudinary(userAvtUrl);
-      }
-      reject(new Exception(Exception.INPUT_ERROR, { message: error.message }));
+  let userAvtUrl = null;
+  try {
+    if (userAvatar) {
+      userAvtUrl = await cloudinaryService.uploadProductImageToCloudinary(
+        userAvatar,
+        constants.CLOUDINARY_USER_AVATAR_IMG
+      );
     }
-  });
+
+    const updateFields = {
+      ...(userName && { userName }),
+      ...(userPhoneNumber && { userPhoneNumber }),
+      ...(userGender &&
+        ["Male", "Female"].includes(userGender) && { userGender }),
+      ...(userAddress && { userAddress }),
+      ...(userAge > 0 && { userAge }),
+      ...(userAvtUrl && { userAvatar: userAvtUrl }),
+      ...(userRole && { userRole }),
+      ...(isActive && { isActive }),
+    };
+
+    const existingUser = await User.findOneAndUpdate(
+      { userEmail },
+      updateFields,
+      { new: true }
+    ).exec();
+
+    return {
+      success: true,
+      message: "Update user successfully!",
+      data: {
+        ...existingUser._doc,
+      },
+    };
+  } catch (exception) {
+    if (userAvtUrl) {
+      cloudinaryService.deleteImageFromCloudinary(userAvtUrl);
+    }
+    throw new Exception({
+      success: false,
+      message: exception.message,
+    });
+  }
 };
 
 const userUpdateRoleRepository = async ({ userEmail, newRole, userRole }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (userRole !== 0) {
-        reject(new Exception(Exception.PERMISSION_DENIED));
-      }
-      const updatedUser = await User.findOneAndUpdate(
-        { userEmail },
-        { userRole: newRole },
-        { new: true }
-      ).exec();
+  try {
+    if (userRole !== 0) {
+      throw new Exception({
+        success: false,
+        message: Exception.PERMISSION_DENIED,
+      });
+    }
 
-      if (!updatedUser) {
-        reject(new Exception(Exception.USER_NOT_FOUND));
-      }
+    const updatedUser = await User.findOneAndUpdate(
+      { userEmail },
+      { userRole: newRole },
+      { new: true }
+    ).exec();
+    if (!updatedUser) {
+      throw new Exception({
+        success: false,
+        message: Exception.USER_NOT_FOUND,
+      });
+    }
 
-      resolve({
+    return {
+      success: true,
+      message: "Update role successfully!",
+      data: {
         ...updatedUser.toObject(),
         userPassword: "Not shown",
-      });
-    } catch (error) {
-      reject(new Exception(Exception.INPUT_ERROR, { message: error.message }));
-    }
-  });
+      },
+    };
+  } catch (exception) {
+    throw new Exception({
+      success: false,
+      message: exception.message,
+    });
+  }
 };
 
 const userUpdateStatusRepository = async ({
@@ -342,29 +421,37 @@ const userUpdateStatusRepository = async ({
   newStatus,
   userRole,
 }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (userRole !== 0) {
-        reject(new Exception(Exception.PERMISSION_DENIED));
-      }
-      const updatedUser = await User.findOneAndUpdate(
-        { userEmail },
-        { isActive: newStatus },
-        { new: true }
-      ).exec();
-
-      if (!updatedUser) {
-        reject(new Exception(Exception.USER_NOT_FOUND));
-      }
-
-      resolve({
-        ...updatedUser.toObject(),
-        userPassword: "Not shown",
+  try {
+    if (userRole !== 0) {
+      throw new Exception({
+        success: false,
+        message: Exception.PERMISSION_DENIED,
       });
-    } catch (error) {
-      reject(new Exception(Exception.INPUT_ERROR, { message: error.message }));
     }
-  });
+
+    const updatedUser = await User.findOneAndUpdate(
+      { userEmail },
+      { isActive: newStatus },
+      { new: true }
+    ).exec();
+    if (!updatedUser) {
+      throw new Exception({
+        success: false,
+        message: Exception.USER_NOT_FOUND,
+      });
+    }
+
+    return {
+      success: true,
+      message: "Update status successfully!",
+      data: { ...updatedUser.toObject(), userPassword: "Not shown" },
+    };
+  } catch (exception) {
+    throw new Exception({
+      success: false,
+      message: exception.message,
+    });
+  }
 };
 
 const searchUsers = async ({ username, onlyName }) => {
@@ -401,8 +488,12 @@ const userForgotPasswordRepository = async (userEmail) => {
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
     if (!existingUser) {
-      throw new Error("User not found");
+      throw new Exception({
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      });
     }
+
     existingUser.createPasswordChangedToken();
     await existingUser.save();
     const resetToken = existingUser.userPasswordResetToken;
@@ -410,25 +501,33 @@ const userForgotPasswordRepository = async (userEmail) => {
     const resetLink = `${process.env.URL_SERVER}/resetPassword/${resetToken}`;
     const emailBody = `To reset your password, click the following link, link tồn tại trong 15p: <a href="${resetLink}">Click here!</a>`;
     await sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
+
     return {
       success: true,
       message: "Password reset instructions sent to your email.",
     };
   } catch (exception) {
-    throw exception;
+    throw new Exception({
+      success: false,
+      message: exception.message,
+    });
   }
 };
 
 const userResetPasswordRepository = async (token, newPassword) => {
   try {
-    console.log(token);
     const existingUser = await User.findOne({
-      userPasswordResetToken : token,
+      userPasswordResetToken: token,
       userPasswordResetExpires: { $gt: Date.now() },
     }).exec();
+
     if (!existingUser) {
-      throw new Error("Invalid user reset token");
+      throw new Exception({
+        success: false,
+        message: Exception.CANNOT_FIND_TOKEN_PASSWORD_IN_USER,
+      });
     }
+
     const hashedPassword = await bcrypt.hash(
       newPassword,
       parseInt(process.env.SALT_ROUNDS)
@@ -438,12 +537,16 @@ const userResetPasswordRepository = async (token, newPassword) => {
     existingUser.userPasswordResetToken = undefined;
     existingUser.userPasswordResetExpires = undefined;
     await existingUser.save();
+
     return {
       success: true,
       message: "Password updated successfully",
     };
   } catch (exception) {
-    throw exception;
+    throw new Exception({
+      success: false,
+      message: exception.message,
+    });
   }
 };
 
@@ -460,5 +563,5 @@ export default {
   refreshTokenRepository,
   userForgotPasswordRepository,
   userResetPasswordRepository,
-  verifyEmailRepository
+  verifyEmailRepository,
 };
