@@ -40,6 +40,7 @@ const deleteImageFromCloudinary = async (publicUrl) => {
     }
   });
 };
+
 const getPublicIdFromUrl = (publicUrl) => {
   const parts = publicUrl.split('/');
   const fileName = parts.pop();
