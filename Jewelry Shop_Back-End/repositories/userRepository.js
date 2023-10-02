@@ -196,6 +196,7 @@ const userRegisterRepository = async ({
         userEmail,
         parseInt(process.env.SALT_ROUNDS)
       );
+
       const verificationCodeLink = `${process.env.URL_SERVER}/verify/${userEmail}`;
       const emailSubject = "Xác minh tài khoản của bạn";
       const emailBody = `Xin chào ${userName},\n\nVui lòng nhấn vào liên kết sau để xác minh tài khoản của bạn:\n\n <a href="${verificationCodeLink}">Click Here!</a>`;
@@ -407,7 +408,7 @@ const userForgotPasswordRepository = async (userEmail) => {
     const resetToken = existingUser.userPasswordResetToken;
     const emailSubject = "Bạn forgot password";
     const resetLink = `${process.env.URL_SERVER}/resetPassword/${resetToken}`;
-    const emailBody = `To reset your password, click the following link, link tồn tại trong 15p: ${resetLink}`;
+    const emailBody = `To reset your password, click the following link, link tồn tại trong 15p: <a href="${resetLink}">Click here!</a>`;
     await sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
     return {
       success: true,

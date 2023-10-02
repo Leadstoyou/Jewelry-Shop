@@ -1,9 +1,6 @@
 import { validationResult } from "express-validator";
-
 import { userRepository } from "../repositories/indexRepository.js";
-
 import HttpStatusCode from "../constant/HttpStatusCode.js";
-import { User } from "../models/indexModel.js";
 
 const userGetAllUsersController = async (req, res) => {
   try {
@@ -12,8 +9,8 @@ const userGetAllUsersController = async (req, res) => {
       message: "Get all users successfully",
       data: allUsers,
     });
-  } catch (error) {
-    res.status(400).json({ message: exception.message });
+  } catch (exception) {
+    res.status(400).json({ message: exception.toString() });
   }
 };
 
@@ -56,8 +53,8 @@ const userLoginController = async (req, res) => {
       userPassword,
     });
 
-    res.cookie("acesssToken", existingUser.acesssToken, {
-      maxAge: 15 * 1000,
+    res.cookie("accessToken", existingUser.accessToken, {
+      maxAge: 3 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       secure: false,
       sameSite: "Strict",
@@ -94,14 +91,15 @@ const refreshAccessTokenController = async (req, res) => {
       cookie.refreshToken
     );
     return res.status(HttpStatusCode.OK).json(result);
-  } catch (error) {
-    return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: error });
+  } catch (exception) {
+    return res
+      .status(HttpStatusCode.UNAUTHORIZED)
+      .json({ message: exception.toString() });
   }
 };
 
 const userLogoutController = async (req, res) => {
   const cookie = req.cookies;
-  console.log(req.cookies);
   if (!cookie || !cookie.refreshToken) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       message: "No refresh token in cookies",
@@ -114,8 +112,10 @@ const userLogoutController = async (req, res) => {
     return res.status(HttpStatusCode.OK).json({
       message: "Logout successful",
     });
-  } catch (error) {
-    return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: error });
+  } catch (exception) {
+    return res
+      .status(HttpStatusCode.UNAUTHORIZED)
+      .json({ message: exception.toString() });
   }
 };
 
@@ -173,7 +173,7 @@ const verifyEmailController = async (req, res) => {
 };
 
 const userChangePasswordController = async (req, res) => {
-  const { userEmail, oldPassword, newPassword,confirmPassword } = req.body;
+  const { userEmail, oldPassword, newPassword, confirmPassword } = req.body;
   if (newPassword !== confirmPassword) {
     return res.status(HttpStatusCode.BAD_REQUEST).json({
       message: "Password and confirm password do not match.",
@@ -337,5 +337,5 @@ export default {
   userLogoutController,
   userForgotPasswordController,
   userResetPasswordController,
-  verifyEmailController
+  verifyEmailController,
 };
