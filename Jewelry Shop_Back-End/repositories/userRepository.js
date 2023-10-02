@@ -10,7 +10,6 @@ import {
 
 import jwt from "jsonwebtoken";
 
-
 const userGetAllUsersRepository = async () => {
   try {
     const allUsers = await User.find({});
@@ -112,22 +111,20 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
 const refreshTokenRepository = async (refreshToken) => {
   return new Promise(async (resolve, reject) => {
     try {
+      //
       const decodedToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
       const existingUser = await User.findOne({
         _id: decodedToken.userId,
         refreshToken,
       });
-
       if (!existingUser) {
         return reject("User not found");
       }
-
       const newAccessToken = await jwtService.generalAccessToken(
         existingUser._id,
         existingUser.userEmail,
         existingUser.userRole
       );
-
       return resolve({
         success: true,
         newAccessToken,

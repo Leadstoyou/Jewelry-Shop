@@ -9,7 +9,7 @@ const generalAccessToken = async (userId, userEmail, userRole) => {
     },
     process.env.ACCESS_TOKEN,
     {
-      expiresIn: "1d",
+      expiresIn: "3 days",
     }
   );
   return accessToken;
