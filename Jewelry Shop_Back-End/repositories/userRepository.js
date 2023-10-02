@@ -187,7 +187,7 @@ const userRegisterRepository = async ({
         userAddress,
         userAge,
         userAvatar:
-          "https://th.bing.com/th/id/R.1257e9bf1162dab4f055837ac569b081?rik=G2s3vNi9Oa7%2bGg&pid=ImgRaw&r=0",
+          "https://vnn-imgs-a1.vgcloud.vn/image1.ictnews.vn/_Files/2020/03/17/trend-avatar-1.jpg",
         userRole: userRole || 2,
         isActive: false,
       });
