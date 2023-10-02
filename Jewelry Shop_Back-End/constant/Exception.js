@@ -10,6 +10,7 @@ export default class Exception extends Error{
     static WRONG_OLD_PASSWORD = "Old password wrong"
     static INPUT_ERROR = "Input error format";
     static PRODUCT_EXIST = "Product already exists";
+    static USER_IS_NOT_ACTIVE = "User is not active";
     constructor(message,validationErrors ={}) {
         super(message)
         console.log(message)

@@ -11,12 +11,17 @@ import {
 import jwt from "jsonwebtoken";
 
 const userGetAllUsersRepository = async () => {
-  try {
-    const allUsers = await User.find({});
-    return allUsers;
-  } catch (error) {
-    throw error;
-  }
+  return new Promise(async (resolve, reject) => {
+    try {
+      const allUsers = await User.find({});
+      resolve({
+        success: true,
+        data: allUsers,
+      });
+    } catch (exception) {
+       reject(exception.message);
+    }
+  });
 };
 
 const userSearchRepository = async ({
@@ -62,6 +67,12 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
         resolve({
           status: "ERROR",
           message: Exception.CANNOT_FIND_USER,
+        });
+      }
+      if (!existingUser.isActive) {
+        resolve({
+          status: "ERROR",
+          message: Exception.USER_IS_NOT_ACTIVE,
         });
       }
       const isMatched = bcrypt.compareSync(
@@ -216,14 +227,14 @@ const verifyEmailRepository = async (userEmail) => {
     const existingUser = await User.findOne({ userEmail }).exec();
 
     if (!existingUser) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
     existingUser.isActive = true;
     await existingUser.save();
 
     return {
       success: true,
-      message: 'Email verified successfully',
+      message: "Email verified successfully",
     };
   } catch (exception) {
     throw exception;
@@ -423,7 +434,7 @@ const userResetPasswordRepository = async (token, newPassword) => {
   try {
     console.log(token);
     const existingUser = await User.findOne({
-      userPasswordResetToken : token,
+      userPasswordResetToken: token,
       userPasswordResetExpires: { $gt: Date.now() },
     }).exec();
     if (!existingUser) {
@@ -460,5 +471,5 @@ export default {
   refreshTokenRepository,
   userForgotPasswordRepository,
   userResetPasswordRepository,
-  verifyEmailRepository
+  verifyEmailRepository,
 };

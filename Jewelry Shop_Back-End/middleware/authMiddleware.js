@@ -21,4 +21,23 @@ const checkToken = (req, res, next) => {
   }
 };
 
-export default checkToken;
+const checkUser = (userRoleId = 2) => (req, res, next) => {
+  checkToken(req, res, (err) => {
+    if (err) {
+      return res.status(err.status).json(err.body);
+    }
+
+    const userRole = req.user?.data?.userRole;
+
+    if (userRole === userRoleId) {
+      next();
+    } else {
+      return res.status(HttpStatusCode.FORBIDDEN).json({
+        success: false,
+        message: "Permission denied",
+      });
+    }
+  });
+};
+
+export { checkToken, checkUser };
