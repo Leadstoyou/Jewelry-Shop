@@ -17,11 +17,7 @@ function hasParams(req, res, next) {
 
 router.get("/",checkToken, hasParams);
 
-router.post(
-  "/login",
-  body("userEmail").isEmail(),
-  userController.userLoginController
-);
+router.post("/login", body("userEmail").isEmail(), userController.userLoginController);
 
 router.get("/logout", userController.userLogoutController);
 

@@ -2,8 +2,7 @@ import HttpStatusCode from "../constant/HttpStatusCode.js";
 import jwt from "jsonwebtoken";
 
 const checkToken = (req, res, next) => {
-
-  if (req?.headers?.authorization?.startsWith('Bearer')) {
+  if (req?.headers?.authorization?.startsWith("Bearer")) {
     const token = req.headers?.authorization.split(" ")[1];
     jwt.verify(token, process.env.ACCESS_TOKEN, (err, decode) => {
       if (err) {
@@ -20,6 +19,6 @@ const checkToken = (req, res, next) => {
       message: "Require authentication",
     });
   }
-}
+};
 
 export default checkToken;
