@@ -56,6 +56,13 @@ const userLoginController = async (req, res) => {
       userPassword,
     });
 
+    res.cookie("acesssToken", existingUser.acesssToken, {
+      maxAge: 15 * 1000,
+      httpOnly: true,
+      secure: false,
+      sameSite: "Strict",
+    });
+
     res.cookie("refreshToken", existingUser.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
@@ -86,7 +93,6 @@ const refreshAccessTokenController = async (req, res) => {
     const result = await userRepository.refreshTokenRepository(
       cookie.refreshToken
     );
-
     return res.status(HttpStatusCode.OK).json(result);
   } catch (error) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: error });
@@ -103,8 +109,8 @@ const userLogoutController = async (req, res) => {
   }
   try {
     await userRepository.userLogoutRepository(cookie.refreshToken);
-    res.clearCookie("refreshToken", { httpOnly: true, secure: true });
     res.clearCookie("accessToken", { httpOnly: true, secure: true });
+    res.clearCookie("refreshToken", { httpOnly: true, secure: true });
     return res.status(HttpStatusCode.OK).json({
       message: "Logout successful",
     });
@@ -153,7 +159,6 @@ const userRegisterController = async (req, res) => {
 
 const verifyEmailController = async (req, res) => {
   const { userEmail } = req.params;
-
   try {
     const result = await userRepository.verifyEmailRepository(userEmail);
     return res.status(HttpStatusCode.OK).json({
