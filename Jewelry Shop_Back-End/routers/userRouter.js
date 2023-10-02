@@ -2,6 +2,7 @@ import express from "express";
 import { body } from "express-validator";
 import { userController } from "../controllers/indexController.js";
 import routeUnknown from "../middleware/routeMiddleware.js";
+import checkToken from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ function hasParams(req, res, next) {
   }
 }
 
-router.get("/", hasParams);
+router.get("/",checkToken, hasParams);
 
 router.post(
   "/login",
@@ -26,21 +27,23 @@ router.get("/logout", userController.userLogoutController);
 
 router.post("/register", userController.userRegisterController);
 
-router.put("/changePassword", userController.userChangePasswordController);
+router.put("/changePassword",checkToken, userController.userChangePasswordController);
 
-router.put("/updateProfile", userController.userUpdateProfileController);
+router.put("/updateProfile",checkToken, userController.userUpdateProfileController);
 
-router.put("/updateRole", userController.userUpdateRoleController);
+router.put("/updateRole",checkToken, userController.userUpdateRoleController);
 
-router.put("/updateStatus", userController.userUpdateStatusController);
+router.put("/updateStatus",checkToken, userController.userUpdateStatusController);
 
 router.post("/refreshToken", userController.refreshAccessTokenController);
 
-router.get("/search/:name", userController.userSearchbyNameController);
+// router.get("/search/:name", userController.userSearchbyNameController);
 
-router.use(routeUnknown);
+// router.use(routeUnknown);
 router.get("/forgotPassword", userController.userForgotPasswordController);
 
 router.put("/resetPassword", userController.userResetPasswordController);
+
+router.post("/verify/:userEmail", userController.verifyEmailController);
 
 export default router;

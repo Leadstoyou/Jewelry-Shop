@@ -167,14 +167,15 @@ const userRegisterRepository = async ({
   userAddress,
   userAge,
   userAvatar,
-  userRole = 2,
-  isActive = false,
+  userRole,
+  isActive,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
       const existingUser = await User.findOne({ userEmail }).exec();
       if (!!existingUser) {
         reject(new Exception(Exception.USER_EXIST));
+        return;
       }
       const hashedPassword = await bcrypt.hash(
         userPassword,
@@ -190,10 +191,15 @@ const userRegisterRepository = async ({
         userAge,
         userAvatar:
           "https://th.bing.com/th/id/R.1257e9bf1162dab4f055837ac569b081?rik=G2s3vNi9Oa7%2bGg&pid=ImgRaw&r=0",
-        userRole: 2,
+        userRole: userRole || 2,
         isActive: false,
       });
-      const verificationCodeLink = `<a href=${process.env.URL_SERVER}/users/verify>Click here</a>`;
+
+      const hashedEmail = await bcrypt.hash(
+        userEmail,
+        parseInt(process.env.SALT_ROUNDS)
+      );
+      const verificationCodeLink = `${process.env.URL_SERVER}/verify/${userEmail}`;
       const emailSubject = "Xác minh tài khoản của bạn";
       const emailBody = `Xin chào ${userName},\n\nVui lòng nhấn vào liên kết sau để xác minh tài khoản của bạn:\n\n${verificationCodeLink}`;
       sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
@@ -205,6 +211,25 @@ const userRegisterRepository = async ({
       reject(exception);
     }
   });
+};
+
+const verifyEmailRepository = async (userEmail) => {
+  try {
+    const existingUser = await User.findOne({ userEmail }).exec();
+
+    if (!existingUser) {
+      throw new Error('User not found');
+    }
+    existingUser.isActive = true;
+    await existingUser.save();
+
+    return {
+      success: true,
+      message: 'Email verified successfully',
+    };
+  } catch (exception) {
+    throw exception;
+  }
 };
 
 const userChangePasswordRepository = async ({
@@ -343,6 +368,7 @@ const userUpdateStatusRepository = async ({
     }
   });
 };
+
 const searchUsers = async ({ username, onlyName }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -436,4 +462,5 @@ export default {
   refreshTokenRepository,
   userForgotPasswordRepository,
   userResetPasswordRepository,
+  verifyEmailRepository
 };

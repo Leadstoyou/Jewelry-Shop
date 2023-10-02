@@ -2,35 +2,35 @@ import HttpStatusCode from "../constant/HttpStatusCode.js";
 import jwt from "jsonwebtoken";
 
 const checkToken = (req, res, next) => {
-  if (
-    req.url.toLowerCase().trim() == "/users/login".toLowerCase().trim() ||
-    req.url.toLowerCase().trim() == "/users/register".toLowerCase().trim() ||
-    req.url.toLowerCase().trim() == "/users/refreshToken".toLowerCase().trim() ||
-    req.url.toLowerCase().trim() == "/users/logout".toLowerCase().trim()  ||
-    req.url.toLowerCase().trim() == "/users/forgotPassword".toLowerCase().trim()  
-  ) {
-    next();
-    return;
-  }
-  try {
-    const token = req.headers?.authorization.split(" ")[1];
-    const jwtObject = jwt.verify(token, process.env.ACCESS_TOKEN);
-    const isExpired = Date.now() >= jwtObject.exp * 1000;
-    if (isExpired) {
-      res.status(HttpStatusCode.BAD_REQUEST).json({
-        success: false,
-        message: "Token is expired",
+ 
+    if (req?.headers?.authorization?.startsWith('Bearer')) {
+      const token = req.headers?.authorization.split(" ")[1];
+      jwt.verify(token, process.env.ACCESS_TOKEN, (err, decode) => {
+        if (err) {
+          return res.status(HttpStatusCode.BAD_REQUEST).json({
+            success: false,
+            message: "Invalid access Token",
+          });
+        }
+        console.log(decode);
+  
+        // Kiểm tra thời gian hết hạn của token
+        const currentTimeInSeconds = Math.floor(Date.now() / 1000); // Lấy thời gian hiện tại (đơn vị giây)
+        if (decode.exp && decode.exp < currentTimeInSeconds) {
+          return res.status(HttpStatusCode.BAD_REQUEST).json({
+            success: false,
+            message: "Token has expired",
+          });
+        }
+  
+        req.user = decode;
+        next();
       });
-      return;
     } else {
-      next();
-      return;
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        message: "Require authentication",
+      });
     }
-  } catch (exception) {
-    res.status(HttpStatusCode.BAD_REQUEST).json({
-      message: exception.message,
-    });
-  }
-};
+}
 
 export default checkToken;
