@@ -5,12 +5,21 @@ import HttpStatusCode from "../constant/HttpStatusCode.js";
 const userGetAllUsersController = async (req, res) => {
   try {
     const allUsers = await userRepository.userGetAllUsersRepository();
-    res.status(200).json({
-      message: "Get all users successfully",
-      data: allUsers,
+    if (!allUsers.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: allUsers.message,
+      });
+    }
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: allUsers.message,
+      data: allUsers.data,
     });
   } catch (exception) {
-    res.status(400).json({ message: exception.toString() });
+    res
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .json({ status: "ERROR", message: exception.message });
   }
 };
 
@@ -26,7 +35,7 @@ const userSearchController = async (req, res) => {
       searchString,
       searchRole,
     });
-    res.status(200).json({
+    return res.status(200).json({
       message: "Get search successfully",
       size,
       page,
@@ -35,74 +44,85 @@ const userSearchController = async (req, res) => {
       data: filteredUsers,
     });
   } catch (exception) {
-    res.status(400).json({ message: exception.message });
+    return res.status(400).json({ message: exception.message });
   }
 };
 
 const userLoginController = async (req, res) => {
-  const errors = validationResult(req);
-  console.log(res.status());
-  if (!errors.isEmpty() ) {
-    return res
-      .status(HttpStatusCode.BAD_REQUEST)
-      .json({ errors: errors.array() });
-  }
-  const { userEmail, userPassword } = req.body;
-  
   try {
-    const existingUser = await userRepository.userLoginRepository({
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: errors.array(),
+      });
+    }
+
+    const { userEmail, userPassword } = req.body;
+    const loginUser = await userRepository.userLoginRepository({
       userEmail,
       userPassword,
     });
-
-    if (existingUser.status === "ERROR") {
+    if (!loginUser.success) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
-        message: existingUser.message,
+        message: loginUser.message,
       });
     }
-    res.cookie("accessToken", existingUser.accessToken, {
+
+    res.cookie("accessToken", loginUser.data.accessToken, {
       maxAge: 3 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       secure: true,
       sameSite: "Strict",
     });
 
-    res.cookie("refreshToken", existingUser.refreshToken, {
+    res.cookie("refreshToken", loginUser.data.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       secure: true,
       sameSite: "Strict",
     });
 
-    res.status(HttpStatusCode.OK).json({
-      message: "Login user success",
+    return res.status(HttpStatusCode.OK).json({
       status: "OK",
-      data: existingUser,
+      message: loginUser.message,
+      data: loginUser.data,
     });
   } catch (exception) {
-    res
-      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json({ message: exception.toString() });
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
+      message: exception.message,
+    });
   }
 };
 
 const refreshAccessTokenController = async (req, res) => {
-  const cookie = req.cookies;
-  if (!cookie || !cookie.refreshToken) {
+  const { refreshToken } = req.cookies;
+  if (!refreshToken) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
       message: "No refresh token in cookies",
     });
   }
   try {
-    const result = await userRepository.refreshTokenRepository(
-      cookie.refreshToken
-    );
-    return res.status(HttpStatusCode.OK).json(result);
+    const result = await userRepository.refreshTokenRepository(refreshToken);
+    if (!result) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: result.message,
+      });
+    }
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: result.message,
+      data: result.data,
+    });
   } catch (exception) {
-    return res
-      .status(HttpStatusCode.UNAUTHORIZED)
-      .json({ message: exception.toString() });
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      message: exception.toString(),
+    });
   }
 };
 
@@ -110,20 +130,31 @@ const userLogoutController = async (req, res) => {
   const cookie = req.cookies;
   if (!cookie || !cookie.refreshToken) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
       message: "No refresh token in cookies",
     });
   }
   try {
-    await userRepository.userLogoutRepository(cookie.refreshToken);
+    const logoutUser = await userRepository.userLogoutRepository(
+      cookie.refreshToken
+    );
+    if (!logoutUser.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: logoutUser.message,
+      });
+    }
     res.clearCookie("accessToken", { httpOnly: true, secure: true });
     res.clearCookie("refreshToken", { httpOnly: true, secure: true });
     return res.status(HttpStatusCode.OK).json({
-      message: "Logout successful",
+      status: "OK",
+      message: logoutUser.message,
     });
   } catch (exception) {
-    return res
-      .status(HttpStatusCode.UNAUTHORIZED)
-      .json({ message: exception.toString() });
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      message: exception.toString(),
+    });
   }
 };
 
@@ -137,15 +168,15 @@ const userRegisterController = async (req, res) => {
     userGender,
     userAddress,
     userAge,
-    userAvatar,
   } = req.body;
   if (userPassword !== confirmPassword) {
-    return res.status(HttpStatusCode.BAD_REQUEST).json({
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
       message: "Password and confirm password do not match.",
     });
   }
   try {
-    const user = await userRepository.userRegisterRepository({
+    const registerUser = await userRepository.userRegisterRepository({
       userName,
       userEmail,
       userPassword,
@@ -153,15 +184,25 @@ const userRegisterController = async (req, res) => {
       userGender,
       userAddress,
       userAge,
-      userAvatar,
     });
-    res
-      .status(HttpStatusCode.CREATE_OK)
-      .json({ message: "POST register users", data: user });
+
+    if (!registerUser.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: registerUser.message,
+      });
+    }
+
+    return res.status(HttpStatusCode.CREATE_OK).json({
+      status: "OK",
+      message: registerUser.message,
+      data: registerUser.data,
+    });
   } catch (exception) {
-    res
-      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json({ message: exception.toString() });
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
+      message: exception.toString(),
+    });
   }
 };
 
@@ -169,12 +210,19 @@ const verifyEmailController = async (req, res) => {
   const { userEmail } = req.params;
   try {
     const result = await userRepository.verifyEmailRepository(userEmail);
+    if (!result.success) {
+      return res.status(HttpStatusCode.OK).json({
+        status: "ERROR",
+        message: result.message,
+      });
+    }
     return res.status(HttpStatusCode.OK).json({
-      success: result.success,
+      status: "OK",
       message: result.message,
     });
   } catch (exception) {
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
       message: exception.toString(),
     });
   }
@@ -183,7 +231,8 @@ const verifyEmailController = async (req, res) => {
 const userChangePasswordController = async (req, res) => {
   const { userEmail, oldPassword, newPassword, confirmPassword } = req.body;
   if (newPassword !== confirmPassword) {
-    return res.status(HttpStatusCode.BAD_REQUEST).json({
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
       message: "Password and confirm password do not match.",
     });
   }
@@ -193,12 +242,21 @@ const userChangePasswordController = async (req, res) => {
       oldPassword,
       newPassword,
     });
-    res.status(HttpStatusCode.OK).json({
-      message: "Password changed successfully",
-      data: updatedUser,
+
+    if (!updatedUser.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: updatedUser.message,
+      });
+    }
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: updatedUser.message,
+      data: updatedUser.data,
     });
   } catch (exception) {
-    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
       message: exception.toString(),
     });
   }
@@ -227,18 +285,21 @@ const userUpdateProfileController = async (req, res) => {
     });
 
     if (!updatedUser) {
-      return res
-        .status(HttpStatusCode.NOT_FOUND)
-        .json({ message: "User not found" });
+      return res.status(HttpStatusCode.NOT_FOUND).json({
+        status: "ERROR",
+        message: updatedUser.message,
+      });
     }
-
-    return res
-      .status(HttpStatusCode.OK)
-      .json({ message: "Profile updated", data: updatedUser });
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: updatedUser.message,
+      data: updatedUser.data,
+    });
   } catch (exception) {
-    return res
-      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json({ message: exception.toString() });
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
+      message: exception.toString(),
+    });
   }
 };
 
@@ -253,17 +314,21 @@ const userUpdateRoleController = async (req, res) => {
     });
 
     if (!updatedUser) {
-      return res
-        .status(HttpStatusCode.NOT_FOUND)
-        .json({ message: "User not found" });
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: updatedUser.message,
+      });
     }
-    return res
-      .status(HttpStatusCode.OK)
-      .json({ message: "Role updated", data: updatedUser });
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: updatedUser.message,
+      data: updatedUser.data,
+    });
   } catch (exception) {
-    return res
-      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json({ message: exception.toString() });
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
+      message: exception.toString(),
+    });
   }
 };
 
@@ -277,33 +342,50 @@ const userUpdateStatusController = async (req, res) => {
       userRole,
     });
 
-    return res
-      .status(HttpStatusCode.OK)
-      .json({ message: "Status updated", data: updatedUser });
+    if (!updatedUser) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: updatedUser.message,
+      });
+    }
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: updatedUser.message,
+      data: updatedUser.data,
+    });
   } catch (exception) {
-    return res
-      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json({ message: exception.toString() });
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
+      message: exception.toString(),
+    });
   }
 };
 
 const userForgotPasswordController = async (req, res) => {
   const { userEmail } = req.query;
-
   if (!userEmail) {
-    return res.status(HttpStatusCode.BAD_REQUEST).json({
-      message: "Missing email",
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      message: "Missing email!",
     });
   }
 
   try {
-    await userRepository.userForgotPasswordRepository(userEmail);
+    const forgotPasswordUser =
+      await userRepository.userForgotPasswordRepository(userEmail);
+    if (!forgotPasswordUser.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: forgotPasswordUser.message,
+      });
+    }
     return res.status(HttpStatusCode.OK).json({
-      success: true,
-      message: "Password reset instructions sent to your email.",
+      status: "OK",
+      message: forgotPasswordUser.message,
     });
   } catch (exception) {
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
       message: exception.toString(),
     });
   }
@@ -313,7 +395,8 @@ const userResetPasswordController = async (req, res) => {
   const { newPassword, token } = req.body;
   if (!newPassword || !token) {
     return res.status(HttpStatusCode.BAD_REQUEST).json({
-      message: "Missing email",
+      status: "ERROR",
+      message: "Missing password",
     });
   }
   try {
@@ -321,12 +404,19 @@ const userResetPasswordController = async (req, res) => {
       token,
       newPassword
     );
+    if (!result.success) {
+      return res.status(HttpStatusCode.UNAUTHORIZED).json({
+        status: "ERROR",
+        message: result.message,
+      });
+    }
     return res.status(HttpStatusCode.OK).json({
-      success: result.success,
+      status: "OK",
       message: result.message,
     });
   } catch (exception) {
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
       message: exception.toString(),
     });
   }

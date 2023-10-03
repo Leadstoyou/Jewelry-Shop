@@ -11,6 +11,9 @@ export default class Exception extends Error{
     static INPUT_ERROR = "Input error format";
     static PRODUCT_EXIST = "Product already exists";
     static USER_IS_NOT_ACTIVE = "User is not active";
+    static CANNOT_FIND_REFRESH_TOKEN_IN_USER= "No user found with the provided refreshToken";
+    static CANNOT_FIND_TOKEN_PASSWORD_IN_USER= "No user found with the provided token Password"
+    static PASSWORD_NOT_MATCH = "Password is not match"
     constructor(message,validationErrors ={}) {
         super(message)
         console.log(message)

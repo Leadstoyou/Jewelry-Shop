@@ -1,7 +1,6 @@
 import mongoose, { Schema, ObjectId } from "mongoose";
 import isEmail from "validator/lib/isEmail.js";
 import validator from "validator";
-// import CryptoJS from "crypto-js";
 import crypto from "crypto";
 
 const userSchema = new Schema(
