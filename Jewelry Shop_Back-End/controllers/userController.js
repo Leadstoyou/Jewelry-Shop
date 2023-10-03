@@ -17,9 +17,10 @@ const userGetAllUsersController = async (req, res) => {
       data: allUsers.data,
     });
   } catch (exception) {
-    res
-      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json({ status: "ERROR", message: exception.message });
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
+      message: exception.message,
+    });
   }
 };
 
@@ -186,14 +187,14 @@ const userRegisterController = async (req, res) => {
       userAge,
     });
 
-    if (!registerUser.success) {
+    if (registerUser.success == false) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: registerUser.message,
       });
     }
 
-    return res.status(HttpStatusCode.CREATE_OK).json({
+    return res.status(HttpStatusCode.CREATED).json({
       status: "OK",
       message: registerUser.message,
       data: registerUser.data,
