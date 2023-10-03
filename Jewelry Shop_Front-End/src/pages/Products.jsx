@@ -4,6 +4,7 @@ import Footer from '../components/Footer'
 import ProductBody from '../components/products/ProductBody'
 import RiseLoader from "react-spinners/RiseLoader";
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 const Container = styled.div`
     font-family: "Jost", sans-serif;
 `
@@ -22,12 +23,25 @@ const Spinner = styled.div`
 `
 const Products = () => {
   const [loading, setLoading] = useState(false);
+  const [foundProduct, setFoundProduct] = useState();
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
+    setLoading(true); 
+    async function fetchData() {
+      try {
+        const response = await axios.get(`http://localhost:9999/api/v1/products/search/${searchtext}`);
+        const data = response.data.data;
+        setFoundProducts(data);
+        setLoading(false);
+        console.log(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoading(false); 
+      }
+    }
+
+    fetchData();
   }, []);
+
   return (
     <>
       {loading ? (
