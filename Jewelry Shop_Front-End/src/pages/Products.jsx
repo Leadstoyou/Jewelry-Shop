@@ -4,6 +4,7 @@ import Footer from '../components/Footer'
 import ProductBody from '../components/products/ProductBody'
 import RiseLoader from "react-spinners/RiseLoader";
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 const Container = styled.div`
     font-family: "Jost", sans-serif;
 `
