@@ -121,7 +121,7 @@ const refreshAccessTokenController = async (req, res) => {
   } catch (exception) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
-      message: exception.toString(),
+      message: exception.message,
     });
   }
 };
@@ -153,7 +153,7 @@ const userLogoutController = async (req, res) => {
   } catch (exception) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
-      message: exception.toString(),
+      message: exception.message,
     });
   }
 };
@@ -201,7 +201,7 @@ const userRegisterController = async (req, res) => {
   } catch (exception) {
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
-      message: exception.toString(),
+      message: exception.message,
     });
   }
 };
@@ -223,7 +223,7 @@ const verifyEmailController = async (req, res) => {
   } catch (exception) {
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
-      message: exception.toString(),
+      message: exception.message,
     });
   }
 };
@@ -257,7 +257,7 @@ const userChangePasswordController = async (req, res) => {
   } catch (exception) {
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
-      message: exception.toString(),
+      message: exception.message,
     });
   }
 };
@@ -298,7 +298,7 @@ const userUpdateProfileController = async (req, res) => {
   } catch (exception) {
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
-      message: exception.toString(),
+      message: exception.message,
     });
   }
 };
@@ -327,7 +327,7 @@ const userUpdateRoleController = async (req, res) => {
   } catch (exception) {
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
-      message: exception.toString(),
+      message: exception.message,
     });
   }
 };
@@ -356,7 +356,7 @@ const userUpdateStatusController = async (req, res) => {
   } catch (exception) {
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
-      message: exception.toString(),
+      message: exception.message,
     });
   }
 };
@@ -386,7 +386,7 @@ const userForgotPasswordController = async (req, res) => {
   } catch (exception) {
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
-      message: exception.toString(),
+      message: exception.message,
     });
   }
 };
@@ -417,7 +417,7 @@ const userResetPasswordController = async (req, res) => {
   } catch (exception) {
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
-      message: exception.toString(),
+      message: exception.message,
     });
   }
 };
