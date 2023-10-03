@@ -12,6 +12,8 @@ router.patch("/update/:id", productController.updateProductController);
 
 router.get("/search/:name", productController.searchProductController);
 
+router.get("/getOneProduct", productController.getOneProductController);
+
 router.get("/view", checkUser([constants.ADMIN_ROLE_ID,constants.STAFF_ROLE_ID,constants.USER_ROLE_ID]),productController.viewProductController);
 
 router.delete("/delete/:id", productController.deleteProductController);
