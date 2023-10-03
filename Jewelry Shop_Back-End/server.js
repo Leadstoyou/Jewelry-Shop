@@ -1,12 +1,10 @@
 import express from "express";
-
-import * as dotenv from "dotenv";
-dotenv.config(); 
-
+import cookieParser from "cookie-parser";
 import { cartRouter, productRouter, userRouter } from "./routers/indexRouter.js";
 import connect from "./database/database.js";
-
-import cookieParser from "cookie-parser";
+import * as dotenv from "dotenv";
+import cors from 'cors'
+dotenv.config(); 
 
 const port = process.env.PORT;
 
@@ -19,8 +17,14 @@ v1Router.use(express.json());
 v1Router.use("/users", userRouter);
 v1Router.use("/products", productRouter);
 v1Router.use("/cart", cartRouter);
-app.use('/api/v1', v1Router);
 
+app.use('/api/v1', v1Router);
+app.use( ()=>{
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE')
+  res.header('Access-Control-Allow-Header','Content-Type');
+  next();
+})
 app.get("/", (req, res) => {
   res.send("Hello Jewelry Shop");
 });

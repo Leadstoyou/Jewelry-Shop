@@ -14,6 +14,7 @@ export default class Exception extends Error{
     static CANNOT_FIND_REFRESH_TOKEN_IN_USER= "No user found with the provided refreshToken";
     static CANNOT_FIND_TOKEN_PASSWORD_IN_USER= "No user found with the provided token Password"
     static PASSWORD_NOT_MATCH = "Password is not match"
+    static PRODUCT_NOT_FOUND = "Product not found"
     constructor(message,validationErrors ={}) {
         super(message)
         console.log(message)

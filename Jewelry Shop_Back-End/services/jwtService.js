@@ -4,12 +4,11 @@ const generalAccessToken = async (userId, userEmail, userRole) => {
   const accessToken = jwt.sign(
     {
       userId: userId,
-      userEmail: userEmail,
       userRole: userRole,
     },
     process.env.ACCESS_TOKEN,
     {
-      expiresIn: "3 days",
+      expiresIn: "1 hour",
     }
   );
   return accessToken;

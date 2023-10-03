@@ -45,7 +45,9 @@ const userSearchController = async (req, res) => {
       data: filteredUsers,
     });
   } catch (exception) {
-    return res.status(400).json({ message: exception.message });
+    return res
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .json({ status: "ERROR", message: exception.message });
   }
 };
 

@@ -189,15 +189,10 @@ const userRegisterRepository = async ({
       });
     }
 
-    const hashedPassword = await bcrypt.hash(
-      userPassword,
-      parseInt(process.env.SALT_ROUNDS)
-    );
-
     const newUser = await User.create({
       userName,
       userEmail,
-      userPassword: hashedPassword,
+      userPassword,
       userPhoneNumber,
       userGender,
       userAddress,

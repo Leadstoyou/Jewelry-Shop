@@ -1,3 +1,4 @@
+import Exception from "../constant/Exception.js";
 import HttpStatusCode from "../constant/HttpStatusCode.js";
 import { productRepository } from "../repositories/indexRepository.js";
 
@@ -12,9 +13,30 @@ const createProductController = async (req, res) => {
       productColors,
       productMaterials,
       productCategory,
-      productDiscount,
+      productDiscount = 0,
       productImage,
     } = req.body;
+
+    const requiredFields = [
+      "productName",
+      "productDescription",
+      "productQuantity",
+      "productSizes",
+      "productColors",
+      "productMaterials",
+      "productImage",
+      "productPrice",
+      "productCategory",
+    ];
+    const missingFields = requiredFields.filter((field) => !req.body[field]);
+
+    if (missingFields.length > 0) {
+       res.status(HttpStatusCode.BAD_REQUEST).json({
+        message: `Missing required fields. Please provide values for ${missingFields.join(
+          ", "
+        )}.`,
+      });
+    }
 
     const newProduct = await productRepository.createNewProduct(
       productName,
@@ -28,15 +50,27 @@ const createProductController = async (req, res) => {
       productDiscount,
       productImage
     );
-    return res
+    if (!newProduct.success) {
+      res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: newProduct.message,
+      });
+    }
+     res
       .status(HttpStatusCode.OK)
-      .json({ message: "Product created successfully", data: newProduct });
+      .json({
+        status: "OK",
+        message: newProduct.message,
+        data: newProduct.data,
+      });
   } catch (exception) {
-    return res
-      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json({ message: exception.toString() });
+     res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
+      message: exception.message,
+    });
   }
 };
+
 const updateProductController = async (req, res) => {
   try {
     const id = req.params.id;
@@ -51,7 +85,7 @@ const updateProductController = async (req, res) => {
       productCategory,
       productDiscount,
       productImage,
-      isDeleted
+      isDeleted,
     } = req.body;
 
     const newProduct = await productRepository.updateProduct(
@@ -68,11 +102,11 @@ const updateProductController = async (req, res) => {
       productImage,
       isDeleted
     );
-    return res
+     res
       .status(HttpStatusCode.OK)
       .json({ message: "Product update successfully", data: newProduct });
   } catch (exception) {
-    return res
+     res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
       .json({ message: exception.toString() });
   }
@@ -81,12 +115,20 @@ const searchProductController = async (req, res) => {
   try {
     const name = req.params.name;
 
-    const newProduct = await productRepository.searchProductsByName(name);
-    return res
+    const foundProduct = await productRepository.searchProductsByName(name);
+
+    if (foundProduct.length === 0) {
+      res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: "Product not found",
+      });
+    }
+
+     res
       .status(HttpStatusCode.OK)
-      .json({ message: "Search products successfully", data: newProduct });
+      .json({ message: "Search products successfully", data: foundProduct.data });
   } catch (exception) {
-    return res
+     res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
       .json({ message: exception.toString() });
   }
@@ -94,11 +136,11 @@ const searchProductController = async (req, res) => {
 const viewProductController = async (req, res) => {
   try {
     const newProduct = await productRepository.getAllProducts();
-    return res
+     res
       .status(HttpStatusCode.OK)
       .json({ message: "Get view products successfully", data: newProduct });
   } catch (exception) {
-    return res
+     res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
       .json({ message: exception.toString() });
   }
@@ -108,11 +150,11 @@ const deleteProductController = async (req, res) => {
   try {
     const id = req.params.id;
     const newProduct = await productRepository.deleteProduct(id);
-    return res
+     res
       .status(HttpStatusCode.OK)
       .json({ message: "Delete products successfully", data: newProduct });
   } catch (exception) {
-    return res
+     res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
       .json({ message: exception.toString() });
   }
