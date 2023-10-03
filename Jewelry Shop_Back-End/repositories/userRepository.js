@@ -19,10 +19,7 @@ const userGetAllUsersRepository = async () => {
       data: allUsers,
     };
   } catch (exception) {
-    throw new Exception({
-      success: false,
-      message: exception.message,
-    });
+    throw new Exception(exception.message);
   }
 };
 
@@ -65,14 +62,14 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
     if (!existingUser) {
-      throw new Exception({
+      return ({
         success: false,
         message: Exception.CANNOT_FIND_USER,
       });
     }
 
     if (!existingUser.isActive) {
-      throw new Exception({
+      return ({
         success: false,
         message: Exception.USER_IS_NOT_ACTIVE,
       });
@@ -83,7 +80,7 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
       existingUser.userPassword
     );
     if (!isMatched) {
-      throw new Exception({
+      return ({
         success: false,
         message: Exception.WRONG_EMAIL_AND_PASSWORD,
       });
@@ -117,10 +114,7 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
       },
     };
   } catch (exception) {
-    throw new Exception({
-      success: false,
-      message: exception.message,
-    });
+    throw new Exception(exception.message);
   }
 };
 
@@ -132,7 +126,7 @@ const refreshTokenRepository = async (refreshToken) => {
       refreshToken,
     });
     if (!existingUser) {
-      throw new Exception({
+      return ({
         success: false,
         message: Exception.CANNOT_FIND_USER,
       });
@@ -150,10 +144,7 @@ const refreshTokenRepository = async (refreshToken) => {
       data: newAccessToken,
     };
   } catch (exception) {
-    throw new Exception({
-      success: false,
-      message: exception.message,
-    });
+    throw new Exception(exception.message);
   }
 };
 
@@ -166,7 +157,7 @@ const userLogoutRepository = async (refreshToken) => {
     );
 
     if (!updatedUser) {
-      throw new Exception({
+      return ({
         success: false,
         message: Exception.CANNOT_FIND_REFRESH_TOKEN_IN_USER,
       });
@@ -176,10 +167,7 @@ const userLogoutRepository = async (refreshToken) => {
       message: "Logout successfully!",
     };
   } catch (exception) {
-    throw new Exception({
-      success: false,
-      message: exception.message,
-    });
+    throw new Exception(exception.message);
   }
 };
 
@@ -195,7 +183,7 @@ const userRegisterRepository = async ({
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
     if (existingUser) {
-      throw new Exception({
+      return ({
         success: false,
         message: Exception.USER_EXIST,
       });
@@ -239,10 +227,7 @@ const userRegisterRepository = async ({
       },
     };
   } catch (exception) {
-    throw new Exception({
-      success: false,
-      message: exception.message,
-    });
+    throw new Exception(exception.message);
   }
 };
 
@@ -250,7 +235,7 @@ const verifyEmailRepository = async (userEmail) => {
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
     if (!existingUser) {
-      throw new Exception({
+      return ({
         success: false,
         message: Exception.CANNOT_FIND_USER,
       });
@@ -264,10 +249,7 @@ const verifyEmailRepository = async (userEmail) => {
       message: "Email verified successfully",
     };
   } catch (exception) {
-    throw new Exception({
-      success: false,
-      message: exception.message,
-    });
+    throw new Exception(exception.message);
   }
 };
 
@@ -279,7 +261,7 @@ const userChangePasswordRepository = async ({
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
     if (!existingUser) {
-      throw new Exception({
+      return ({
         success: false,
         message: Exception.CANNOT_FIND_USER,
       });
@@ -290,7 +272,7 @@ const userChangePasswordRepository = async ({
       existingUser.userPassword
     );
     if (!isMatched) {
-      throw new Exception({
+      return ({
         success: false,
         message: Exception.PASSWORD_NOT_MATCH,
       });
@@ -316,10 +298,7 @@ const userChangePasswordRepository = async ({
       },
     };
   } catch (exception) {
-    throw new Exception({
-      success: false,
-      message: exception.message,
-    });
+    throw new Exception(exception.message);
   }
 };
 
@@ -355,34 +334,37 @@ const userUpdateProfileRepository = async ({
       ...(isActive && { isActive }),
     };
 
-    const existingUser = await User.findOneAndUpdate(
+    const updatedUser = await User.findOneAndUpdate(
       { userEmail },
       updateFields,
       { new: true }
     ).exec();
+    if (!updatedUser) {
+      return ({
+        success: false,
+        message: Exception.USER_NOT_FOUND,
+      });
+    }
 
     return {
       success: true,
       message: "Update user successfully!",
       data: {
-        ...existingUser._doc,
+        ...updatedUser._doc,
       },
     };
   } catch (exception) {
     if (userAvtUrl) {
       cloudinaryService.deleteImageFromCloudinary(userAvtUrl);
     }
-    throw new Exception({
-      success: false,
-      message: exception.message,
-    });
+    throw new Exception(exception.message);
   }
 };
 
 const userUpdateRoleRepository = async ({ userEmail, newRole, userRole }) => {
   try {
     if (userRole !== 0) {
-      throw new Exception({
+      return ({
         success: false,
         message: Exception.PERMISSION_DENIED,
       });
@@ -394,7 +376,7 @@ const userUpdateRoleRepository = async ({ userEmail, newRole, userRole }) => {
       { new: true }
     ).exec();
     if (!updatedUser) {
-      throw new Exception({
+      return ({
         success: false,
         message: Exception.USER_NOT_FOUND,
       });
@@ -409,10 +391,7 @@ const userUpdateRoleRepository = async ({ userEmail, newRole, userRole }) => {
       },
     };
   } catch (exception) {
-    throw new Exception({
-      success: false,
-      message: exception.message,
-    });
+    throw new Exception(exception.message);
   }
 };
 
@@ -423,7 +402,7 @@ const userUpdateStatusRepository = async ({
 }) => {
   try {
     if (userRole !== 0) {
-      throw new Exception({
+      return ({
         success: false,
         message: Exception.PERMISSION_DENIED,
       });
@@ -435,7 +414,7 @@ const userUpdateStatusRepository = async ({
       { new: true }
     ).exec();
     if (!updatedUser) {
-      throw new Exception({
+      return ({
         success: false,
         message: Exception.USER_NOT_FOUND,
       });
@@ -447,48 +426,15 @@ const userUpdateStatusRepository = async ({
       data: { ...updatedUser.toObject(), userPassword: "Not shown" },
     };
   } catch (exception) {
-    throw new Exception({
-      success: false,
-      message: exception.message,
-    });
+    throw new Exception(exception.message);
   }
-};
-
-const searchUsers = async ({ username, onlyName }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const query = {
-        $or: [
-          { userName: new RegExp(username, "i") },
-          ...(onlyName
-            ? []
-            : [
-                { userAddress: new RegExp(username, "i") },
-                { userEmail: new RegExp(username, "i") },
-              ]),
-        ],
-      };
-
-      const searchResult = await User.find(query).exec();
-      if (searchResult.length === 0) {
-        throw new Exception(Exception.USER_NOT_FOUND);
-      }
-
-      const formattedResults = searchResult.map((result) => {
-        return { ...result.toObject(), userPassword: "Not shown" };
-      });
-      resolve(formattedResults);
-    } catch (error) {
-      reject(new Exception(Exception.INPUT_ERROR, { message: error.message }));
-    }
-  });
 };
 
 const userForgotPasswordRepository = async (userEmail) => {
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
     if (!existingUser) {
-      throw new Exception({
+      return ({
         success: false,
         message: Exception.CANNOT_FIND_USER,
       });
@@ -507,10 +453,7 @@ const userForgotPasswordRepository = async (userEmail) => {
       message: "Password reset instructions sent to your email.",
     };
   } catch (exception) {
-    throw new Exception({
-      success: false,
-      message: exception.message,
-    });
+    throw new Exception(exception.message);
   }
 };
 
@@ -522,7 +465,7 @@ const userResetPasswordRepository = async (token, newPassword) => {
     }).exec();
 
     if (!existingUser) {
-      throw new Exception({
+      return ({
         success: false,
         message: Exception.CANNOT_FIND_TOKEN_PASSWORD_IN_USER,
       });
@@ -543,10 +486,7 @@ const userResetPasswordRepository = async (token, newPassword) => {
       message: "Password updated successfully",
     };
   } catch (exception) {
-    throw new Exception({
-      success: false,
-      message: exception.message,
-    });
+    throw new Exception(exception.message);
   }
 };
 
