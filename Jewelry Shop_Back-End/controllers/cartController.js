@@ -15,14 +15,11 @@ const viewCart = async (req, res) => {
   };
   const addToCart = async (req, res) => {
     try {
-      const userId = req.params.userId;
-      const productId = req.body.productId;
-      const quantity = req.body.quantity;
-      const cart = await cartRepository.addToCart(userId, productId, quantity);
-      return res.status(HttpStatusCode.OK).json(cart);
-    } catch (err) {
-      console.error(err);
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+      const { cartToken, user_id, product_id, size, color, material, quantity, price } = req.body;
+      const cart = await cartRepository.addToCart(cartToken, user_id, product_id, size, color, material, quantity, price);
+      res.status(200).json(cart);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
   };
   const removeFromCart = async (req, res) => {
