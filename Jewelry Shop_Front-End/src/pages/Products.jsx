@@ -22,12 +22,25 @@ const Spinner = styled.div`
 `
 const Products = () => {
   const [loading, setLoading] = useState(false);
+  const [foundProduct, setFoundProduct] = useState();
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
+    setLoading(true); 
+    async function fetchData() {
+      try {
+        const response = await axios.get(`http://localhost:9999/api/v1/products/search/${searchtext}`);
+        const data = response.data.data;
+        setFoundProducts(data);
+        setLoading(false);
+        console.log(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoading(false); 
+      }
+    }
+
+    fetchData();
   }, []);
+
   return (
     <>
       {loading ? (
