@@ -9,6 +9,7 @@ export default mongoose.model(
       productName: {
         type: String,
         required: true,
+        unique: true,
         validate: {
           validator: (value) => validator.isLength(value, { min: 2, max: 200 }),
           message: "productName must be between 2 and 200 characters",

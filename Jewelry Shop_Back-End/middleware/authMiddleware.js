@@ -21,23 +21,25 @@ const checkToken = (req, res, next) => {
   }
 };
 
-const checkUser = (userRoleId = 2) => (req, res, next) => {
-  checkToken(req, res, (err) => {
-    if (err) {
-      return res.status(err.status).json(err.body);
-    }
+const checkUser =
+  (allowedRoles = [2]) =>
+  (req, res, next) => {
+    checkToken(req, res, (err) => {
+      if (err) {
+        return res.status(err.status).json(err.body);
+      }
 
-    const userRole = req.user?.data?.userRole;
+      const userRole = req.user?.userRole;
 
-    if (userRole === userRoleId) {
-      next();
-    } else {
-      return res.status(HttpStatusCode.FORBIDDEN).json({
-        success: false,
-        message: "Permission denied",
-      });
-    }
-  });
-};
+      if (allowedRoles.includes(userRole)) {
+        next();
+      } else {
+        return res.status(HttpStatusCode.FORBIDDEN).json({
+          success: false,
+          message: "Permission denied",
+        });
+      }
+    });
+  };
 
 export { checkToken, checkUser };

@@ -16,43 +16,51 @@ const createNewProduct = async (
   productDiscount,
   productImage
 ) => {
-  return new Promise(async (resolve, reject) => {
-    let productImageUrl;
-    try {
-      const dupicateProductName = await Product.findOne({ productName }).exec();
-      if (!!dupicateProductName) {
-        reject(new Exception(Exception.PRODUCT_EXIST));
-      } else {
-        productImageUrl =
-          await cloudinaryService.uploadProductImageToCloudinary(
-            productImage,
-            constants.CLOUDINARY_PRODUCT_IMG
-          );
+  let productImageUrl;
+  try {
+    productImageUrl = await cloudinaryService.uploadProductImageToCloudinary(
+      productImage,
+      constants.CLOUDINARY_PRODUCT_IMG
+    );
 
-        const newProduct = await Product.create({
-          productName,
-          productDescription,
-          productQuantity,
-          productSizes,
-          productPrice,
-          productColors,
-          productMaterials,
-          productCategory,
-          productDiscount,
-          productImage: productImageUrl,
-        });
-        resolve({
-          ...newProduct._doc,
-        });
+    const newProduct = await Product.create({
+      productName,
+      productDescription,
+      productQuantity,
+      productSizes,
+      productPrice,
+      productColors,
+      productMaterials,
+      productCategory,
+      productDiscount,
+      productImage: productImageUrl,
+    });
+    if (!newProduct) {
+      return {
+         success: false,
+        message: Exception.PRODUCT_NOT_FOUND,
       }
-    } catch (error) {
-      if (productImageUrl) {
-        cloudinaryService.deleteImageFromCloudinary(productImageUrl);
-      }
-      reject(error);
     }
-  });
+    return {
+      success: true,
+      message: "Create product successfully!",
+      data: newProduct,
+    };
+  } catch (exception) {
+    if (productImageUrl) {
+      await cloudinaryService.deleteImageFromCloudinary(productImageUrl);
+    }
+    if (
+      exception.code === 11000 &&
+      exception.keyPattern &&
+      exception.keyPattern.productName
+    ) {
+      throw new Exception("Product is duplicated with the same productName.");
+    }
+    throw new Exception(exception.message);
+  }
 };
+
 const searchProductsByName = async (searchTerm) => {
   try {
     const query = {
@@ -67,10 +75,13 @@ const searchProductsByName = async (searchTerm) => {
 
     const searchResult = await Product.find(query).exec();
 
-    return searchResult;
-  } catch (error) {
-    console.error("Error searching products:", error);
-    throw error;
+    return {
+      success: true,
+      message: "Search product successfully!",
+      data: searchResult,
+    };
+  } catch (exception) {
+    throw new Exception(exception.message);
   }
 };
 
@@ -99,40 +110,46 @@ const updateProduct = async (
   productImage,
   isDeleted
 ) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      let productImageUrl = null;
-      if (productImage) {
-        productImageUrl =
-          await cloudinaryService.uploadProductImageToCloudinary(
-            productImage,
-            constants.CLOUDINARY_PRODUCT_IMG
-          );
+  let productImageUrl;
+  try {
+
+    const updateProduct = await Product.findOneAndUpdate(
+      { _id: id },
+      {
+        ...(productName && { productName }),
+        ...(productDescription && { productDescription }),
+        ...(productQuantity && { productQuantity }),
+        ...(productSizes && { productSizes }),
+        ...(productPrice && { productPrice }),
+        ...(productColors && { productColors }),
+        ...(productMaterials && { productMaterials }),
+        ...(productCategory && { productCategory }),
+        ...(productDiscount && { productDiscount }),
+        ...(productImageUrl && { productImage: await cloudinaryService.uploadProductImageToCloudinary(
+          productImage,
+          constants.CLOUDINARY_PRODUCT_IMG
+        ) }),
+        ...(isDeleted !== undefined && { isDeleted }),
+      },
+      { new: true }
+    ).exec();
+    if (!updateProduct) {
+      return {
+         success: false,
+        message: Exception.PRODUCT_NOT_FOUND,
       }
-      const updateProduct = await Product.findOneAndUpdate(
-        { _id: id },
-        {
-          ...(productName && { productName }),
-          ...(productDescription && { productDescription }),
-          ...(productQuantity && { productQuantity }),
-          ...(productSizes && { productSizes }),
-          ...(productPrice && { productPrice }),
-          ...(productColors && { productColors }),
-          ...(productMaterials && { productMaterials }),
-          ...(productCategory && { productCategory }),
-          ...(productDiscount && { productDiscount }),
-          ...(productImageUrl && { productImage: productImageUrl }),
-          ...(isDeleted !== undefined && { isDeleted }),
-        },
-        { new: true }
-      ).exec();
-      resolve({
-        ...updateProduct._doc,
-      });
-    } catch (error) {
-      reject(error);
     }
-  });
+    return {
+      success: true,
+      message: "update product successfully!",
+      data: updateProduct,
+    };
+  } catch (exception) {
+    if (productImageUrl) {
+      await cloudinaryService.deleteImageFromCloudinary(productImageUrl);
+    }
+    throw new Exception(exception.message);
+  }
 };
 
 const deleteProduct = async (id) => {
