@@ -1,15 +1,19 @@
 import express from "express";
-import cookieParser from "cookie-parser";
+import * as dotenv from "dotenv";
+dotenv.config(); 
+
 import { cartRouter, productRouter, userRouter } from "./routers/indexRouter.js";
 import connect from "./database/database.js";
-import * as dotenv from "dotenv";
-import cors from 'cors'
-dotenv.config(); 
+
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from "./middleware/swaggerMiddleware.js";
+import cookieParser from "cookie-parser";
 
 const port = process.env.PORT;
 
 const app = express();
 const v1Router = express.Router(); 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 v1Router.use(cookieParser());  
 v1Router.use(express.json());
