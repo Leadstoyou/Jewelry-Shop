@@ -21,11 +21,35 @@ export default mongoose.model(
                 },
                 size: [{
                   type: String,
+                  enum: {
+                    values: ['S', "M", "L", "XL"],
+                    message: '{VALUE} is not suppoted'
+                },
+                  required: true
+                }],
+                color: [{
+                  type: String,
+                  required: true
+                }],
+                material: [{
+                  type: String,
                   required: true
                 }],
                 quantity: {
                   type: Number,
-                  required: true
+                  required: true,
+                  validate:{
+                    validator: (value) => value > 0 ,
+                    message: 'Quantity must be greate than 0'
+                }
+                },
+                price: {
+                  type: Number,
+                  required: true,
+                  validate:{
+                    validator: (value) => value > 0 ,
+                    message: 'Price must be greate than 0'
+                }
                 }
               }],
               total: {
