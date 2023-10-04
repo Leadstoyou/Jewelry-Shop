@@ -16,43 +16,51 @@ const createNewProduct = async (
   productDiscount,
   productImage
 ) => {
-  return new Promise(async (resolve, reject) => {
-    let productImageUrl;
-    try {
-      const dupicateProductName = await Product.findOne({ productName }).exec();
-      if (!!dupicateProductName) {
-        reject(new Exception(Exception.PRODUCT_EXIST));
-      } else {
-        productImageUrl =
-          await cloudinaryService.uploadProductImageToCloudinary(
-            productImage,
-            constants.CLOUDINARY_PRODUCT_IMG
-          );
+  let productImageUrl;
+  try {
+    productImageUrl = await cloudinaryService.uploadProductImageToCloudinary(
+      productImage,
+      constants.CLOUDINARY_PRODUCT_IMG
+    );
 
-        const newProduct = await Product.create({
-          productName,
-          productDescription,
-          productQuantity,
-          productSizes,
-          productPrice,
-          productColors,
-          productMaterials,
-          productCategory,
-          productDiscount,
-          productImage: productImageUrl,
-        });
-        resolve({
-          ...newProduct._doc,
-        });
-      }
-    } catch (error) {
-      if (productImageUrl) {
-        cloudinaryService.deleteImageFromCloudinary(productImageUrl);
-      }
-      reject(error);
+    const newProduct = await Product.create({
+      productName,
+      productDescription,
+      productQuantity,
+      productSizes,
+      productPrice,
+      productColors,
+      productMaterials,
+      productCategory,
+      productDiscount,
+      productImage: productImageUrl,
+    });
+    if (!newProduct) {
+      return {
+        success: false,
+        message: Exception.PRODUCT_NOT_FOUND,
+      };
     }
-  });
+    return {
+      success: true,
+      message: "Create product successfully!",
+      data: newProduct,
+    };
+  } catch (exception) {
+    if (productImageUrl) {
+      await cloudinaryService.deleteImageFromCloudinary(productImageUrl);
+    }
+    if (
+      exception.code === 11000 &&
+      exception.keyPattern &&
+      exception.keyPattern.productName
+    ) {
+      throw new Exception("Product is duplicated with the same productName.");
+    }
+    throw new Exception(exception.message);
+  }
 };
+
 const searchProductsByName = async (searchTerm) => {
   try {
     const query = {
@@ -66,24 +74,39 @@ const searchProductsByName = async (searchTerm) => {
     };
 
     const searchResult = await Product.find(query).exec();
-
-    return searchResult;
-  } catch (error) {
-    console.error("Error searching products:", error);
-    throw error;
+    if (!searchResult) {
+      return {
+        success: false,
+        message: Exception.PRODUCT_NOT_FOUND,
+      };
+    }
+    return {
+      success: true,
+      message: "Search product successfully!",
+      data: searchResult,
+    };
+  } catch (exception) {
+    throw new Exception(exception.message);
   }
 };
 
 const getAllProducts = async () => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const getAllProducts = await Product.find({}).exec();
-
-      resolve(getAllProducts);
-    } catch (error) {
-      reject(error);
+  try {
+    const getAllProducts = await Product.find({}).exec();
+    if (!getAllProducts) {
+      return {
+        success: false,
+        message: Exception.PRODUCT_NOT_FOUND,
+      };
     }
-  });
+    return {
+      success: true,
+      message: "Get all product successfully!",
+      data: getAllProducts,
+    };
+  } catch (exception) {
+    throw new Exception(exception.message);
+  }
 };
 const updateProduct = async (
   id,
@@ -99,77 +122,109 @@ const updateProduct = async (
   productImage,
   isDeleted
 ) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      let productImageUrl = null;
-      if (productImage) {
-        productImageUrl =
-          await cloudinaryService.uploadProductImageToCloudinary(
+  try {
+    const updateProduct = await Product.findOneAndUpdate(
+      { _id: id },
+      {
+        ...(productName && { productName }),
+        ...(productDescription && { productDescription }),
+        ...(productQuantity && { productQuantity }),
+        ...(productSizes && { productSizes }),
+        ...(productPrice && { productPrice }),
+        ...(productColors && { productColors }),
+        ...(productMaterials && { productMaterials }),
+        ...(productCategory && { productCategory }),
+        ...(productDiscount && { productDiscount }),
+        ...(productImage && {
+          productImage: await cloudinaryService.uploadProductImageToCloudinary(
             productImage,
             constants.CLOUDINARY_PRODUCT_IMG
-          );
-      }
-      const updateProduct = await Product.findOneAndUpdate(
-        { _id: id },
-        {
-          ...(productName && { productName }),
-          ...(productDescription && { productDescription }),
-          ...(productQuantity && { productQuantity }),
-          ...(productSizes && { productSizes }),
-          ...(productPrice && { productPrice }),
-          ...(productColors && { productColors }),
-          ...(productMaterials && { productMaterials }),
-          ...(productCategory && { productCategory }),
-          ...(productDiscount && { productDiscount }),
-          ...(productImageUrl && { productImage: productImageUrl }),
-          ...(isDeleted !== undefined && { isDeleted }),
-        },
-        { new: true }
-      ).exec();
-      resolve({
-        ...updateProduct._doc,
-      });
-    } catch (error) {
-      reject(error);
+          ),
+        }),
+        ...(isDeleted !== undefined && { isDeleted }),
+      },
+      { new: true }
+    ).exec();
+    if (!updateProduct) {
+      return {
+        success: false,
+        message: Exception.PRODUCT_UPDATE_FAILED,
+      };
     }
-  });
+    return {
+      success: true,
+      message: "Product update successfully!",
+      data: updateProduct,
+    };
+  } catch (exception) {
+    throw new Exception(exception.message);
+  }
 };
 
 const deleteProduct = async (id) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const isValidObjectId = mongoose.Types.ObjectId.isValid(id);
-
-      if (!isValidObjectId) {
-        reject(new Error("Invalid ObjectId"));
-        return;
-      }
-
-      const updateProduct = await Product.findOneAndUpdate(
-        { _id: new mongoose.Types.ObjectId(id) },
-        { isDeleted: true },
-        { new: false }
-      ).exec();
-      if (updateProduct.isDeleted) {
-        reject(new Error("Product was soft deleted"));
-      }
-      if (!updateProduct) {
-        reject(new Error("Product not found"));
-        return;
-      }
-      resolve({
-        ...updateProduct._doc,
-      });
-    } catch (error) {
-      reject(error);
+  try {
+    const isValidObjectId = mongoose.Types.ObjectId.isValid(id);
+    if (!isValidObjectId) {
+      return {
+        success: false,
+        message: Exception.INVALID_OBJECT_ID,
+      };
     }
-  });
+    const updateProduct = await Product.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(id) },
+      { isDeleted: true },
+      { new: false }
+    ).exec();
+    if (updateProduct.isDeleted) {
+      return {
+        success: true,
+        message: "Product was soft deleted",
+        data: updateProduct,
+      };
+    }
+    if (!updateProduct) {
+      return {
+        success: false,
+        message: Exception.PRODUCT_NOT_FOUND,
+      };
+    }
+  } catch (exception) {
+    throw new Exception(exception.message);
+  }
 };
 
+const getProductById = async (id) => {
+  try {
+    const isValidObjectId = mongoose.Types.ObjectId.isValid(id);
+    if (!isValidObjectId) {
+      return {
+        success: false,
+        message: Exception.INVALID_OBJECT_ID,
+      };
+    }
+    const product = await Product.findOne({
+      _id: new mongoose.Types.ObjectId(id),
+    }).exec();
+    if(!product){
+      return {
+        success: false,
+        message: Exception.PRODUCT_NOT_FOUND,
+      };
+    }
+    return {
+      success: true,
+      message: "Get product by ID found",
+      data: product,
+    };
+  } catch (exception) {
+    throw new Exception(exception.message);
+  }
+};
 export default {
   createNewProduct,
   searchProductsByName,
   getAllProducts,
   updateProduct,
   deleteProduct,
+  getProductById,
 };

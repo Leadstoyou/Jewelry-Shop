@@ -2,6 +2,7 @@ import mongoose, { Schema, ObjectId } from "mongoose";
 import isEmail from "validator/lib/isEmail.js";
 import validator from "validator";
 import crypto from "crypto";
+import bcrypt from 'bcrypt';
 
 const userSchema = new Schema(
   {
@@ -95,4 +96,17 @@ userSchema.methods = {
     return resetToken;
   },
 };
+userSchema.pre('save', async function (next) {
+  try {
+    const hashedPassword = await bcrypt.hash(
+      this.userPassword,
+      parseInt(process.env.SALT_ROUNDS)
+    );
+    this.userPassword = hashedPassword;
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default mongoose.model("User", userSchema);

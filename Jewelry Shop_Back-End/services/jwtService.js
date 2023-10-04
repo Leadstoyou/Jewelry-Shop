@@ -1,15 +1,14 @@
 import jwt from "jsonwebtoken";
 
-const generalAccessToken = async (userId, userEmail, userRole) => {
+const generalAccessToken = async (userId, userRole) => {
   const accessToken = jwt.sign(
     {
       userId: userId,
-      userEmail: userEmail,
       userRole: userRole,
     },
     process.env.ACCESS_TOKEN,
     {
-      expiresIn: "3 days",
+      expiresIn: "10000",
     }
   );
   return accessToken;
@@ -22,7 +21,7 @@ const generalRefreshToken = async (userId) => {
     },
     process.env.REFRESH_TOKEN,
     {
-      expiresIn: "30 days",
+      expiresIn: "60000",
     }
   );
   return refreshToken;
