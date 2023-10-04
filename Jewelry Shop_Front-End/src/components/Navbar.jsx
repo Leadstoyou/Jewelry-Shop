@@ -101,14 +101,18 @@ const Nav = styled.div`
 `;
 const Navbar = () => {
   const navigate = useNavigate();
+  // const [searchText , setSearchText] = useState("")
   const [searchQuery, setSearchQuery] = useState("");
 
   // Function to handle Enter key press
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
-      navigate("/search");
+      navigate(`/search/${searchQuery}`);
     }
   };
+  const handleSubmit = ()=>{
+    navigate(`/search/${searchQuery}`);
+  }
   return (
     <Nav>
       <Container>
@@ -117,10 +121,10 @@ const Navbar = () => {
         <Logo >Jewelry</Logo>
         </ControllerLogo>
         <Right>
-          <InputController>
+          <InputController >
             <Icon>
               <SearchIcon
-                onClick={() => navigate("/search")}
+                onClick={handleSubmit}
                 style={{
                   color: "black",
                   backgroundColor: "white",

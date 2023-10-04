@@ -15,6 +15,11 @@ export default class Exception extends Error{
     static CANNOT_FIND_TOKEN_PASSWORD_IN_USER= "No user found with the provided token Password"
     static PASSWORD_NOT_MATCH = "Password is not match"
     static PRODUCT_NOT_FOUND = "Product not found"
+    static PRODUCT_UPDATE_FAILED = "Product update failed"
+    static SEARCH_PARAMS_IS_NOT_FOUND = "Search params is not found"
+    static INVALID_OBJECT_ID = "Invalid object ID"
+    static ID_NOT_FOUND = "ID is not found"
+    static REFRESH_TOKEN_EXPRIED = "Refresh token was expired"
     constructor(message,validationErrors ={}) {
         super(message)
         console.log(message)

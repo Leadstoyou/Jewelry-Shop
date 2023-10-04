@@ -31,7 +31,7 @@ const createProductController = async (req, res) => {
     const missingFields = requiredFields.filter((field) => !req.body[field]);
 
     if (missingFields.length > 0) {
-       res.status(HttpStatusCode.BAD_REQUEST).json({
+      res.status(HttpStatusCode.BAD_REQUEST).json({
         message: `Missing required fields. Please provide values for ${missingFields.join(
           ", "
         )}.`,
@@ -56,18 +56,15 @@ const createProductController = async (req, res) => {
         message: newProduct.message,
       });
     }
-     res
-      .status(HttpStatusCode.OK)
-      .json({
-        status: "OK",
-        message: newProduct.message,
-        data: newProduct.data,
-      });
-  } catch (exception) {
-     res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-      status: "ERROR",
-      message: exception.message,
+    res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: newProduct.message,
+      data: newProduct.data,
     });
+  } catch (exception) {
+    return res
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .json({ status: "ERROR", message: exception.message });
   }
 };
 
@@ -102,13 +99,21 @@ const updateProductController = async (req, res) => {
       productImage,
       isDeleted
     );
-     res
-      .status(HttpStatusCode.OK)
-      .json({ message: "Product update successfully", data: newProduct });
+    if (!newProduct.success) {
+      res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: newProduct.message,
+      });
+    }
+    res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: newProduct.message,
+      data: newProduct.data,
+    });
   } catch (exception) {
-     res
+    return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json({ message: exception.toString() });
+      .json({ status: "ERROR", message: exception.message });
   }
 };
 const searchProductController = async (req, res) => {
@@ -120,49 +125,107 @@ const searchProductController = async (req, res) => {
     if (foundProduct.length === 0) {
       res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
-        message: "Product not found",
+        message: foundProduct.message,
       });
     }
 
-     res
-      .status(HttpStatusCode.OK)
-      .json({ message: "Search products successfully", data: foundProduct.data });
+    res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: foundProduct.message,
+      data: foundProduct.data,
+    });
   } catch (exception) {
-     res
+    return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json({ message: exception.toString() });
+      .json({ status: "ERROR", message: exception.message });
   }
 };
 const viewProductController = async (req, res) => {
   try {
-    const newProduct = await productRepository.getAllProducts();
-     res
-      .status(HttpStatusCode.OK)
-      .json({ message: "Get view products successfully", data: newProduct });
+    const viewProducts = await productRepository.getAllProducts();
+    if (!viewProducts) {
+      res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: viewProducts.message,
+      });
+    }
+    res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: viewProducts.message,
+      data: viewProducts.data,
+    });
   } catch (exception) {
-     res
+    return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json({ message: exception.toString() });
+      .json({ status: "ERROR", message: exception.message });
   }
 };
 
 const deleteProductController = async (req, res) => {
   try {
     const id = req.params.id;
-    const newProduct = await productRepository.deleteProduct(id);
-     res
+    if (!id) {
+      res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: Exception.ID_NOT_FOUND,
+      });
+    }
+
+    const deleteProduct = await productRepository.deleteProduct(id);
+    if (!deleteProduct) {
+      res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: deleteProduct.message,
+      });
+    }
+    res
       .status(HttpStatusCode.OK)
-      .json({ message: "Delete products successfully", data: newProduct });
+      .json({
+        status: "OK",
+        message: deleteProduct.message,
+        data: deleteProduct.data,
+      });
   } catch (exception) {
-     res
+    return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json({ message: exception.toString() });
+      .json({ status: "ERROR", message: exception.message });
   }
 };
+const getOneProductController = async (req,res) =>{
+  try {
+    const id = req.params.id;
+    if (!id) {
+     return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: Exception.ID_NOT_FOUND,
+      });
+    }
+    const product = await productRepository.getProductById(id);
+
+    if (!product.success) {
+     return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: product.message,
+      });
+    }
+    return res
+      .status(HttpStatusCode.OK)
+      .json({
+        status: "OK",
+        message: product.message,
+        data: product.data,
+      });
+  } catch (exception) {
+    return res
+    .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+    .json({ status: "ERROR", message: exception.message });
+  }
+}
 export default {
   createProductController,
   updateProductController,
   searchProductController,
   viewProductController,
   deleteProductController,
+  getOneProductController
 };
