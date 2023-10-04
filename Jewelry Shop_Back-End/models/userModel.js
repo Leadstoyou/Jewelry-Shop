@@ -18,7 +18,7 @@ const userSchema = new Schema(
       type: String,
       validate: {
         validator: (value) => isEmail(value),
-        message: "Email must be at least 3 characters",
+        message: "Invalid email address",
       },
     },
     userPassword: {

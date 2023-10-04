@@ -20,6 +20,8 @@ router.get("/",checkToken,checkUser(constants.ADMIN_ROLE_ID), hasParams);
 
 router.post("/login", body("userEmail").isEmail(), userController.userLoginController);
 
+router.post("/refreshToken", userController.refreshAccessTokenController);
+
 router.get("/logout", userController.userLogoutController);
 
 router.post("/register", userController.userRegisterController);
@@ -32,7 +34,6 @@ router.put("/updateRole",checkToken, userController.userUpdateRoleController);
 
 router.put("/updateStatus",checkToken, userController.userUpdateStatusController);
 
-router.post("/refreshToken", userController.refreshAccessTokenController);
 
 router.get("/forgotPassword", userController.userForgotPasswordController);
 
