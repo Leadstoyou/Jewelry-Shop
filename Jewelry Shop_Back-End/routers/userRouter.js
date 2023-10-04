@@ -32,8 +32,6 @@ router.put("/updateRole",checkToken, userController.userUpdateRoleController);
 
 router.put("/updateStatus",checkToken, userController.userUpdateStatusController);
 
-router.post("/refreshToken", userController.refreshAccessTokenController);
-
 router.get("/forgotPassword", userController.userForgotPasswordController);
 
 router.put("/resetPassword", userController.userResetPasswordController);
