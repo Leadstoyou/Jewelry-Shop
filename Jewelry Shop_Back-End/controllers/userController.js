@@ -1,6 +1,7 @@
 import { validationResult } from "express-validator";
 import { userRepository } from "../repositories/indexRepository.js";
 import HttpStatusCode from "../constant/HttpStatusCode.js";
+import Exception from "../constant/Exception.js";
 
 const userGetAllUsersController = async (req, res) => {
   try {
@@ -72,13 +73,7 @@ const userLoginController = async (req, res) => {
         message: loginUser.message,
       });
     }
-
-    res.cookie("accessToken", loginUser.data.accessToken, {
-      maxAge: 3 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      secure: true,
-      sameSite: "Strict",
-    });
+    res.header('Authorization', `Bearer ${loginUser.data.accessToken}`);
 
     res.cookie("refreshToken", loginUser.data.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -109,19 +104,27 @@ const refreshAccessTokenController = async (req, res) => {
     });
   }
   try {
-    const result = await userRepository.refreshTokenRepository(refreshToken);
-    if (!result) {
+    const result = await userRepository.refreshAccessTokenRepository(refreshToken);
+    console.log(result.message)
+
+    if (!result.success) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: result.message,
       });
     }
+    res.header('Authorization', `Bearer ${result.data}`);
+
     return res.status(HttpStatusCode.OK).json({
       status: "OK",
       message: result.message,
       data: result.data,
     });
+    
   } catch (exception) {
+    if(exception.message === Exception.REFRESH_TOKEN_EXPRIED){
+      return userLogoutController(req,res);
+    } 
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
       message: exception.message,
@@ -138,6 +141,8 @@ const userLogoutController = async (req, res) => {
     });
   }
   try {
+    res.set('Authorization', undefined);
+    res.clearCookie("refreshToken", { httpOnly: true, secure: true });
     const logoutUser = await userRepository.userLogoutRepository(
       cookie.refreshToken
     );
@@ -147,8 +152,7 @@ const userLogoutController = async (req, res) => {
         message: logoutUser.message,
       });
     }
-    res.clearCookie("accessToken", { httpOnly: true, secure: true });
-    res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+
     return res.status(HttpStatusCode.OK).json({
       status: "OK",
       message: logoutUser.message,
@@ -252,6 +256,7 @@ const userChangePasswordController = async (req, res) => {
         message: updatedUser.message,
       });
     }
+
     return res.status(HttpStatusCode.OK).json({
       status: "OK",
       message: updatedUser.message,

@@ -12,9 +12,12 @@ router.patch("/update/:id", productController.updateProductController);
 
 router.get("/search/:name", productController.searchProductController);
 
-router.get("/view",productController.viewProductController);
+
+router.get("/view", checkUser([constants.ADMIN_ROLE_ID,constants.STAFF_ROLE_ID,constants.USER_ROLE_ID]),productController.viewProductController);
 
 router.delete("/delete/:id", productController.deleteProductController);
+
+router.get("/:id", productController.getOneProductController);
 
 router.use(routeUnknown);
 

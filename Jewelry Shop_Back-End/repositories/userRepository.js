@@ -62,17 +62,17 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
     if (!existingUser) {
-      return ({
+      return {
         success: false,
         message: Exception.CANNOT_FIND_USER,
-      });
+      };
     }
 
     if (!existingUser.isActive) {
-      return ({
+      return {
         success: false,
         message: Exception.USER_IS_NOT_ACTIVE,
-      });
+      };
     }
 
     const isMatched = bcrypt.compareSync(
@@ -80,15 +80,14 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
       existingUser.userPassword
     );
     if (!isMatched) {
-      return ({
+      return {
         success: false,
         message: Exception.WRONG_EMAIL_AND_PASSWORD,
-      });
+      };
     }
 
     const accessToken = await jwtService.generalAccessToken(
       existingUser._id,
-      existingUser.userEmail,
       existingUser.userRole
     );
     const refreshToken = await jwtService.generalRefreshToken(existingUser._id);
@@ -106,7 +105,7 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
     } = updatedUser.toObject();
     return {
       success: true,
-      message: "Login successfully!",
+      message: constants.LOGIN_SUCCESSFUL,
       data: {
         ...userData,
         accessToken,
@@ -118,29 +117,73 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
   }
 };
 
-const refreshTokenRepository = async (refreshToken) => {
+const refreshAccessTokenRepository = async (refreshToken) => {
   try {
-    const decodedToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
+    const decodedToken = await new Promise((resolve, reject) => {
+      jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, decode) => {
+        if (err instanceof jwt.TokenExpiredError) {
+          reject({
+            success: false,
+            message: Exception.REFRESH_TOKEN_EXPRIED,
+          });
+        } else if (err) {
+          reject({
+            success: false,
+            message: "Lỗi xác thực token: " + err.message,
+          });
+        } else {
+          resolve(decode);
+        }
+      });
+    });
+
     const existingUser = await User.findOne({
       _id: decodedToken.userId,
       refreshToken,
     });
     if (!existingUser) {
-      return ({
+      return {
         success: false,
         message: Exception.CANNOT_FIND_USER,
-      });
+      };
     }
 
     const newAccessToken = await jwtService.generalAccessToken(
       existingUser._id,
-      existingUser.userEmail,
       existingUser.userRole
     );
 
     return {
       success: true,
-      message: "Refresh token successfully!",
+      message: constants.REFRESH_ACCESS_TOKEN_SUCCESS ,
+      data: newAccessToken,
+    };
+  } catch (exception) {
+    throw new Exception(exception.message);
+  }
+};
+
+const updateRefreshTokenRepository = async (userId, refreshToken) => {
+  try {
+    const existingUser = await User.findOne({
+      _id: userId,
+      refreshToken,
+    });
+
+    if (!existingUser) {
+      return {
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      };
+    }
+
+    const newAccessToken = await jwtService.generalRefreshToken(
+      existingUser._id
+    );
+
+    return {
+      success: true,
+      message: "update refresh token successfully!",
       data: newAccessToken,
     };
   } catch (exception) {
@@ -157,10 +200,10 @@ const userLogoutRepository = async (refreshToken) => {
     );
 
     if (!updatedUser) {
-      return ({
+      return {
         success: false,
         message: Exception.CANNOT_FIND_REFRESH_TOKEN_IN_USER,
-      });
+      };
     }
     return {
       success: true,
@@ -183,10 +226,10 @@ const userRegisterRepository = async ({
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
     if (existingUser) {
-      return ({
+      return {
         success: false,
         message: Exception.USER_EXIST,
-      });
+      };
     }
 
     const newUser = await User.create({
@@ -230,10 +273,10 @@ const verifyEmailRepository = async (userEmail) => {
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
     if (!existingUser) {
-      return ({
+      return {
         success: false,
         message: Exception.CANNOT_FIND_USER,
-      });
+      };
     }
 
     existingUser.isActive = true;
@@ -256,10 +299,10 @@ const userChangePasswordRepository = async ({
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
     if (!existingUser) {
-      return ({
+      return {
         success: false,
         message: Exception.CANNOT_FIND_USER,
-      });
+      };
     }
 
     const isMatched = await bcrypt.compare(
@@ -267,10 +310,10 @@ const userChangePasswordRepository = async ({
       existingUser.userPassword
     );
     if (!isMatched) {
-      return ({
+      return {
         success: false,
         message: Exception.PASSWORD_NOT_MATCH,
-      });
+      };
     }
 
     const hashedPassword = await bcrypt.hash(
@@ -335,10 +378,10 @@ const userUpdateProfileRepository = async ({
       { new: true }
     ).exec();
     if (!updatedUser) {
-      return ({
+      return {
         success: false,
         message: Exception.USER_NOT_FOUND,
-      });
+      };
     }
 
     return {
@@ -359,10 +402,10 @@ const userUpdateProfileRepository = async ({
 const userUpdateRoleRepository = async ({ userEmail, newRole, userRole }) => {
   try {
     if (userRole !== 0) {
-      return ({
+      return {
         success: false,
         message: Exception.PERMISSION_DENIED,
-      });
+      };
     }
 
     const updatedUser = await User.findOneAndUpdate(
@@ -371,10 +414,10 @@ const userUpdateRoleRepository = async ({ userEmail, newRole, userRole }) => {
       { new: true }
     ).exec();
     if (!updatedUser) {
-      return ({
+      return {
         success: false,
         message: Exception.USER_NOT_FOUND,
-      });
+      };
     }
 
     return {
@@ -397,10 +440,10 @@ const userUpdateStatusRepository = async ({
 }) => {
   try {
     if (userRole !== 0) {
-      return ({
+      return {
         success: false,
         message: Exception.PERMISSION_DENIED,
-      });
+      };
     }
 
     const updatedUser = await User.findOneAndUpdate(
@@ -409,10 +452,10 @@ const userUpdateStatusRepository = async ({
       { new: true }
     ).exec();
     if (!updatedUser) {
-      return ({
+      return {
         success: false,
         message: Exception.USER_NOT_FOUND,
-      });
+      };
     }
 
     return {
@@ -429,10 +472,10 @@ const userForgotPasswordRepository = async (userEmail) => {
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
     if (!existingUser) {
-      return ({
+      return {
         success: false,
         message: Exception.CANNOT_FIND_USER,
-      });
+      };
     }
 
     existingUser.createPasswordChangedToken();
@@ -460,10 +503,10 @@ const userResetPasswordRepository = async (token, newPassword) => {
     }).exec();
 
     if (!existingUser) {
-      return ({
+      return {
         success: false,
         message: Exception.CANNOT_FIND_TOKEN_PASSWORD_IN_USER,
-      });
+      };
     }
 
     const hashedPassword = await bcrypt.hash(
@@ -495,8 +538,9 @@ export default {
   userUpdateProfileRepository,
   userUpdateRoleRepository,
   userUpdateStatusRepository,
-  refreshTokenRepository,
+  refreshAccessTokenRepository,
   userForgotPasswordRepository,
   userResetPasswordRepository,
   verifyEmailRepository,
+  updateRefreshTokenRepository,
 };
