@@ -9,6 +9,8 @@ const router = express.Router();
 
 router.get("/",checkToken,checkUser(constants.ADMIN_ROLE_ID), userController.userGetAllUsersController);
 
+router.post("/", userController.userSearchController);
+
 router.post("/login", body("userEmail").isEmail(), userController.userLoginController);
 
 router.post("/refreshToken", userController.refreshAccessTokenController);
@@ -19,6 +21,10 @@ router.post("/register", userController.userRegisterController);
 
 router.get("/verify/:userVerifyResetToken", userController.verifyEmailController);
 
+router.get("/forgotPassword", userController.userForgotPasswordController);
+
+router.put("/resetPassword", userController.userResetPasswordController);
+
 router.put("/changePassword",checkToken, userController.userChangePasswordController);
 
 router.put("/updateProfile",checkToken, userController.userUpdateProfileController);
@@ -27,9 +33,7 @@ router.put("/updateRole",checkToken, userController.userUpdateRoleController);
 
 router.put("/updateStatus",checkToken, userController.userUpdateStatusController);
 
-router.get("/forgotPassword", userController.userForgotPasswordController);
-
-router.put("/resetPassword", userController.userResetPasswordController);
+router.put("/updateBlock",checkToken, userController.userUpdateBlockController);
 
 router.use(routeUnknown);
 

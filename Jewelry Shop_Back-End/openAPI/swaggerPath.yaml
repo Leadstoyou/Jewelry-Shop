@@ -194,6 +194,82 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorServer"
+  /users/forgotPassword:
+    get:
+      tags:
+        - users
+      summary: Forgot mật khẩu tài khoản
+      description: Forgot mật khẩu tài khoản trong JEWELRY shop
+      operationId: forgotPassword  
+      parameters:
+        - name: userEmail
+          in: query
+          description: Địa chỉ email của người dùng cần xác minh
+          required: true
+          schema:
+            type: string
+            example: example@example.com
+      responses:
+        "200":
+          description: Forgot Password successfully!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForgotPasswordSuccess"
+
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"       
+  /users/resetPassword:
+    put:
+      tags:
+        - users
+      summary: Reset mật khẩu tài khoản
+      description: Reset mật khẩu tài khoản trong JEWELRY shop
+      operationId: resetPassword  
+      requestBody:
+        description: Reset password
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newPassword:
+                  type: string
+                  example: example123 
+                token:
+                  type: string
+                  example: dfsdf23423sdasdfasdf     
+        required: true
+      responses:
+        "200":
+          description: Change Password successfully!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResetPasswordSuccess"
+
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"  
   /users/changePassword:
     put:
       tags:
@@ -392,69 +468,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorServer"
-  /users/forgotPassword:
-    get:
-      tags:
-        - users
-      summary: Forgot mật khẩu tài khoản
-      description: Forgot mật khẩu tài khoản trong JEWELRY shop
-      operationId: forgotPassword  
-      parameters:
-        - name: userEmail
-          in: query
-          description: Địa chỉ email của người dùng cần xác minh
-          required: true
-          schema:
-            type: string
-            example: example@example.com
-      responses:
-        "200":
-          description: Forgot Password successfully!
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ForgotPasswordSuccess"
-
-        "400":
-          description: Yêu cầu không hợp lệ
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorRequest"
-        "500":
-          description: Lỗi máy chủ nội bộ
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorServer"       
-  /users/resetPassword:
+  /users/updateBlock:
     put:
       tags:
         - users
-      summary: Reset mật khẩu tài khoản
-      description: Reset mật khẩu tài khoản trong JEWELRY shop
-      operationId: resetPassword  
+      summary: Đổi status tài khoản
+      description: Đổi status tài khoản trong JEWELRY shop
+      operationId: updateStatus
+      security:  
+       - BearerAuth: []  
       requestBody:
-        description: Reset password
+        description: Change password
         content:
           application/json:
             schema:
               type: object
               properties:
-                newPassword:
+                userEmail: 
                   type: string
-                  example: example123 
-                token:
-                  type: string
-                  example: dfsdf23423sdasdfasdf     
+                  example: abc@gmail.com
+                newStatus:
+                  type: boolean
+                  example: false
         required: true
       responses:
         "200":
-          description: Change Password successfully!
+          description: Update block successfully!
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResetPasswordSuccess"
+                $ref: "#/components/schemas/UpdateBlockSuccess"
 
         "400":
           description: Yêu cầu không hợp lệ
@@ -468,3 +511,4 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorServer"
+ 

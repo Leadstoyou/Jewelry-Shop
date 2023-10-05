@@ -68,6 +68,11 @@ const userSchema = new Schema(
       default: false,
       required: true,
     },
+    isDelete: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
     refreshToken: {
       type: String,
     },
