@@ -31,7 +31,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LoginSchema"
+              type: object
+              properties:
+                userEmail:
+                  type: string
+                  format: email
+                  example: abc@example.com
+                userPassword:
+                  type: string
+                  example: example.com    
         required: true
       responses:
         "200":
@@ -67,7 +75,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorServer"
-
+  /users/logout:
+    get: 
+      tags:
+        - users
+      summary: Đăng xuất tài khoản
+      description: Đăng xuất tài khoản trong JEWELRY shop
+      operationId: logout
+      responses:
+        "200":
+          description: Đăng xuất thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogoutSuccess"
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"
   /users/register:
     post:
       tags:
@@ -77,11 +110,37 @@ paths:
       operationId: register
       requestBody:
         description: Thông tin tài khoản cần đăng ký
-        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RegisterRequest"
+              type: object
+              properties:
+                userName:
+                  type: string
+                  example: John 
+                userEmail:
+                  type: string
+                  format: email
+                  example: example@example@example
+                userPassword:
+                  type: string
+                  example: example
+                confirmPassword:
+                  type: string
+                  example: example
+                userPhoneNumber:
+                  type: string
+                  example: 01234576454
+                userGender:
+                  type: string
+                  example: Male
+                userAddress:
+                  type: string
+                  example: Somewhere
+                userAge:
+                  type: integer
+                  example: 21
+        required: true
       responses:
         "200":
           description: Đăng ký thành công
@@ -101,11 +160,311 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorServer"
-  /users/refreshToken:
-    post:
+  /users/verify:
+    get:
       tags:
         - users
-      summary: Lấy lại token
-      description: Lấy lại accessToken
-      operationId: refreshToken
-      
+      summary: Xác minh tài khoản
+      description: Xác minh tài khoản trong JEWELRY shop
+      operationId: verify
+      parameters:
+        - name: userEmail
+          in: query
+          description: Địa chỉ email của người dùng cần xác minh
+          required: true
+          schema:
+            type: string
+            example: example@example.com
+      responses:
+        "200":
+          description: Xác minh thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifySuccess"
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"
+  /users/changePassword:
+    put:
+      tags:
+        - users
+      summary: Đổi mật khẩu tài khoản
+      description: Đổi mật khẩu tài khoản trong JEWELRY shop
+      operationId: changePassword 
+      security:  
+       - BearerAuth: []
+      requestBody:
+        description: Change password
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userEmail:
+                  type: string
+                  format: email
+                  example: abcd@example.com
+                oldPassword:
+                  type: string
+                  example: example
+                newPassword:
+                  type: string
+                  example: example123 
+                confirmPassword:
+                  type: string
+                  example: example123     
+        required: true
+      responses:
+        "200":
+          description: Change Password successfully!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChangePasswordSuccess"
+
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"
+  /users/updateProfile:
+    put:
+      tags:
+        - users
+      summary: Đổi thông tin tài khoản
+      description: Đổi thông tin tài khoản trong JEWELRY shop
+      operationId: updateProfile
+      security:  
+       - BearerAuth: []  
+      requestBody:
+        description: Change password
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userEmail: 
+                  type: string
+                  example: abc@gmail.com
+                userName:
+                  type: string
+                  example: John Doe
+                userPhoneNumber:
+                  type: string
+                  example: +1234567890
+                userGender:
+                  type: string
+                  enum:
+                    - Male
+                    - Female
+                  example: Male
+                userAddress:
+                  type: string
+                  example: 123 Main St, City
+                userAge:
+                  type: integer
+                  example: 30
+                userAvatar:
+                  type: string
+                  example: https://example.com/avatar.jpg
+              required:
+                - userEmail
+      responses:
+        "200":
+          description: Update profile successfully!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChangePasswordSuccess"
+
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"
+  /users/updateRole:
+    put:
+      tags:
+        - users
+      summary: Đổi role tài khoản
+      description: Đổi role tài khoản trong JEWELRY shop
+      operationId: updateProfile
+      security:  
+       - BearerAuth: []  
+      requestBody:
+        description: Change password
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userEmail: 
+                  type: string
+                  example: abc@gmail.com
+                newRole:
+                  type: number
+                  example: 1
+        required: true
+      responses:
+        "200":
+          description: Update role successfully!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateRoleSuccess"
+
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"
+  /users/updateStatus:
+    put:
+      tags:
+        - users
+      summary: Đổi status tài khoản
+      description: Đổi status tài khoản trong JEWELRY shop
+      operationId: updateStatus
+      security:  
+       - BearerAuth: []  
+      requestBody:
+        description: Change password
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userEmail: 
+                  type: string
+                  example: abc@gmail.com
+                newStatus:
+                  type: boolean
+                  example: false
+        required: true
+      responses:
+        "200":
+          description: Update role successfully!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateStatusSuccess"
+
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"
+  /users/forgotPassword:
+    get:
+      tags:
+        - users
+      summary: Forgot mật khẩu tài khoản
+      description: Forgot mật khẩu tài khoản trong JEWELRY shop
+      operationId: forgotPassword  
+      parameters:
+        - name: userEmail
+          in: query
+          description: Địa chỉ email của người dùng cần xác minh
+          required: true
+          schema:
+            type: string
+            example: example@example.com
+      responses:
+        "200":
+          description: Forgot Password successfully!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForgotPasswordSuccess"
+
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"       
+  /users/resetPassword:
+    put:
+      tags:
+        - users
+      summary: Reset mật khẩu tài khoản
+      description: Reset mật khẩu tài khoản trong JEWELRY shop
+      operationId: resetPassword  
+      requestBody:
+        description: Reset password
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newPassword:
+                  type: string
+                  example: example123 
+                token:
+                  type: string
+                  example: dfsdf23423sdasdfasdf     
+        required: true
+      responses:
+        "200":
+          description: Change Password successfully!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResetPasswordSuccess"
+
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"

@@ -54,7 +54,6 @@ const userSearchRepository = async ({
     { $skip: (page - 1) * size },
     { $limit: size },
   ]);
-
   return filteredUsers;
 };
 
@@ -69,6 +68,10 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
     }
 
     if (!existingUser.isActive) {
+      const verificationCodeLink = `${process.env.URL_SERVER}/verify/${userEmail}`;
+      const emailSubject = "Bạn chưa xác mình tài khoản của bạn";
+      const emailBody = `Xin chào ${existingUser.userName},\n\nVui lòng nhấn vào liên kết sau để xác minh tài khoản của bạn:\n\n <a href="${verificationCodeLink}">Click Here!</a>`;
+      sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
       return {
         success: false,
         message: Exception.USER_IS_NOT_ACTIVE,
@@ -155,7 +158,7 @@ const refreshAccessTokenRepository = async (refreshToken) => {
 
     return {
       success: true,
-      message: constants.REFRESH_ACCESS_TOKEN_SUCCESS ,
+      message: constants.REFRESH_ACCESS_TOKEN_SUCCESS,
       data: newAccessToken,
     };
   } catch (exception) {
@@ -231,11 +234,14 @@ const userRegisterRepository = async ({
         message: Exception.USER_EXIST,
       };
     }
-
+    const hashedPassword = await bcrypt.hash(
+      userPassword,
+      parseInt(process.env.SALT_ROUNDS)
+    );
     const newUser = await User.create({
       userName,
       userEmail,
-      userPassword,
+      userPassword: hashedPassword,
       userPhoneNumber,
       userGender,
       userAddress,
@@ -246,12 +252,11 @@ const userRegisterRepository = async ({
       isActive: false,
     });
 
-    const hashedEmail = await bcrypt.hash(
-      userEmail,
-      parseInt(process.env.SALT_ROUNDS)
-    );
+    newUser.createVerifyToken();
+    await newUser.save();
+    const resetToken = newUser.userVerifyResetToken;
 
-    const verificationCodeLink = `${process.env.URL_SERVER}/verify/${userEmail}`;
+    const verificationCodeLink = `${process.env.URL_SERVER}/verify/${resetToken}`;
     const emailSubject = "Xác minh tài khoản của bạn";
     const emailBody = `Xin chào ${userName},\n\nVui lòng nhấn vào liên kết sau để xác minh tài khoản của bạn:\n\n <a href="${verificationCodeLink}">Click Here!</a>`;
     sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
@@ -269,9 +274,9 @@ const userRegisterRepository = async ({
   }
 };
 
-const verifyEmailRepository = async (userEmail) => {
+const verifyEmailRepository = async (userVerifyResetToken) => {
   try {
-    const existingUser = await User.findOne({ userEmail }).exec();
+    const existingUser = await User.findOne({userVerifyResetToken }).exec();
     if (!existingUser) {
       return {
         success: false,
@@ -280,12 +285,16 @@ const verifyEmailRepository = async (userEmail) => {
     }
 
     existingUser.isActive = true;
+    existingUser.userPasswordChangedAt = Date.now();
+    existingUser.userVerifyResetToken = undefined;
+    existingUser.userVerifyResetExpires = undefined;
     await existingUser.save();
 
     return {
       success: true,
       message: "Email verified successfully",
     };
+
   } catch (exception) {
     throw new Exception(exception.message);
   }
@@ -348,8 +357,6 @@ const userUpdateProfileRepository = async ({
   userAddress,
   userAge,
   userAvatar,
-  userRole,
-  isActive,
 }) => {
   let userAvtUrl = null;
   try {
@@ -368,8 +375,6 @@ const userUpdateProfileRepository = async ({
       ...(userAddress && { userAddress }),
       ...(userAge > 0 && { userAge }),
       ...(userAvtUrl && { userAvatar: userAvtUrl }),
-      ...(userRole && { userRole }),
-      ...(isActive && { isActive }),
     };
 
     const updatedUser = await User.findOneAndUpdate(
@@ -482,8 +487,7 @@ const userForgotPasswordRepository = async (userEmail) => {
     await existingUser.save();
     const resetToken = existingUser.userPasswordResetToken;
     const emailSubject = "Bạn forgot password";
-    const resetLink = `${process.env.URL_SERVER}/resetPassword/${resetToken}`;
-    const emailBody = `To reset your password, click the following link, link tồn tại trong 15p: <a href="${resetLink}">Click here!</a>`;
+    const emailBody = `Đây là mã code resetpassword, mã code tồn tại trong 15p: ${resetToken}`;
     await sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
 
     return {
@@ -495,17 +499,17 @@ const userForgotPasswordRepository = async (userEmail) => {
   }
 };
 
-const userResetPasswordRepository = async (token, newPassword) => {
+const userResetPasswordRepository = async (userPasswordResetToken, newPassword) => {
   try {
     const existingUser = await User.findOne({
-      userPasswordResetToken: token,
+      userPasswordResetToken,
       userPasswordResetExpires: { $gt: Date.now() },
     }).exec();
 
     if (!existingUser) {
       return {
         success: false,
-        message: Exception.CANNOT_FIND_TOKEN_PASSWORD_IN_USER,
+        message: Exception.CANNOT_WRONG_RESET_PASSWORD_TOKEN,
       };
     }
 
