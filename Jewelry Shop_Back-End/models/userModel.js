@@ -71,6 +71,15 @@ const userSchema = new Schema(
     refreshToken: {
       type: String,
     },
+    userVerifyAt: {
+      type: String,
+    },
+    userVerifyResetToken: {
+      type: String,
+    },
+    userVerifyResetExpires: {
+      type: String,
+    },
     userPasswordChangedAt: {
       type: String,
     },
@@ -95,18 +104,15 @@ userSchema.methods = {
     this.userPasswordResetExpires = Date.now() + 15 * 60 * 60 * 1000;
     return resetToken;
   },
+  createVerifyToken: function () {
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    this.userVerifyResetToken = crypto.createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+    this.userVerifyResetExpires = Date.now() + 15 * 60 * 60 * 1000;
+    return resetToken;
+  },
 };
-userSchema.pre('save', async function (next) {
-  try {
-    const hashedPassword = await bcrypt.hash(
-      this.userPassword,
-      parseInt(process.env.SALT_ROUNDS)
-    );
-    this.userPassword = hashedPassword;
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
+
 
 export default mongoose.model("User", userSchema);
