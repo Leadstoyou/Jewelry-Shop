@@ -5,7 +5,7 @@ export default mongoose.model(
   "Product",
   new Schema(
     {
-      id: { type: ObjectId},
+      id: { type: ObjectId },
       productName: {
         type: String,
         required: true,
@@ -40,7 +40,7 @@ export default mongoose.model(
           message: "productPrice must be a floating-point number",
         },
       },
-      productColors : {
+      productColors: {
         type: [String],
         required: true,
         validate: {
@@ -76,6 +76,7 @@ export default mongoose.model(
       productCategory: {
         type: String,
         required: true,
+        enum: ["Dây Chuyền", "Vòng", "Hoa Tai", "Charm"],
         validate: {
           validator: (value) => validator.isLength(value, { min: 2, max: 20 }),
           message: "productCategory must be between 2 and 20 characters",

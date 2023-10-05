@@ -1,0 +1,111 @@
+openapi: 3.0.3
+info:
+  title: Swagger JEWELRY SHOP - OpenAPI 3.0
+  description: |-
+    PROJECT SDN
+  termsOfService: https://docs.google.com/spreadsheets/d/1R2fpNLx-H0VYpIQADfsMWJ_1F9cbCukkhc7RkuMsX0k/edit#gid=0
+  contact:
+    email: maitranhuy1709@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://localhost:9999/api/v1/
+tags:
+  - name: users
+    description: Các API LIÊN QUAN ĐẾN USER
+paths:
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Login
+      description: Login into JEWELRY shop
+      operationId: login
+      requestBody:
+        description: Account to login
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginSchema"
+        required: true
+      responses:
+        "200":
+          description: Login successfully!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginSuccess"
+
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+
+        "403":
+          description: Bị từ chối truy cập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ERROR"
+                  message:
+                    type: string
+                    example: "Bị từ chối truy cập"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"
+
+  /users/register:
+    post:
+      tags:
+        - users
+      summary: Đăng ký tài khoản
+      description: Đăng ký tài khoản mới trong JEWELRY shop
+      operationId: register
+      requestBody:
+        description: Thông tin tài khoản cần đăng ký
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "200":
+          description: Đăng ký thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterSuccess"
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"
+  /users/refreshToken:
+    post:
+      tags:
+        - users
+      summary: Lấy lại token
+      description: Lấy lại accessToken
+      operationId: refreshToken
+      
