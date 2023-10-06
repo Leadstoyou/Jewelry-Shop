@@ -1,3 +1,4 @@
 import userRepository from "./userRepository.js";
 import productRepository from "./productRepository.js";
-export { userRepository ,productRepository};
+import cartRepository from "./cartRepository.js"
+export {cartRepository, userRepository ,productRepository};

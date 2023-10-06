@@ -40,8 +40,11 @@ const Text = styled.h1`
 `;
 
 const ListItem = styled.div`
-  display: flex;
   width: 700%;
+  margin-left: 10px;
+ 
+  padding-right: 10px;
+  display: flex;
 `;
 
 const Wrapper = styled.div`
@@ -88,8 +91,8 @@ const ListProduct = () => {
     Aos.init({ duration: 2000 });
   }, []);
   return (
-   
-    <Container data-aos="fade-up"
+    <Container
+      data-aos="fade-up"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       ref={containerRef}
@@ -100,7 +103,7 @@ const ListProduct = () => {
       <Wrapper translateX={translateX}>
         <ListItem>
           {ProductList.map((product) => (
-            <Product key={product.id} props={product}  />
+            <Product key={product.id} props={product} />
           ))}
         </ListItem>
       </Wrapper>

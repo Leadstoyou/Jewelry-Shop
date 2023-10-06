@@ -1,32 +1,54 @@
 import HttpStatusCode from "../constant/HttpStatusCode.js";
 import jwt from "jsonwebtoken";
+import { userController } from "../controllers/indexController.js";
 
 const checkToken = (req, res, next) => {
-  if (
-    req.url.toLowerCase().trim() == "/users/login".toLowerCase().trim() ||
-    req.url.toLowerCase().trim() == "/users/register".toLowerCase().trim()
-  ) {
-    next();
-    return;
-  }
-  try {
+  if (req?.headers?.authorization?.startsWith("Bearer")) {
     const token = req.headers?.authorization.split(" ")[1];
-    const jwtObject = jwt.verify(token, process.env.ACCESS_TOKEN);
-    const isExpired = Date.now() >= jwtObject.exp * 1000;
-    if (isExpired) {
-      res.status(HttpStatusCode.BAD_REQUEST).json({
-        message: "Token is expired",
-      });
-      res.end();
-    } else {
-      next();
-      return;
-    }
-  } catch (exception) {
-    res.status(HttpStatusCode.BAD_REQUEST).json({
-      message: exception.message,
+    jwt.verify(token, process.env.ACCESS_TOKEN, async (err, decode) => {
+      if (err?.name === "JsonWebTokenError") {
+        return res.status(HttpStatusCode.UNAUTHORIZED).json({
+          status: "ERROR",
+          message: "Invalid token format",
+        });
+      } else if (err instanceof jwt.TokenExpiredError) {
+        await userController.refreshAccessTokenController(req, res);
+      } else if (err) {
+        return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+          status: "ERROR",
+          message: "Internal Server Error",
+        });
+      } else {
+        req.user = decode;
+        next();
+      }
+    });
+  } else {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      message: "Require authentication",
     });
   }
 };
 
-export default checkToken;
+const checkUser =
+  (allowedRoles = [2]) =>
+  (req, res, next) => {
+    checkToken(req, res, (err) => {
+      if (err) {
+        return res.status(err.status).json(err.body);
+      }
+      const userRole = req.user?.userRole;
+
+      if (allowedRoles.includes(userRole)) {
+        next();
+      } else {
+        return res.status(HttpStatusCode.FORBIDDEN).json({
+          status: "ERROR",
+          message: "Permission denied",
+        });
+      }
+    });
+  };
+
+export { checkToken, checkUser };

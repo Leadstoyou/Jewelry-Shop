@@ -9,6 +9,7 @@ import { useEffect } from "react";
 const Container = styled.div`
   text-align: center;
   margin-top: 15vh;
+  margin-bottom: 30vh;
 `;
 const Header = styled.h1``;
 const AlbumC = styled.div`
@@ -50,7 +51,7 @@ const Album = () => {
     <Container  data-aos="fade-up">
       <Header>Bộ Sưu Tập</Header>
       <AlbumC>
-        <AlbumItem>
+        <AlbumItem >
           <Controller>
             <ImageController>
               <Image src={album1} />

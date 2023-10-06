@@ -12,13 +12,14 @@ import "aos/dist/aos.css";
 import footerVideo from "../assets/footer.mp4";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 const Container = styled.div`
-  margin-top: 20vh;
+  
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   font-weight: 500;
   gap: 10px;
+ 
 `;
 
 const Left = styled.div`
@@ -141,12 +142,10 @@ const Overlay = styled.div`
 `;
 
 const Footer = () => {
-  useEffect(() => {
-    Aos.init({ duration: 2000 });
-  }, []);
+
   return (
     <Container
-      data-aos="fade-up"
+      
       style={{ backgroundColor: "teal", zIndex: 15 }}
     >
       <Overlay></Overlay>

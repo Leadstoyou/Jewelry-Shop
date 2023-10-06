@@ -28,7 +28,6 @@ const deleteImageFromCloudinary = async (publicUrl) => {
       }
 
       const deletionResult = await cloudinary.uploader.destroy(publicId);
-
       if (deletionResult.result === "ok") {
         resolve({ message: "Image deleted successfully" });
       } else {
@@ -40,10 +39,12 @@ const deleteImageFromCloudinary = async (publicUrl) => {
     }
   });
 };
+
 const getPublicIdFromUrl = (publicUrl) => {
-  const parts = publicUrl.split('/');
-  const fileName = parts.pop();
-  const publicId = fileName.split('.')[0];
+  const urlParts = publicUrl.split('/');
+  const baseIndex = urlParts.indexOf('upload') + 2; 
+  const remainingPath = urlParts.slice(baseIndex).join('/');
+  const publicId = remainingPath.split('.')[0];
   return publicId;
 };
 

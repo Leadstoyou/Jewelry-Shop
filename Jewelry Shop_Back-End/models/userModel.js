@@ -1,10 +1,11 @@
 import mongoose, { Schema, ObjectId } from "mongoose";
 import isEmail from "validator/lib/isEmail.js";
 import validator from "validator";
+import crypto from "crypto";
+import bcrypt from 'bcrypt';
 
-export default mongoose.model(
-  "User",
-  new Schema({
+const userSchema = new Schema(
+  {
     id: { type: ObjectId },
     userName: {
       type: String,
@@ -18,7 +19,7 @@ export default mongoose.model(
       type: String,
       validate: {
         validator: (value) => isEmail(value),
-        message: "Email must be at least 3 characters",
+        message: "Invalid email address",
       },
     },
     userPassword: {
@@ -64,12 +65,59 @@ export default mongoose.model(
     },
     isActive: {
       type: Boolean,
-      default: true,
+      default: false,
       required: true,
+    },
+    isDelete: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
+    refreshToken: {
+      type: String,
+    },
+    userVerifyAt: {
+      type: String,
+    },
+    userVerifyResetToken: {
+      type: String,
+    },
+    userVerifyResetExpires: {
+      type: String,
+    },
+    userPasswordChangedAt: {
+      type: String,
+    },
+    userPasswordResetToken: {
+      type: String,
+    },
+    userPasswordResetExpires: {
+      type: String,
     },
   },
   {
     timestamps: true,
   }
-  )
 );
+
+userSchema.methods = {
+  createPasswordChangedToken: function () {
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    this.userPasswordResetToken = crypto.createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+    this.userPasswordResetExpires = Date.now() + 15 * 60 * 60 * 1000;
+    return resetToken;
+  },
+  createVerifyToken: function () {
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    this.userVerifyResetToken = crypto.createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+    this.userVerifyResetExpires = Date.now() + 15 * 60 * 60 * 1000;
+    return resetToken;
+  },
+};
+
+
+export default mongoose.model("User", userSchema);

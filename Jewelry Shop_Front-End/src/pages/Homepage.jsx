@@ -5,6 +5,7 @@ import Slider from "../components/Slider";
 import ElementOne from "../components/ElementOne";
 import ListProduct from "../components/ListProduct";
 import Album from "../components/Album";
+
 import Footer from "../components/Footer";
 import RiseLoader from "react-spinners/RiseLoader";
 import { useEffect, useState } from "react";
@@ -17,7 +18,9 @@ const Spinner = styled.div`
   align-items: center;
   justify-content: center;
 `
-const Container = styled.div``;
+const Container = styled.div`
+  font-family: 'Jost', sans-serif;
+`;
 
 function Homepage() {
   const [loading, setLoading] = useState(false);
