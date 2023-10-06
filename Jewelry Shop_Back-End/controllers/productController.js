@@ -178,24 +178,22 @@ const deleteProductController = async (req, res) => {
         message: deleteProduct.message,
       });
     }
-    res
-      .status(HttpStatusCode.OK)
-      .json({
-        status: "OK",
-        message: deleteProduct.message,
-        data: deleteProduct.data,
-      });
+    res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: deleteProduct.message,
+      data: deleteProduct.data,
+    });
   } catch (exception) {
     return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
       .json({ status: "ERROR", message: exception.message });
   }
 };
-const getOneProductController = async (req,res) =>{
+const getOneProductController = async (req, res) => {
   try {
     const id = req.params.id;
     if (!id) {
-     return res.status(HttpStatusCode.BAD_REQUEST).json({
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: Exception.ID_NOT_FOUND,
       });
@@ -203,29 +201,56 @@ const getOneProductController = async (req,res) =>{
     const product = await productRepository.getProductById(id);
 
     if (!product.success) {
-     return res.status(HttpStatusCode.BAD_REQUEST).json({
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: product.message,
       });
     }
-    return res
-      .status(HttpStatusCode.OK)
-      .json({
-        status: "OK",
-        message: product.message,
-        data: product.data,
-      });
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: product.message,
+      data: product.data,
+    });
   } catch (exception) {
     return res
-    .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-    .json({ status: "ERROR", message: exception.message });
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .json({ status: "ERROR", message: exception.message });
   }
-}
+};
+const getProductsByCategory = async (req, res) => {
+  try {
+    const category = req.params.category;
+
+    if (!category) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: Exception.ID_NOT_FOUND,
+      });
+    }
+    const products = await productRepository.getProductByCategories([category]);
+    if (!products.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: products.message,
+      });
+    }
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: products.message,
+      data: products.data,
+    });
+  } catch (exception) {
+    return res
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .json({ status: "ERROR", message: exception.message });
+  }
+};
 export default {
   createProductController,
   updateProductController,
   searchProductController,
   viewProductController,
   deleteProductController,
-  getOneProductController
+  getOneProductController,
+  getProductsByCategory,
 };

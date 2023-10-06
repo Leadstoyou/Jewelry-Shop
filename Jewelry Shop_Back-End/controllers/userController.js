@@ -76,7 +76,12 @@ const userLoginController = async (req, res) => {
         message: loginUser.message,
       });
     }
-    res.header("Authorization", `Bearer ${loginUser.data.accessToken}`);
+    res.cookie("accessToken", loginUser.data.accessToken, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true,
+      sameSite: "Strict",
+    });
 
     res.cookie("refreshToken", loginUser.data.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -118,7 +123,13 @@ const refreshAccessTokenController = async (req, res) => {
         message: result.message,
       });
     }
-    res.header("Authorization", `Bearer ${result.data}`);
+    res.cookie("accessToken", result.data, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true,
+      sameSite: "Strict",
+    });
+
 
     return res.status(HttpStatusCode.OK).json({
       status: "OK",
@@ -145,7 +156,7 @@ const userLogoutController = async (req, res) => {
     });
   }
   try {
-    res.set("Authorization", undefined);
+    res.clearCookie("accessToken", { httpOnly: true, secure: true });
     res.clearCookie("refreshToken", { httpOnly: true, secure: true });
     const logoutUser = await userRepository.userLogoutRepository(
       cookie.refreshToken

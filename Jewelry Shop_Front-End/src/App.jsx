@@ -15,9 +15,8 @@ const Container = styled.div``
 
 function App() {
   return <Container>
-     <BrowserRouter>
-     <Routes>
-
+     <BrowserRouter basename="/Jewelry-Shop">
+     <Routes > 
       <Route path="/" element={<Homepage />} />
       <Route path="/search/:searchtext" element={<SearchPage />} />
       <Route path="/collections" element={<Collections />} />

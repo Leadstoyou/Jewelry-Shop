@@ -18,7 +18,9 @@ export default class Exception extends Error{
     static PRODUCT_UPDATE_FAILED = "Product update failed"
     static SEARCH_PARAMS_IS_NOT_FOUND = "Search params is not found"
     static INVALID_OBJECT_ID = "Invalid object ID"
+    static INVALID_INPUT_TYPE = "Invalid input type value"
     static ID_NOT_FOUND = "ID is not found"
+    static CATEGORY_NOT_FOUND = "Category is not found"
     static REFRESH_TOKEN_EXPRIED = "Refresh token was expired"
     constructor(message,validationErrors ={}) {
         super(message)
