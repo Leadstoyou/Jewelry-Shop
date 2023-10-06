@@ -133,6 +133,18 @@ components:
         message:
           type: string
           example: Xác minh tài khoản thành công
+    ForgotPasswordSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Forgot mật khẩu tài khoản thành công  
+    ResetPasswordSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Reset mật khẩu tài khoản thành công     
     ChangePasswordSuccess:
       type: object
       properties:
@@ -151,18 +163,12 @@ components:
         message:
           type: string
           example: Đổi status tài khoản thành công
-    ForgotPasswordSuccess:
+    UpdateBlockSuccess:
       type: object
       properties:
         message:
           type: string
-          example: Forgot mật khẩu tài khoản thành công  
-    ResetPasswordSuccess:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Reset mật khẩu tài khoản thành công         
+          example: Xóa mềm tài khoản thành công        
     ErrorServer:
       type: object
       properties:
