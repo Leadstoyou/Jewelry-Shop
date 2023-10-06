@@ -36,7 +36,6 @@ const checkUser =
       if (err) {
         return res.status(err.status).json(err.body);
       }
-      console.log(req.user);
       const userRole = req.user?.userRole;
 
       if (allowedRoles.includes(userRole)) {
