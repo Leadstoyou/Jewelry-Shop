@@ -4,7 +4,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "bootstrap";
 import Comment from "./Comment";
 import { grey } from "@mui/material/colors";
@@ -12,7 +12,7 @@ import ListProduct from "../ListProduct";
 import List from "./List";
 const FooterProduct = styled.div`
   margin-bottom: 5%;
-`
+`;
 const Container = styled.div`
   margin-top: 2%;
   margin-left: 5%;
@@ -116,23 +116,26 @@ const Action = styled.div`
 `;
 
 const CommentAction = styled.div`
-  display:  flex;
+  display: flex;
   justify-content: space-between;
-
-`
-const CommentDisplay = styled.div``
+`;
+const CommentDisplay = styled.div``;
 const CommentController = styled.div``;
-const ProductBody = () => {
-  const [comdisplay,setCom] = useState(true)
+const ProductBody = (props) => {
+  const { product } = props;
+  const [comdisplay, setCom] = useState(true);
   const [desc, setDesc] = useState(true);
   const [favorite, setFavorite] = useState(false);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedMaterial, setSelectedMaterial] = useState("");
-
-  const handleDisplay = ()=>{
-    setCom(!comdisplay)
-  }
+  const [productDetail, setProductDetail] = useState(product);
+  useEffect(() => {
+    setProductDetail(product);
+  }, []);
+  const handleDisplay = () => {
+    setCom(!comdisplay);
+  };
 
   const handleDesc = () => {
     setDesc(!desc);
@@ -159,13 +162,13 @@ const ProductBody = () => {
     setSelectedColor("");
     setSelectedMaterial("");
   };
-  
+
   return (
     <Container>
       <ItemOne>
         <Left>
           <ImageController>
-            <Image src={img} />
+            <Image src={productDetail.productImage} />
           </ImageController>
           <SuggestImg>
             <SuggestText1>Miễn phí vận chuyển</SuggestText1>
@@ -175,12 +178,10 @@ const ProductBody = () => {
         </Left>
         <Right>
           <RightOne>
-            <h1 style={{ textAlign: "center" }}>
-              Bông tai bạc mạ vàng 14k hình vỏ sò Disney The Little Mermaid được
-              đính ngọc trai nhân tạo màu trắng
-            </h1>
+            <h1 style={{ textAlign: "center" }}>{productDetail.productName}</h1>
             <h3 style={{ backgroundColor: "#cacaca", padding: "10px" }}>
-              3,890,000<span style={{ textDecoration: "underline" }}>đ</span>
+              {productDetail.productPrice}
+              <span style={{ textDecoration: "underline" }}>đ</span>
             </h3>
           </RightOne>
           <hr />
@@ -192,9 +193,11 @@ const ProductBody = () => {
                     <TextInDropdown value="" disabled>
                       Kích thước
                     </TextInDropdown>
-                    <TextInDropdown value="Size1">Size 1</TextInDropdown>
-                    <TextInDropdown value="Size2">Size 2</TextInDropdown>
-                    <TextInDropdown value="Size3">Size 3</TextInDropdown>
+                    {productDetail.productSizes?.map((value, index) => (
+                      <TextInDropdown value={value} key={index}>
+                        {value}
+                      </TextInDropdown>
+                    ))}
                   </DropdownOne>
                   {selectedSize ? (
                     <p style={{ fontWeight: "bolder" }}>
@@ -214,9 +217,11 @@ const ProductBody = () => {
                     <TextInDropdown value="" disabled>
                       Màu sắc
                     </TextInDropdown>
-                    <TextInDropdown value="Color1">Color 1</TextInDropdown>
-                    <TextInDropdown value="Color2">Color 2</TextInDropdown>
-                    <TextInDropdown value="Color3">Color 3</TextInDropdown>
+                    {productDetail.productColors?.map((value, index) => (
+                      <TextInDropdown value={value} key={index}>
+                        {value}
+                      </TextInDropdown>
+                    ))}
                   </DropdownOne>
                   {selectedColor ? (
                     <p style={{ fontWeight: "bolder" }}>
@@ -236,15 +241,11 @@ const ProductBody = () => {
                     <TextInDropdown value="" disabled>
                       Chất liệu
                     </TextInDropdown>
-                    <TextInDropdown value="Material1">
-                      Material 1
-                    </TextInDropdown>
-                    <TextInDropdown value="Material2">
-                      Material 2
-                    </TextInDropdown>
-                    <TextInDropdown value="Material3">
-                      Material 3
-                    </TextInDropdown>
+                    {productDetail.productMaterials?.map((value, index) => (
+                      <TextInDropdown value={value} key={index}>
+                        {value}
+                      </TextInDropdown>
+                    ))}
                   </DropdownOne>
                   {selectedMaterial ? (
                     <p style={{ fontWeight: "bolder" }}>
@@ -288,33 +289,32 @@ const ProductBody = () => {
         <ControllerTwo>
           <h1>Thông tin sản phẩm</h1>
           <Action style={{ display: desc ? "block" : "none" }}>
-            <p>
-              Bước ra khỏi vòng an toàn của mình với đôi bông tai Disney The
-              Little Mermaid Seashell đầy cảm xúc của chúng tôi. Mỗi chiếc bông
-              tai mạ vàng 14k được tạo hình với những đường rãnh chân thực và
-              trang trí bằng viên ngọc trai nhân tạo. Những chiếc bông tai này
-              không chỉ là một món trang sức, mà còn là biểu tượng của sự tự do
-              và khát vọng khám phá. Hãy thêm chúng vào bộ sưu tập của bạn để
-              nhớ rằng thế giới đang chờ đợi bạn khám phá, như một đại dương với
-              vô số khả năng và kỳ diệu.
-            </p>
+            <p>{productDetail.productDescription}</p>
             <p>
               <span style={{ fontWeight: "bolder" }}>Mã sản phẩm:</span>{" "}
-              262686C01
+              {productDetail._id}
             </p>
             <p>
               <span style={{ fontWeight: "bolder" }}>Phân loại sản phẩm:</span>{" "}
-              Hoa tai
+              {productDetail.productCategory}
             </p>
             <p>
-              <span style={{ fontWeight: "bolder" }}>Kim loại:</span> Bạc
+              <span style={{ fontWeight: "bolder" }}>Chất liệu:</span>{" "}
+              {productDetail.productMaterials?.map((value, index) => {
+                if (index === 0) {
+                  return value;
+                }
+              })}
             </p>
             <p>
-              <span style={{ fontWeight: "bolder" }}>Chất liệu:</span> Bạc mạ
-              vàng 14k
-            </p>
-            <p>
-              <span style={{ fontWeight: "bolder" }}>Màu sắc:</span> Vàng
+              <span style={{ fontWeight: "bolder" }}>Màu sắc:</span>
+              {productDetail.productColors?.length > 0 ? (
+                productDetail.productColors.map((value, index) => (
+                  <span key={index}>{value}</span>
+                ))
+              ) : (
+                <span>Không có màu </span>
+              )}
             </p>
           </Action>
         </ControllerTwo>
@@ -325,13 +325,13 @@ const ProductBody = () => {
       <hr />
       <CommentController>
         <CommentAction>
-        <h1>Đánh giá sản phẩm</h1>
-        <IconTwo onClick={handleDisplay}>
-        {comdisplay ? <RemoveIcon /> : <AddIcon />}
-        </IconTwo>
+          <h1>Đánh giá sản phẩm</h1>
+          <IconTwo onClick={handleDisplay}>
+            {comdisplay ? <RemoveIcon /> : <AddIcon />}
+          </IconTwo>
         </CommentAction>
-        <CommentDisplay style={{display: comdisplay ? 'block': 'none'}}>
-        <Comment />
+        <CommentDisplay style={{ display: comdisplay ? "block" : "none" }}>
+          <Comment />
         </CommentDisplay>
       </CommentController>
       <hr />

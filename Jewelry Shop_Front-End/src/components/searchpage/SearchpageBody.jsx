@@ -92,7 +92,6 @@ const SearchpageBody = (props) => {
     setProducts(foundProducts);
   }, []);
 
-  console.log(searchText, foundProducts)
   return (
     <Container data-aos="fade-up">
       <Header data-aos="fade-up">

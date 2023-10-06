@@ -66,10 +66,6 @@ const searchProductsByName = async (searchTerm) => {
     const query = {
       $or: [
         { productName: new RegExp(searchTerm, "i") },
-        { productDescription: new RegExp(searchTerm, "i") },
-        { productColors: searchTerm },
-        { productCategory: new RegExp(searchTerm, "i") },
-        { productSizes: searchTerm },
       ],
     };
 
