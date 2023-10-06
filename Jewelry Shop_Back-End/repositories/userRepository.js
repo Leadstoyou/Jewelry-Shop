@@ -90,7 +90,10 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
     }
 
     if (!existingUser.isActive) {
-      const verificationCodeLink = `${process.env.URL_SERVER}/verify/${userEmail}`;
+      existingUser.createVerifyToken();
+      await existingUser.save();
+      const resetToken = existingUser.userVerifyResetToken;
+      const verificationCodeLink = `${process.env.URL_SERVER}/verify/${resetToken}`;
       const emailSubject = "Bạn chưa xác mình tài khoản của bạn";
       const emailBody = `Xin chào ${existingUser.userName},\n\nVui lòng nhấn vào liên kết sau để xác minh tài khoản của bạn:\n\n <a href="${verificationCodeLink}">Click Here!</a>`;
       sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
@@ -128,13 +131,13 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
       isDelete,
       isActive,
       ...userData
-    } =  updatedUser.toObject();
+    } = updatedUser.toObject();
     return {
       success: true,
       message: constants.LOGIN_SUCCESSFUL,
       data: {
         ...userData,
-        userPassword:"Not show",
+        userPassword: "Not show",
         accessToken,
       },
     };

@@ -25,6 +25,7 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
+
 app.use('/api/v1', v1Router);
 
 app.get("/", (req, res) => {

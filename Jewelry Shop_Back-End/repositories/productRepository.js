@@ -205,7 +205,7 @@ const getProductById = async (id) => {
     const product = await Product.findOne({
       _id: new mongoose.Types.ObjectId(id),
     }).exec();
-    if(!product){
+    if (!product) {
       return {
         success: false,
         message: Exception.PRODUCT_NOT_FOUND,
@@ -220,6 +220,35 @@ const getProductById = async (id) => {
     throw new Exception(exception.message);
   }
 };
+const getProductByCategories = async (categories) => {
+  try {
+    if (!Array.isArray(categories)) {
+      return {
+        success: false,
+        message: Exception.INVALID_INPUT_TYPE,
+      };
+    }
+    const foundProduct = await Product.find({
+      productCategory: { $in: categories },
+    }).exec();
+
+    if (!foundProduct) {
+      return {
+        success: false,
+        message: Exception.PRODUCT_NOT_FOUND,
+      };
+    }
+
+    return {
+      success: true,
+      message: `Found product(s) in categories [${categories.join(", ")}]`,
+      data: foundProduct,
+    };
+  } catch (exception) {
+    throw new Exception(exception.message);
+  }
+};
+
 export default {
   createNewProduct,
   searchProductsByName,
@@ -227,4 +256,5 @@ export default {
   updateProduct,
   deleteProduct,
   getProductById,
+  getProductByCategories,
 };
