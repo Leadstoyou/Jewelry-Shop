@@ -16,7 +16,7 @@ const Logins = () => {
     if (validate()) {
       try {
         
-        const response = await axios.get("http://localhost:3001/Account", {
+        const response = await axios.post("http://localhost:3001/Account", {
           email: email,
           password: password,
         });
@@ -66,7 +66,7 @@ const Logins = () => {
           className="email"
             type="text"
             placeholder="Email"
-            size={30}
+   
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -76,7 +76,7 @@ const Logins = () => {
           <input
             className="password"
             type="password"
-            size={30}
+            
             placeholder="Mật khẩu"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
