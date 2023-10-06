@@ -30,25 +30,28 @@ const userSearchController = async (req, res) => {
   size = size >= 6 ? 6 : size;
   try {
     const searchRoleNumber = parseInt(searchRole);
-
     let filteredUsers = await userRepository.userSearchRepository({
       size,
       page,
       searchString,
       searchRole,
     });
-    return res.status(200).json({
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
       message: "Get search successfully",
-      size,
-      page,
-      searchString: searchString,
-      searchRole: searchRoleNumber,
-      data: filteredUsers,
+      data: {
+        size,
+        page,
+        searchString: searchString,
+        searchRole: searchRoleNumber,
+        data: filteredUsers,
+      },
     });
   } catch (exception) {
-    return res
-      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json({ status: "ERROR", message: exception.message });
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
+      message: exception.message,
+    });
   }
 };
 
@@ -109,8 +112,10 @@ const refreshAccessTokenController = async (req, res) => {
     });
   }
   try {
-    const result = await userRepository.refreshAccessTokenRepository(refreshToken);
-    console.log(result.message)
+    const result = await userRepository.refreshAccessTokenRepository(
+      refreshToken
+    );
+    console.log(result.message);
 
     if (!result.success) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
@@ -118,7 +123,6 @@ const refreshAccessTokenController = async (req, res) => {
         message: result.message,
       });
     }
-    // res.header('Authorization', `Bearer ${result.data}`);
     res.cookie("accessToken", result.data, {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: true,
@@ -126,16 +130,16 @@ const refreshAccessTokenController = async (req, res) => {
       sameSite: "Strict",
     });
 
+
     return res.status(HttpStatusCode.OK).json({
       status: "OK",
       message: result.message,
       data: result.data,
     });
-    
   } catch (exception) {
-    if(exception.message === Exception.REFRESH_TOKEN_EXPRIED){
-      return userLogoutController(req,res);
-    } 
+    if (exception.message === Exception.REFRESH_TOKEN_EXPRIED) {
+      return userLogoutController(req, res);
+    }
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
       message: exception.message,
@@ -225,9 +229,9 @@ const userRegisterController = async (req, res) => {
 };
 
 const verifyEmailController = async (req, res) => {
-  const { userEmail } = req.params;
+  const { userVerifyResetToken } = req.params;
   try {
-    const result = await userRepository.verifyEmailRepository(userEmail);
+    const result = await userRepository.verifyEmailRepository(userVerifyResetToken);
     if (!result.success) {
       return res.status(HttpStatusCode.OK).json({
         status: "ERROR",
@@ -411,8 +415,8 @@ const userForgotPasswordController = async (req, res) => {
 };
 
 const userResetPasswordController = async (req, res) => {
-  const { newPassword, token } = req.body;
-  if (!newPassword || !token) {
+  const { newPassword, userPasswordResetToken } = req.body;
+  if (!newPassword || !userPasswordResetToken) {
     return res.status(HttpStatusCode.BAD_REQUEST).json({
       status: "ERROR",
       message: "Missing password",
@@ -420,7 +424,7 @@ const userResetPasswordController = async (req, res) => {
   }
   try {
     const result = await userRepository.userResetPasswordRepository(
-      token,
+      userPasswordResetToken,
       newPassword
     );
     if (!result.success) {

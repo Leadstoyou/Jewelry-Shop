@@ -1,16 +1,6 @@
 
 components:
-  schemas:
-    LoginSchema:
-        type: object
-        properties:
-          userEmail:
-            type: string
-            format: email
-            example: huymthe16351123@fpt.edu.vn
-          userPassword:
-            type: string
-            example: huy17092002    
+  schemas: 
     LoginSuccess:
           type: object
           properties:
@@ -73,35 +63,6 @@ components:
                 accessToken:
                     type: string
                     example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."          
-    RegisterRequest:
-      type: object
-      properties:
-        userName:
-          type: string
-          example: Mai Tran Huy
-        userEmail:
-          type: string
-          format: email
-          example: huymthe16351123@fpt.edu.vn
-        userPassword:
-          type: string
-          example: huy17092002
-        confirmPassword:
-          type: string
-          example: huy17092002
-        userPhoneNumber:
-          type: string
-          example: 0984943638
-        userGender:
-          type: string
-          example: Male
-        userAddress:
-          type: string
-          example: Ha Noi
-        userAge:
-          type: integer
-          example: 21
-
     RegisterSuccess: 
       type: object
       properties:
@@ -157,6 +118,51 @@ components:
             __v:
               type: integer
               example: 0
+    LogoutSuccess: 
+      type: object
+      properties:
+        status:
+          type: string
+          example: OK
+        message:
+          type: string
+          example: Đăng xuất thành công
+    VerifySuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Xác minh tài khoản thành công
+    ChangePasswordSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Đổi mật khẩu tài khoản thành công   
+    UpdateRoleSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Đổi role tài khoản thành công  
+    UpdateStatusSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Đổi status tài khoản thành công
+    ForgotPasswordSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Forgot mật khẩu tài khoản thành công  
+    ResetPasswordSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Reset mật khẩu tài khoản thành công         
     ErrorServer:
       type: object
       properties:
@@ -175,12 +181,9 @@ components:
         message:
           type: string
           example: "Yêu cầu không hợp lệ"
-
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
-
 

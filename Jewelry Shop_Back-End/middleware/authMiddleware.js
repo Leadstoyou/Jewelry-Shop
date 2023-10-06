@@ -8,14 +8,14 @@ const checkToken = (req, res, next) => {
     jwt.verify(token, process.env.ACCESS_TOKEN, async (err, decode) => {
       if (err?.name === "JsonWebTokenError") {
         return res.status(HttpStatusCode.UNAUTHORIZED).json({
-          success: false,
+          status: "ERROR",
           message: "Invalid token format",
         });
       } else if (err instanceof jwt.TokenExpiredError) {
         await userController.refreshAccessTokenController(req, res);
       } else if (err) {
         return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-          success: false,
+          status: "ERROR",
           message: "Internal Server Error",
         });
       } else {
@@ -25,10 +25,12 @@ const checkToken = (req, res, next) => {
     });
   } else {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
       message: "Require authentication",
     });
   }
 };
+
 const checkUser =
   (allowedRoles = [2]) =>
   (req, res, next) => {
@@ -42,7 +44,7 @@ const checkUser =
         next();
       } else {
         return res.status(HttpStatusCode.FORBIDDEN).json({
-          success: false,
+          status: "ERROR",
           message: "Permission denied",
         });
       }
