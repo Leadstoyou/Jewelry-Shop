@@ -13,7 +13,7 @@ const createProductController = async (req, res) => {
       productColors,
       productMaterials,
       productCategory,
-      productDiscount = 0,
+      productDiscount = [],
       productImage,
     } = req.body;
 
@@ -245,6 +245,59 @@ const getProductsByCategory = async (req, res) => {
       .json({ status: "ERROR", message: exception.message });
   }
 };
+
+const getProductHasDiscount = async (req,res) => {
+  try {
+    const {startDate,expiredDate} = req.body
+    if (!expiredDate || !startDate) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: Exception.INPUT_DATA_ERROR,
+      });
+    }
+
+    const products = await productRepository.getProductHasDiscount(new Date(startDate),new Date(expiredDate));
+
+    if (!products.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: products.message,
+      });
+    }
+
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: products.message,
+      data: products.data,
+    });
+  } catch (exception) {
+    return res
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .json({ status: "ERROR", message: exception.message });
+  }
+}
+const getAllProductHasDiscount = async (req,res) => {
+  try {
+
+    const products = await productRepository.getProductHasDiscount(new Date(),new Date(),true);
+
+    if (!products.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: products.message,
+      });
+    }
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: products.message,
+      data: products.data,
+    });
+  } catch (exception) {
+    return res
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .json({ status: "ERROR", message: exception.message });
+  }
+}
 export default {
   createProductController,
   updateProductController,
@@ -253,4 +306,6 @@ export default {
   deleteProductController,
   getOneProductController,
   getProductsByCategory,
+  getProductHasDiscount,
+  getAllProductHasDiscount
 };
