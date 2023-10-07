@@ -18,7 +18,7 @@ export default mongoose.model(
                 type: String,
                 required: true
               },
-              orderStatus: {
+              status: {
                 type: String,
                 enum: {
                     values: ['Đã thanh toán', "Chưa thanh toán"],
