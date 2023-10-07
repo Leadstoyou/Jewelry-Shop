@@ -23,7 +23,6 @@ const Profile = () => {
   const [image, setImage] = useState(null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [checkPassword, setCheckPassword] = useState("");
 
   const handleImageUpload = async (e) => {
 
@@ -38,7 +37,7 @@ const Profile = () => {
     console.log("Changing password...");
   };
   return (
-    <Container style={{ marginTop: "100px" }}>
+    <Container style={{ marginTop: "100px",marginBottom:"30px" }}>
       <div className="all_information">
        
           <h1>Thông tin cá nhân</h1>
@@ -144,8 +143,8 @@ const Profile = () => {
             className="text"
             label="Mật khẩu mới"
             type="password"
-            value={checkPassword}
-            onChange={(e) => setCheckPassword(e.target.value)}
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
           />
         </div>
         <Button

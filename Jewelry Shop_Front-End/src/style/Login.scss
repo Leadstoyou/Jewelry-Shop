@@ -48,7 +48,11 @@ body{
       
   }
   .btn:hover{
-      color: rgb(5, 5, 5);
+      color: rgb(5, 5, 5) !important; 
       font-size: 14px;
   
+  }
+  .note a {
+    text-decoration: none;
+    color: black !important;
   }
