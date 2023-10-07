@@ -17,9 +17,9 @@ const viewCart = async (req, res) => {
     try {
       const { cartToken, user_id, product_id, size, color, material, quantity, price } = req.body;
       const cart = await cartRepository.addToCart(cartToken, user_id, product_id, size, color, material, quantity, price);
-      res.status(200).json(cart);
+      res.status(HttpStatusCode.OK).json(cart);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
     }
   };
   const removeFromCart = async (req, res) => {
