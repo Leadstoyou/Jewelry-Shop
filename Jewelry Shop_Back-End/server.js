@@ -1,4 +1,7 @@
 import express from "express";
+import cookieParser from "cookie-parser";
+import {orderRouter, cartRouter, productRouter, userRouter } from "./routers/indexRouter.js";
+import connect from "./database/database.js";
 import * as dotenv from "dotenv";
 dotenv.config(); 
 
@@ -32,6 +35,8 @@ v1Router.use("/cart", cartRouter);
 //     console.error("Error:", error.message);
 //   }
 // });
+v1Router.use("/order", orderRouter)
+
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');

@@ -13,7 +13,7 @@ export default mongoose.model(
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'User'
               },
-              product_list: [{
+              productList: [{
                 product_id: {
                   type: mongoose.Schema.Types.ObjectId,
                   ref: 'Product',
@@ -21,10 +21,6 @@ export default mongoose.model(
                 },
                 size: [{
                   type: String,
-                  enum: {
-                    values: ['S', "M", "L", "XL"],
-                    message: '{VALUE} is not suppoted'
-                },
                   required: true
                 }],
                 color: [{
