@@ -1,94 +1,199 @@
-import React from 'react';
-import styled from 'styled-components';
+import React, { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const Container = styled.div`
-  background-color: white;
-  margin-top: 22vh;
-  position: relative;
-  padding: 0 20px;
-  width: 300px;
-  height: 450px;
-  border: 1px solid rgb(203, 195, 195);
-  align-items: center;
-  justify-content: center;
-  left: 50%;
-  transform: translate(-50%);
-  box-shadow: rgba(60, 59, 59, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
-`;
 
-const Header = styled.div`
-  text-align: center;
-  margin-bottom: 20px;
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Input = styled.input`
-  border: 1px solid transparent;
-  background: #ededed;
-  color: black;
-  padding: 10px;
-  margin-bottom: 12px;
-`;
-
-const RadioContainer = styled.div`
-  display: flex;
-  margin-bottom: 10px; 
-`;
-
-const RadioInput = styled.input`
-  margin-right: 5px;
-`;
-
-const EmailInput = styled(Input)`
-border: 1px solid transparent;
-background: #ededed;
-color: black;
-padding: 10px 10px;
-margin-bottom: 12px; 
-width: 268px;
-height:15px
-`;
-
-const Button = styled.input`
-  height: 30px;
-  width: 95%;
-  line-height: 55px;
-  text-transform: uppercase;
-  font-weight: 600;
-  margin-top: 15px;
-  margin-bottom: 10px;
-  font-family: Arial;
-  font-size: 13px;
-`;
-
+import {
+  Container,
+  Typography,
+  TextField,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  Button,
+  Box,
+} from "@mui/material";
+import "../style/Register.scss";
 const Register = () => {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    gender: "nam",
+    phoneNumber: "",
+    age: "",
+    email: "",
+    password: "",
+    checkpassword: "",
+  });
+  const navigate = useNavigate();
+
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    if (validate()) {
+      try {
+        const response = await axios.post("http://localhost:3001/Account", {
+          name:formData.fullName,
+          gender:formData.gender,
+          phoneNumber:formData.phoneNumber,
+          age:formData.age,
+          email: formData.email, 
+          password: formData.password,
+        });
+
+        if (response.status === 200) {
+          console.log("Registration successful");
+          navigate("/login"); 
+          
+        } else {
+          toast.error("Registration failed");
+        }
+      } catch (error) {
+        console.error("An error occurred:", error);
+      }
+    }
+  };
+
+  const validate = () => {
+    const passwordRegex = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/;
+    if (
+      formData.fullName === "" ||
+      formData.age === "" || 
+      formData.phoneNumber===""
+     
+    ) {
+      toast.error("Not empty ");
+      return false;
+    }
+    if (
+      formData.email === "" ||
+      formData.email === null ||
+      !formData.email.includes("@")
+    ) {
+      toast.error("Please enter a valid email");
+      return false;
+    }
+
+    if (
+      formData.password === "" ||
+      formData.password === null ||
+      !formData.password.match(passwordRegex)
+    ) {
+      toast.error(
+        "Password must contain at least one number and one letter."
+      );
+      return false;
+    }
+
+    if (formData.password !== formData.checkpassword) {
+      toast.error("Passwords do not match");
+      return false;
+    }
+
+    return true;
+  };
+
   return (
-    <Container>
-      <Header>
-        <h1>Đăng ký</h1>
-      </Header>
-      <Form>
-        <Input required type="text" placeholder="Họ và Tên" />
-        <RadioContainer>
-          <label htmlFor="radio1">
-            <RadioInput type="radio" id="radio1" value={1} />
-            Nam
-          </label>
-          <label htmlFor="radio2">
-            <RadioInput type="radio" id="radio2" value={2} />
-            Nữ
-          </label>
-        </RadioContainer>
-        <Input required type="text" placeholder="Số điện thoại" />
-        <Input type="text" placeholder="Tuổi" />
-        <EmailInput type="email" placeholder="Email" /> 
-        <Input type="password" placeholder="Mật khẩu" />
-        <Button type="submit" value="Đăng Ký" className="btn" />
-      </Form>
+    <Container maxWidth="sm" className="container">
+      <Typography variant="h3" align="center" gutterBottom>
+        Đăng ký
+      </Typography>
+      <form onSubmit={handleSubmit}>
+        <TextField
+          fullWidth
+          label="Họ và Tên"
+          variant="outlined"
+          name="fullName"
+          value={formData.fullName}
+          onChange={handleChange}
+          margin="normal"
+        />
+        <Box display="flex" alignItems="center" justifyContent="start">
+          <Typography variant="subtitle1" gutterBottom>
+            Giới tính:
+          </Typography>
+          <RadioGroup
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            row
+          >
+            <FormControlLabel value="nam" control={<Radio />} label="Nam" />
+            <FormControlLabel value="nu" control={<Radio />} label="Nữ" />
+          </RadioGroup>
+        </Box>
+        <TextField
+          fullWidth
+          label="Số điện thoại"
+          variant="outlined"
+          inputProps={{
+            type: 'number', 
+            maxLength: 10,  
+          }}
+          name="phoneNumber"
+          value={formData.phoneNumber}
+          onChange={handleChange}
+          margin="normal"
+        />
+        <TextField
+          fullWidth
+          label="Tuổi"
+          variant="outlined"
+          name="age"
+          inputProps={{
+            type: 'number', 
+            maxLength: 2,  
+          }}
+          value={formData.age}
+          onChange={handleChange}
+          margin="normal"
+        />
+        <TextField
+          fullWidth
+          label="Email"
+          variant="outlined"
+          type="text"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          margin="normal"
+        />
+        <TextField
+          fullWidth
+          label="Mật khẩu"
+          variant="outlined"
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          margin="normal"
+        />
+        <TextField
+          fullWidth
+          label=" Nhập Lại Mật khẩu"
+          variant="outlined"
+          type="password"
+          name="checkpassword"
+          value={formData.checkpassword}
+          onChange={handleChange}
+          margin="normal"
+        />
+        <Button type="submit" variant="contained" color="primary" fullWidth>
+          Đăng Ký
+        </Button>
+      <ToastContainer position="top-right" autoClose="1000" />
+
+      </form>
     </Container>
   );
 };

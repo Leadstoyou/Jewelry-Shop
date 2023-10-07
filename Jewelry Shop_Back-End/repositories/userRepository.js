@@ -13,6 +13,12 @@ import jwt from "jsonwebtoken";
 const userGetAllUsersRepository = async () => {
   try {
     const allUsers = await User.find({});
+    if (!allUsers || allUsers.length === 0) {
+      return {
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      };
+    }
     return {
       success: true,
       message: "Get all users successfully!",
@@ -29,50 +35,72 @@ const userSearchRepository = async ({
   searchString,
   searchRole,
 }) => {
-  page = parseInt(page);
-  size = parseInt(size);
-  const searchRoleNumber = parseInt(searchRole);
-  const matchQuery = {
-    $or: [
-      {
-        userName: { $regex: `.*${searchString}.*`, $options: "i" },
-      },
-      {
-        userEmail: { $regex: `.*${searchString}.*`, $options: "i" },
-      },
-    ],
-  };
+  try {
+    page = parseInt(page);
+    size = parseInt(size);
+    const searchRoleNumber = parseInt(searchRole);
+    const matchQuery = {
+      $or: [
+        {
+          userName: { $regex: `.*${searchString}.*`, $options: "i" },
+        },
+        {
+          userEmail: { $regex: `.*${searchString}.*`, $options: "i" },
+        },
+      ],
+    };
 
-  if (searchRole) {
-    matchQuery.userRole = searchRoleNumber;
+    if (searchRole) {
+      matchQuery.userRole = searchRoleNumber;
+    }
+
+    let filteredUsers = await User.aggregate([
+      {
+        $match: matchQuery,
+      },
+      { $skip: (page - 1) * size },
+      { $limit: size },
+    ]);
+
+    if (!filteredUsers || filteredUsers.length === 0) {
+      return {
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      };
+    }
+
+    return {
+      success: true,
+      message: "Get users successfully!",
+      data: filteredUsers,
+    };
+  } catch (exception) {
+    throw new Exception(exception.message);
   }
-
-  let filteredUsers = await User.aggregate([
-    {
-      $match: matchQuery,
-    },
-    { $skip: (page - 1) * size },
-    { $limit: size },
-  ]);
-
-  return filteredUsers;
 };
 
 const userLoginRepository = async ({ userEmail, userPassword }) => {
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
     if (!existingUser) {
-      return ({
+      return {
         success: false,
         message: Exception.CANNOT_FIND_USER,
-      });
+      };
     }
 
     if (!existingUser.isActive) {
-      return ({
+      existingUser.createVerifyToken();
+      await existingUser.save();
+      const resetToken = existingUser.userVerifyResetToken;
+      const verificationCodeLink = `${process.env.URL_SERVER}/verify/${resetToken}`;
+      const emailSubject = "Bạn chưa xác mình tài khoản của bạn";
+      const emailBody = `Xin chào ${existingUser.userName},\n\nVui lòng nhấn vào liên kết sau để xác minh tài khoản của bạn:\n\n <a href="${verificationCodeLink}">Click Here!</a>`;
+      sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
+      return {
         success: false,
         message: Exception.USER_IS_NOT_ACTIVE,
-      });
+      };
     }
 
     const isMatched = bcrypt.compareSync(
@@ -80,15 +108,14 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
       existingUser.userPassword
     );
     if (!isMatched) {
-      return ({
+      return {
         success: false,
         message: Exception.WRONG_EMAIL_AND_PASSWORD,
-      });
+      };
     }
 
     const accessToken = await jwtService.generalAccessToken(
       existingUser._id,
-      existingUser.userEmail,
       existingUser.userRole
     );
     const refreshToken = await jwtService.generalRefreshToken(existingUser._id);
@@ -100,17 +127,18 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
     );
 
     const {
-      userPassword: removedUserPassword,
       userRole,
+      isDelete,
+      isActive,
       ...userData
     } = updatedUser.toObject();
     return {
       success: true,
-      message: "Login successfully!",
+      message: constants.LOGIN_SUCCESSFUL,
       data: {
         ...userData,
+        userPassword: "Not show",
         accessToken,
-        refreshToken,
       },
     };
   } catch (exception) {
@@ -118,29 +146,45 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
   }
 };
 
-const refreshTokenRepository = async (refreshToken) => {
+const refreshAccessTokenRepository = async (refreshToken) => {
   try {
-    const decodedToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
+    const decodedToken = await new Promise((resolve, reject) => {
+      jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, decode) => {
+        if (err instanceof jwt.TokenExpiredError) {
+          reject({
+            success: false,
+            message: Exception.REFRESH_TOKEN_EXPIRED,
+          });
+        } else if (err) {
+          reject({
+            success: false,
+            message: "Lỗi xác thực token: " + err.message,
+          });
+        } else {
+          resolve(decode);
+        }
+      });
+    });
+
     const existingUser = await User.findOne({
       _id: decodedToken.userId,
       refreshToken,
     });
     if (!existingUser) {
-      return ({
+      return {
         success: false,
         message: Exception.CANNOT_FIND_USER,
-      });
+      };
     }
 
     const newAccessToken = await jwtService.generalAccessToken(
       existingUser._id,
-      existingUser.userEmail,
       existingUser.userRole
     );
 
     return {
       success: true,
-      message: "Refresh token successfully!",
+      message: constants.REFRESH_ACCESS_TOKEN_SUCCESS,
       data: newAccessToken,
     };
   } catch (exception) {
@@ -157,10 +201,10 @@ const userLogoutRepository = async (refreshToken) => {
     );
 
     if (!updatedUser) {
-      return ({
+      return {
         success: false,
         message: Exception.CANNOT_FIND_REFRESH_TOKEN_IN_USER,
-      });
+      };
     }
     return {
       success: true,
@@ -183,16 +227,19 @@ const userRegisterRepository = async ({
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
     if (existingUser) {
-      return ({
+      return {
         success: false,
         message: Exception.USER_EXIST,
-      });
+      };
     }
-
+    const hashedPassword = await bcrypt.hash(
+      userPassword,
+      parseInt(process.env.SALT_ROUNDS)
+    );
     const newUser = await User.create({
       userName,
       userEmail,
-      userPassword,
+      userPassword: hashedPassword,
       userPhoneNumber,
       userGender,
       userAddress,
@@ -203,12 +250,11 @@ const userRegisterRepository = async ({
       isActive: false,
     });
 
-    const hashedEmail = await bcrypt.hash(
-      userEmail,
-      parseInt(process.env.SALT_ROUNDS)
-    );
+    newUser.createVerifyToken();
+    await newUser.save();
+    const resetToken = newUser.userVerifyResetToken;
 
-    const verificationCodeLink = `${process.env.URL_SERVER}/verify/${userEmail}`;
+    const verificationCodeLink = `${process.env.URL_SERVER}/verify/${resetToken}`;
     const emailSubject = "Xác minh tài khoản của bạn";
     const emailBody = `Xin chào ${userName},\n\nVui lòng nhấn vào liên kết sau để xác minh tài khoản của bạn:\n\n <a href="${verificationCodeLink}">Click Here!</a>`;
     sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
@@ -226,22 +272,87 @@ const userRegisterRepository = async ({
   }
 };
 
-const verifyEmailRepository = async (userEmail) => {
+const verifyEmailRepository = async (userVerifyResetToken) => {
   try {
-    const existingUser = await User.findOne({ userEmail }).exec();
+    const existingUser = await User.findOne({ userVerifyResetToken }).exec();
     if (!existingUser) {
-      return ({
+      return {
         success: false,
         message: Exception.CANNOT_FIND_USER,
-      });
+      };
     }
 
     existingUser.isActive = true;
+    existingUser.userPasswordChangedAt = Date.now();
+    existingUser.userVerifyResetToken = undefined;
+    existingUser.userVerifyResetExpires = undefined;
     await existingUser.save();
 
     return {
       success: true,
       message: "Email verified successfully",
+    };
+  } catch (exception) {
+    throw new Exception(exception.message);
+  }
+};
+
+const userForgotPasswordRepository = async (userEmail) => {
+  try {
+    const existingUser = await User.findOne({ userEmail }).exec();
+    if (!existingUser) {
+      return {
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      };
+    }
+
+    existingUser.createPasswordChangedToken();
+    await existingUser.save();
+    const resetToken = existingUser.userPasswordResetToken;
+    const emailSubject = "Bạn forgot password";
+    const emailBody = `Đây là mã code resetpassword, mã code tồn tại trong 15p: ${resetToken}`;
+    await sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
+
+    return {
+      success: true,
+      message: "Password reset instructions sent to your email.",
+    };
+  } catch (exception) {
+    throw new Exception(exception.message);
+  }
+};
+
+const userResetPasswordRepository = async (
+  userPasswordResetToken,
+  newPassword
+) => {
+  try {
+    const existingUser = await User.findOne({
+      userPasswordResetToken,
+      userPasswordResetExpires: { $gt: Date.now() },
+    }).exec();
+
+    if (!existingUser) {
+      return {
+        success: false,
+        message: Exception.CANNOT_WRONG_RESET_PASSWORD_TOKEN,
+      };
+    }
+
+    const hashedPassword = await bcrypt.hash(
+      newPassword,
+      parseInt(process.env.SALT_ROUNDS)
+    );
+    existingUser.userPassword = hashedPassword;
+    existingUser.userPasswordChangedAt = Date.now();
+    existingUser.userPasswordResetToken = undefined;
+    existingUser.userPasswordResetExpires = undefined;
+    await existingUser.save();
+
+    return {
+      success: true,
+      message: "Password updated successfully",
     };
   } catch (exception) {
     throw new Exception(exception.message);
@@ -256,10 +367,10 @@ const userChangePasswordRepository = async ({
   try {
     const existingUser = await User.findOne({ userEmail }).exec();
     if (!existingUser) {
-      return ({
+      return {
         success: false,
         message: Exception.CANNOT_FIND_USER,
-      });
+      };
     }
 
     const isMatched = await bcrypt.compare(
@@ -267,10 +378,10 @@ const userChangePasswordRepository = async ({
       existingUser.userPassword
     );
     if (!isMatched) {
-      return ({
+      return {
         success: false,
         message: Exception.PASSWORD_NOT_MATCH,
-      });
+      };
     }
 
     const hashedPassword = await bcrypt.hash(
@@ -305,8 +416,6 @@ const userUpdateProfileRepository = async ({
   userAddress,
   userAge,
   userAvatar,
-  userRole,
-  isActive,
 }) => {
   let userAvtUrl = null;
   try {
@@ -325,8 +434,6 @@ const userUpdateProfileRepository = async ({
       ...(userAddress && { userAddress }),
       ...(userAge > 0 && { userAge }),
       ...(userAvtUrl && { userAvatar: userAvtUrl }),
-      ...(userRole && { userRole }),
-      ...(isActive && { isActive }),
     };
 
     const updatedUser = await User.findOneAndUpdate(
@@ -335,10 +442,10 @@ const userUpdateProfileRepository = async ({
       { new: true }
     ).exec();
     if (!updatedUser) {
-      return ({
+      return {
         success: false,
         message: Exception.USER_NOT_FOUND,
-      });
+      };
     }
 
     return {
@@ -359,10 +466,10 @@ const userUpdateProfileRepository = async ({
 const userUpdateRoleRepository = async ({ userEmail, newRole, userRole }) => {
   try {
     if (userRole !== 0) {
-      return ({
+      return {
         success: false,
         message: Exception.PERMISSION_DENIED,
-      });
+      };
     }
 
     const updatedUser = await User.findOneAndUpdate(
@@ -371,10 +478,10 @@ const userUpdateRoleRepository = async ({ userEmail, newRole, userRole }) => {
       { new: true }
     ).exec();
     if (!updatedUser) {
-      return ({
+      return {
         success: false,
         message: Exception.USER_NOT_FOUND,
-      });
+      };
     }
 
     return {
@@ -397,10 +504,10 @@ const userUpdateStatusRepository = async ({
 }) => {
   try {
     if (userRole !== 0) {
-      return ({
+      return {
         success: false,
         message: Exception.PERMISSION_DENIED,
-      });
+      };
     }
 
     const updatedUser = await User.findOneAndUpdate(
@@ -409,10 +516,10 @@ const userUpdateStatusRepository = async ({
       { new: true }
     ).exec();
     if (!updatedUser) {
-      return ({
+      return {
         success: false,
         message: Exception.USER_NOT_FOUND,
-      });
+      };
     }
 
     return {
@@ -425,60 +532,35 @@ const userUpdateStatusRepository = async ({
   }
 };
 
-const userForgotPasswordRepository = async (userEmail) => {
+const userUpdateBlockRepository = async ({
+  userEmail,
+  newBlock,
+  userRole,
+}) => {
   try {
-    const existingUser = await User.findOne({ userEmail }).exec();
-    if (!existingUser) {
-      return ({
+    if (userRole !== 0) {
+      return {
         success: false,
-        message: Exception.CANNOT_FIND_USER,
-      });
+        message: Exception.PERMISSION_DENIED,
+      };
     }
 
-    existingUser.createPasswordChangedToken();
-    await existingUser.save();
-    const resetToken = existingUser.userPasswordResetToken;
-    const emailSubject = "Bạn forgot password";
-    const resetLink = `${process.env.URL_SERVER}/resetPassword/${resetToken}`;
-    const emailBody = `To reset your password, click the following link, link tồn tại trong 15p: <a href="${resetLink}">Click here!</a>`;
-    await sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
+    const updatedUser = await User.findOneAndUpdate(
+      { userEmail },
+      { isDelete: newBlock },
+      { new: true }
+    ).exec();
+    if (!updatedUser) {
+      return {
+        success: false,
+        message: Exception.USER_NOT_FOUND,
+      };
+    }
 
     return {
       success: true,
-      message: "Password reset instructions sent to your email.",
-    };
-  } catch (exception) {
-    throw new Exception(exception.message);
-  }
-};
-
-const userResetPasswordRepository = async (token, newPassword) => {
-  try {
-    const existingUser = await User.findOne({
-      userPasswordResetToken: token,
-      userPasswordResetExpires: { $gt: Date.now() },
-    }).exec();
-
-    if (!existingUser) {
-      return ({
-        success: false,
-        message: Exception.CANNOT_FIND_TOKEN_PASSWORD_IN_USER,
-      });
-    }
-
-    const hashedPassword = await bcrypt.hash(
-      newPassword,
-      parseInt(process.env.SALT_ROUNDS)
-    );
-    existingUser.userPassword = hashedPassword;
-    existingUser.userPasswordChangedAt = Date.now();
-    existingUser.userPasswordResetToken = undefined;
-    existingUser.userPasswordResetExpires = undefined;
-    await existingUser.save();
-
-    return {
-      success: true,
-      message: "Password updated successfully",
+      message: "Delete status successfully!",
+      data: { ...updatedUser.toObject(), userPassword: "Not shown" },
     };
   } catch (exception) {
     throw new Exception(exception.message);
@@ -489,14 +571,15 @@ export default {
   userGetAllUsersRepository,
   userSearchRepository,
   userLoginRepository,
+  refreshAccessTokenRepository,
   userLogoutRepository,
   userRegisterRepository,
+  verifyEmailRepository,
+  userForgotPasswordRepository,
+  userResetPasswordRepository,
   userChangePasswordRepository,
   userUpdateProfileRepository,
   userUpdateRoleRepository,
   userUpdateStatusRepository,
-  refreshTokenRepository,
-  userForgotPasswordRepository,
-  userResetPasswordRepository,
-  verifyEmailRepository,
+  userUpdateBlockRepository
 };

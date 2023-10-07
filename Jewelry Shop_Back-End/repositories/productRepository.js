@@ -37,9 +37,9 @@ const createNewProduct = async (
     });
     if (!newProduct) {
       return {
-         success: false,
+        success: false,
         message: Exception.PRODUCT_NOT_FOUND,
-      }
+      };
     }
     return {
       success: true,
@@ -66,15 +66,16 @@ const searchProductsByName = async (searchTerm) => {
     const query = {
       $or: [
         { productName: new RegExp(searchTerm, "i") },
-        { productDescription: new RegExp(searchTerm, "i") },
-        { productColors: searchTerm },
-        { productCategory: new RegExp(searchTerm, "i") },
-        { productSizes: searchTerm },
       ],
     };
 
     const searchResult = await Product.find(query).exec();
-
+    if (!searchResult) {
+      return {
+        success: false,
+        message: Exception.PRODUCT_NOT_FOUND,
+      };
+    }
     return {
       success: true,
       message: "Search product successfully!",
@@ -86,15 +87,22 @@ const searchProductsByName = async (searchTerm) => {
 };
 
 const getAllProducts = async () => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const getAllProducts = await Product.find({}).exec();
-
-      resolve(getAllProducts);
-    } catch (error) {
-      reject(error);
+  try {
+    const getAllProducts = await Product.find({}).exec();
+    if (!getAllProducts) {
+      return {
+        success: false,
+        message: Exception.PRODUCT_NOT_FOUND,
+      };
     }
-  });
+    return {
+      success: true,
+      message: "Get all product successfully!",
+      data: getAllProducts,
+    };
+  } catch (exception) {
+    throw new Exception(exception.message);
+  }
 };
 const updateProduct = async (
   id,
@@ -110,9 +118,7 @@ const updateProduct = async (
   productImage,
   isDeleted
 ) => {
-  let productImageUrl;
   try {
-
     const updateProduct = await Product.findOneAndUpdate(
       { _id: id },
       {
@@ -125,62 +131,118 @@ const updateProduct = async (
         ...(productMaterials && { productMaterials }),
         ...(productCategory && { productCategory }),
         ...(productDiscount && { productDiscount }),
-        ...(productImageUrl && { productImage: await cloudinaryService.uploadProductImageToCloudinary(
-          productImage,
-          constants.CLOUDINARY_PRODUCT_IMG
-        ) }),
+        ...(productImage && {
+          productImage: await cloudinaryService.uploadProductImageToCloudinary(
+            productImage,
+            constants.CLOUDINARY_PRODUCT_IMG
+          ),
+        }),
         ...(isDeleted !== undefined && { isDeleted }),
       },
       { new: true }
     ).exec();
     if (!updateProduct) {
       return {
-         success: false,
-        message: Exception.PRODUCT_NOT_FOUND,
-      }
+        success: false,
+        message: Exception.PRODUCT_UPDATE_FAILED,
+      };
     }
     return {
       success: true,
-      message: "update product successfully!",
+      message: "Product update successfully!",
       data: updateProduct,
     };
   } catch (exception) {
-    if (productImageUrl) {
-      await cloudinaryService.deleteImageFromCloudinary(productImageUrl);
-    }
     throw new Exception(exception.message);
   }
 };
 
 const deleteProduct = async (id) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const isValidObjectId = mongoose.Types.ObjectId.isValid(id);
-
-      if (!isValidObjectId) {
-        reject(new Error("Invalid ObjectId"));
-        return;
-      }
-
-      const updateProduct = await Product.findOneAndUpdate(
-        { _id: new mongoose.Types.ObjectId(id) },
-        { isDeleted: true },
-        { new: false }
-      ).exec();
-      if (updateProduct.isDeleted) {
-        reject(new Error("Product was soft deleted"));
-      }
-      if (!updateProduct) {
-        reject(new Error("Product not found"));
-        return;
-      }
-      resolve({
-        ...updateProduct._doc,
-      });
-    } catch (error) {
-      reject(error);
+  try {
+    const isValidObjectId = mongoose.Types.ObjectId.isValid(id);
+    if (!isValidObjectId) {
+      return {
+        success: false,
+        message: Exception.INVALID_OBJECT_ID,
+      };
     }
-  });
+    const updateProduct = await Product.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(id) },
+      { isDeleted: true },
+      { new: false }
+    ).exec();
+    if (updateProduct.isDeleted) {
+      return {
+        success: true,
+        message: "Product was soft deleted",
+        data: updateProduct,
+      };
+    }
+    if (!updateProduct) {
+      return {
+        success: false,
+        message: Exception.PRODUCT_NOT_FOUND,
+      };
+    }
+  } catch (exception) {
+    throw new Exception(exception.message);
+  }
+};
+
+const getProductById = async (id) => {
+  try {
+    const isValidObjectId = mongoose.Types.ObjectId.isValid(id);
+    if (!isValidObjectId) {
+      return {
+        success: false,
+        message: Exception.INVALID_OBJECT_ID,
+      };
+    }
+    const product = await Product.findOne({
+      _id: new mongoose.Types.ObjectId(id),
+    }).exec();
+    if (!product) {
+      return {
+        success: false,
+        message: Exception.PRODUCT_NOT_FOUND,
+      };
+    }
+    return {
+      success: true,
+      message: "Get product by ID found",
+      data: product,
+    };
+  } catch (exception) {
+    throw new Exception(exception.message);
+  }
+};
+const getProductByCategories = async (categories) => {
+  try {
+    if (!Array.isArray(categories)) {
+      return {
+        success: false,
+        message: Exception.INVALID_INPUT_TYPE,
+      };
+    }
+    const foundProduct = await Product.find({
+      productCategory: { $in: categories },
+    }).exec();
+
+    if (!foundProduct) {
+      return {
+        success: false,
+        message: Exception.PRODUCT_NOT_FOUND,
+      };
+    }
+
+    return {
+      success: true,
+      message: `Found product(s) in categories [${categories.join(", ")}]`,
+      data: foundProduct,
+    };
+  } catch (exception) {
+    throw new Exception(exception.message);
+  }
 };
 
 export default {
@@ -189,4 +251,6 @@ export default {
   getAllProducts,
   updateProduct,
   deleteProduct,
+  getProductById,
+  getProductByCategories,
 };

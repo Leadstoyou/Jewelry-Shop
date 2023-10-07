@@ -5,16 +5,16 @@ export default mongoose.model(
     "Order",
     new Schema(
         {
-            customer_id: {
+            customerId: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'User',
                 required: true
               },
-              order_date: {
+              orderDate: {
                 type: Date,
                 required: true
               },
-              total_amount: {
+              totalAmount: {
                 type: String,
                 required: true
               },

@@ -10,11 +10,18 @@ export default class Exception extends Error{
     static WRONG_OLD_PASSWORD = "Old password wrong"
     static INPUT_ERROR = "Input error format";
     static PRODUCT_EXIST = "Product already exists";
-    static USER_IS_NOT_ACTIVE = "User is not active";
+    static USER_IS_NOT_ACTIVE = "User is not active please check your email";
     static CANNOT_FIND_REFRESH_TOKEN_IN_USER= "No user found with the provided refreshToken";
-    static CANNOT_FIND_TOKEN_PASSWORD_IN_USER= "No user found with the provided token Password"
+    static CANNOT_WRONG_RESET_PASSWORD_TOKEN= "Wrong reset token Password"
     static PASSWORD_NOT_MATCH = "Password is not match"
     static PRODUCT_NOT_FOUND = "Product not found"
+    static PRODUCT_UPDATE_FAILED = "Product update failed"
+    static SEARCH_PARAMS_IS_NOT_FOUND = "Search params is not found"
+    static INVALID_OBJECT_ID = "Invalid object ID"
+    static INVALID_INPUT_TYPE = "Invalid input type value"
+    static ID_NOT_FOUND = "ID is not found"
+    static REFRESH_TOKEN_EXPIRED = "Refresh token was expired"
+    static CATEGORY_NOT_FOUND = "Category is not found"
     constructor(message,validationErrors ={}) {
         super(message)
         console.log(message)

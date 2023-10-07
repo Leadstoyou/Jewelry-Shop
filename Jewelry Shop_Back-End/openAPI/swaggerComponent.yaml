@@ -1,0 +1,195 @@
+
+components:
+  schemas: 
+    LoginSuccess:
+          type: object
+          properties:
+            status:
+              type: string
+              example: OK
+            message:
+              type: string
+              example: Login successfully!
+            data:
+              type: object
+              properties:
+                _id:
+                  type: string
+                  example: 651bebf30a2f7e7e6918ab2e
+                userName:
+                  type: string
+                  example: Mai Tran Huy
+                userEmail:
+                    type: string
+                    format: email
+                    example: huymthe163523@fpt.edu.vn
+                userPhoneNumber:
+                    type: string
+                    example: 09845143638
+                userGender:
+                    type: string
+                    example: Male
+                userAddress:
+                    type: string
+                    example: H12312a123 No22323i
+                userAge:
+                    type: integer
+                    example: 21
+                userAvatar:
+                    type: string
+                    format: uri
+                    example: https://vnn-imgs-a1.vgcloud.vn/image1.ictnews.vn/_Files/2020/03/17/trend-avatar-1.jpg
+                isActive:
+                    type: boolean
+                    example: true
+                createdAt:
+                    type: string
+                    format: date-time
+                    example: "2023-10-03T10:24:51.057Z"
+                updatedAt:
+                    type: string
+                    format: date-time
+                    example: "2023-10-03T10:34:57.782Z"
+                __v:
+                    type: integer
+                    example: 0
+                refreshToken:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                userPasswordChangedAt:
+                    type: string
+                    format: date-time
+                    example: "1696329291493"
+                accessToken:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."          
+    RegisterSuccess: 
+      type: object
+      properties:
+        status:
+          type: string
+          example: OK
+        message:
+          type: string
+          example: Đăng ký thành công
+        data:
+          type: object
+          properties:
+            userName:
+              type: string
+              example: Mai Tran Huy
+            userEmail:
+              type: string
+              format: email
+              example: huymthe16351123@fpt.edu.vn
+            userPhoneNumber:
+              type: string
+              example: 0984943638
+            userGender:
+              type: string
+              example: Male
+            userAddress:
+              type: string
+              example: Ha Noi
+            userAge:
+              type: integer
+              example: 21
+            userAvatar:
+              type: string
+              format: uri
+              example: https://vnn-imgs-a1.vgcloud.vn/image1.ictnews.vn/_Files/2020/03/17/trend-avatar-1.jpg
+            userRole:
+              type: integer
+              example: 2
+            isActive:
+              type: boolean
+              example: false
+            _id:
+              type: string
+              example: 651c5490de80d53dd1ffade9
+            createdAt:
+              type: string
+              format: date-time
+              example: "2023-10-03T17:51:12.370Z"
+            updatedAt:
+              type: string
+              format: date-time
+              example: "2023-10-03T17:51:12.370Z"
+            __v:
+              type: integer
+              example: 0
+    LogoutSuccess: 
+      type: object
+      properties:
+        status:
+          type: string
+          example: OK
+        message:
+          type: string
+          example: Đăng xuất thành công
+    VerifySuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Xác minh tài khoản thành công
+    ForgotPasswordSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Forgot mật khẩu tài khoản thành công  
+    ResetPasswordSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Reset mật khẩu tài khoản thành công     
+    ChangePasswordSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Đổi mật khẩu tài khoản thành công   
+    UpdateRoleSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Đổi role tài khoản thành công  
+    UpdateStatusSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Đổi status tài khoản thành công
+    UpdateBlockSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Xóa mềm tài khoản thành công        
+    ErrorServer:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "ERROR"
+        message:
+          type: string
+          example: "Lỗi máy chủ nội bộ"      
+    ErrorRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "ERROR"
+        message:
+          type: string
+          example: "Yêu cầu không hợp lệ"
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+

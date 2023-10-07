@@ -1,14 +1,10 @@
-import styled from "styled-components";
-import Product from "./Product";
-import Pagination from "react-bootstrap/Pagination";
-import PageItem from "react-bootstrap/PageItem";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { Dropdown } from "bootstrap";
-import axios from "axios";
 import Aos from "aos";
 import "aos/dist/aos.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import Pagination from "react-bootstrap/Pagination";
+import styled from "styled-components";
+import Product from "./Product";
 
 const Container = styled.div`
   margin-top: 100px;
@@ -37,7 +33,6 @@ const TextItem = styled.p`
   font-size: large;
   color: #a1a1a1;
 `;
-const Underline = styled.hr``;
 const Inline = styled.span`
   font-weight: bolder !important;
   color: #494848 !important;
@@ -86,26 +81,17 @@ const DropdownOne = styled.select`
 const TextInDropdown = styled.option``;
 const TextSearch = styled.div``;
 
-const SearchpageBody = () => {
+const SearchpageBody = (props) => {
+  const { searchtext, foundProducts } = props
+  const [searchText,setSearchText] = useState(searchtext);
+  const [products,setProducts] = useState(foundProducts);
+
   useEffect(() => {
     Aos.init({ duration: 2000 });
+    setSearchText(searchtext);
+    setProducts(foundProducts);
   }, []);
-  const { searchtext } = useParams();
-  const [foundProducts, setFoundProducts] = useState([]);
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await axios.get(`http://localhost:9999/api/v1/products/search/${searchtext}`);
-        const data = response.data.data;
-        setFoundProducts(data);
-        console.log(data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    }
 
-    fetchData();
-  }, [searchtext])
   return (
     <Container data-aos="fade-up">
       <Header data-aos="fade-up">
@@ -120,7 +106,7 @@ const SearchpageBody = () => {
       </Header>
       <TitleProduct data-aos="fade-up">
         <Result>
-          Kết quả tìm kiếm cho <Inline>"....."</Inline>
+          Kết quả tìm kiếm cho <Inline>{searchText}</Inline>
         </Result>
       </TitleProduct>
       <SearchController data-aos="fade-up">
@@ -164,9 +150,9 @@ const SearchpageBody = () => {
         </ItemOne>
       </SearchController>
       <ProductList data-aos="fade-up">
-        {foundProducts.map((product)=>
-        <Product product={product}/>
-        ) }
+        {products.map((product, index) => (
+          <Product product={product} key={index} />
+        ))}
       </ProductList>
       <PagingController data-aos="fade-up">
         <Pagination>

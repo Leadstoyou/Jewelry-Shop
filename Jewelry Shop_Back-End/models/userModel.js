@@ -19,7 +19,7 @@ const userSchema = new Schema(
       type: String,
       validate: {
         validator: (value) => isEmail(value),
-        message: "Email must be at least 3 characters",
+        message: "Invalid email address",
       },
     },
     userPassword: {
@@ -68,7 +68,21 @@ const userSchema = new Schema(
       default: false,
       required: true,
     },
+    isDelete: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
     refreshToken: {
+      type: String,
+    },
+    userVerifyAt: {
+      type: String,
+    },
+    userVerifyResetToken: {
+      type: String,
+    },
+    userVerifyResetExpires: {
       type: String,
     },
     userPasswordChangedAt: {
@@ -95,18 +109,15 @@ userSchema.methods = {
     this.userPasswordResetExpires = Date.now() + 15 * 60 * 60 * 1000;
     return resetToken;
   },
+  createVerifyToken: function () {
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    this.userVerifyResetToken = crypto.createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+    this.userVerifyResetExpires = Date.now() + 15 * 60 * 60 * 1000;
+    return resetToken;
+  },
 };
-userSchema.pre('save', async function (next) {
-  try {
-    const hashedPassword = await bcrypt.hash(
-      this.userPassword,
-      parseInt(process.env.SALT_ROUNDS)
-    );
-    this.userPassword = hashedPassword;
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
+
 
 export default mongoose.model("User", userSchema);
