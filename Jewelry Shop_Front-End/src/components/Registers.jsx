@@ -3,8 +3,6 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
-
 import {
   Container,
   Typography,
@@ -118,20 +116,21 @@ const Register = () => {
           onChange={handleChange}
           margin="normal"
         />
-        <Box display="flex" alignItems="center" justifyContent="start">
-          <Typography variant="subtitle1" gutterBottom>
-            Giới tính:
-          </Typography>
-          <RadioGroup
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            row
-          >
-            <FormControlLabel value="nam" control={<Radio />} label="Nam" />
-            <FormControlLabel value="nu" control={<Radio />} label="Nữ" />
-          </RadioGroup>
-        </Box>
+       <Box display="flex" alignItems="center" justifyContent="start" flexDirection="row">
+  <Typography variant="subtitle1" gutterBottom>
+    Giới tính:
+  </Typography>
+  <RadioGroup
+    name="gender"
+    value={formData.gender}
+    onChange={handleChange}
+    row
+  >
+    <FormControlLabel value="nam" control={<Radio />} label="Nam" />
+    <FormControlLabel value="nu" control={<Radio />} label="Nữ" />
+  </RadioGroup>
+</Box>
+
         <TextField
           fullWidth
           label="Số điện thoại"
