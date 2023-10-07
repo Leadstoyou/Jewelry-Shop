@@ -13,7 +13,7 @@ const getCartByUserId = async (userId) => {
         { cartToken },
         {
           $push: {
-            product_list: {
+            productList: {
               product_id,
               size,
               color,
@@ -27,7 +27,7 @@ const getCartByUserId = async (userId) => {
       );
   
       let total = 0;
-      cart.product_list.forEach((product) => {
+      cart.productList.forEach((product) => {
         total += product.price * product.quantity;
       });
   
@@ -58,4 +58,12 @@ const getCartByUserId = async (userId) => {
     await cart.save();
     return cart;
   };
-export default { getCartByUserId, addToCart, removeFromCart};
+
+  const removePurchasedProducts = async (cartId) => {
+    try {
+      await Cart.findByIdAndUpdate(cartId, { $pull: { products: {} } });
+    } catch (error) {
+      throw error;
+    }
+  };
+export default {removePurchasedProducts, getCartByUserId, addToCart, removeFromCart};

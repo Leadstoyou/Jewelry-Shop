@@ -10,43 +10,41 @@ export default mongoose.model(
                 ref: 'Order',
                 required: true
               },
-              product_id: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Product',
-                required: true
-              },
-              size: {
-                type: [String],
-                enum: {
-                    values: ['S', "M", "L", "XL"],
-                    message: '{VALUE} is not suppoted'
+              productList: [{
+                product_id: {
+                  type: mongoose.Schema.Types.ObjectId,
+                  ref: 'Product',
+                  required: true
                 },
-                required: true
-              },
-              color: {
-                type: [String],
-                required: true
-              },
-              material: {
-                type: [String],
-                required: true
-              },
-              quantity: {
-                type: Number,
-                required: true,
-                validate:{
+                size: [{
+                  type: String,
+                  required: true
+                }],
+                color: [{
+                  type: String,
+                  required: true
+                }],
+                material: [{
+                  type: String,
+                  required: true
+                }],
+                quantity: {
+                  type: Number,
+                  required: true,
+                  validate:{
                     validator: (value) => value > 0 ,
                     message: 'Quantity must be greate than 0'
                 }
-              },
-              price: {
-                type: Number,
-                required: true,
-                validate:{
+                },
+                price: {
+                  type: Number,
+                  required: true,
+                  validate:{
                     validator: (value) => value > 0 ,
                     message: 'Price must be greate than 0'
                 }
-              },
+                }
+              }],
               rating: {
                 type: Number,
                 required: true

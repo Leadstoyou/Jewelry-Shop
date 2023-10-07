@@ -1,6 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import { cartRouter, productRouter, userRouter } from "./routers/indexRouter.js";
+import {orderRouter, cartRouter, productRouter, userRouter } from "./routers/indexRouter.js";
 import connect from "./database/database.js";
 import * as dotenv from "dotenv";
 import cors from 'cors'
@@ -17,6 +17,7 @@ v1Router.use(express.json());
 v1Router.use("/users", userRouter);
 v1Router.use("/products", productRouter);
 v1Router.use("/cart", cartRouter);
+v1Router.use("/order", orderRouter)
 // app.use(cors());
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
