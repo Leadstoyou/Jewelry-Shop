@@ -1,7 +1,8 @@
-import './App.css';
+import "./App.css";
 // import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Homepage from "./pages/Homepage";
+<<<<<<< HEAD
 import styled from 'styled-components'
 import SearchPage from './pages/SearchPage';
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -30,6 +31,42 @@ function App() {
      </Routes>
      </BrowserRouter>
   </Container>;
+=======
+import styled from "styled-components";
+import SearchPage from "./pages/SearchPage";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Collections from "./pages/Collections";
+import Products from "./pages/Products";
+import CartPage from "./pages/Cart";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Profile from "./pages/Profile";
+import NotFound from "./components/error/NotFound";
+import Dashboard from './pages/Dashboard.jsx'
+const Container = styled.div`
+  font-family: 'Jost', sans-serif;
+`;
+
+function App() {
+  return (
+    <Container>
+      <BrowserRouter basename="/Jewelry-Shop">
+        <Routes>
+          <Route path="/" element={<Homepage />} />
+          <Route path="/search/:searchtext" element={<SearchPage />} />
+          <Route path="/collections" element={<Collections />} />
+          <Route path="/product/:id" element={<Products />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </Container>
+  );
+>>>>>>> 3932af2290f8170379bf87fc1180865ad8456f4d
 }
 
 export default App;
