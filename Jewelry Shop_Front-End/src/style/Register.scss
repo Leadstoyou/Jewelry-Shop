@@ -1,53 +1,9 @@
-// body {
-//     background-color: rgb(255, 252, 252);
-// }
-
-
-// .container {
-//     background-color: white;
-//     margin-top: 22vh;
-//     position: relative;
-//     padding: 0 20px;
-//     width: 300px;
-//     height: 400px;
-//     border: 1px solid rgb(203, 195, 195);
-//     align-items: center;
-//     justify-content: center;
-//     left: 50%;
-//     transform: translate(-50%);
-//     box-shadow: rgba(60, 59, 59, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
-
-// }
-
-// form {
-//     margin-left: 10px;
-
-// }
-
-// input[type="text"], input[type="email"], input[type="password"], input[type="date"] {
-//     border: 1px solid transparent;
-//     background: #ededed;
-//     color: black;
-//     padding: 0px 20px;
-//     font-weight: 500;
-//     margin-bottom: 12px;
-//     height: 30px;
-//     width: 80%;
-// }
-
-// .gender {
-//     margin: 5px 0px;
-// }
-
-// input[type="submit"] {
-//     height: 30px;
-//     width: 95%;
-//     line-height: 55px;
-//     text-transform: uppercase;
-//     font-weight: 600;
-//     margin-top: 15px;
-//     margin-bottom: 10px;
-//     font-family: Arial;
-//     font-size: 13px;
-// }
-
+.container{
+    
+    margin-top: 150px;
+    margin-bottom: 50px;
+}
+.radio{
+    display: inline-flex;
+    align-items: center;
+}
