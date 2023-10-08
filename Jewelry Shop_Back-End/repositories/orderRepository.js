@@ -1,5 +1,5 @@
-import { Order } from "../models/indexModel";
-import { OrderDetail } from "../models/indexModel";
+import { Order } from "../models/indexModel.js";
+import { OrderDetail } from "../models/indexModel.js";
 
 const createOrder = async (userId, order_date, total_amount, orderStatus) => {
     try {

@@ -10,6 +10,8 @@ import Comment from "./Comment";
 import { grey } from "@mui/material/colors";
 import ListProduct from "../ListProduct";
 import List from "./List";
+import { useDispatch } from "react-redux";
+import {addToCard} from '../../redux/Cart.jsx'
 const FooterProduct = styled.div`
   margin-bottom: 5%;
 `;
@@ -163,6 +165,8 @@ const ProductBody = (props) => {
     setSelectedMaterial("");
   };
 
+  const dispatch = useDispatch()
+
   return (
     <Container>
       <ItemOne>
@@ -180,7 +184,7 @@ const ProductBody = (props) => {
           <RightOne>
             <h1 style={{ textAlign: "center" }}>{productDetail.productName}</h1>
             <h3 style={{ backgroundColor: "#cacaca", padding: "10px" }}>
-              {productDetail.productPrice}
+              {productDetail.productPrice?.toLocaleString("vi-VN")}
               <span style={{ textDecoration: "underline" }}>đ</span>
             </h3>
           </RightOne>
@@ -268,7 +272,7 @@ const ProductBody = (props) => {
           </RightTwo>
           <hr />
           <RightThree>
-            <RButtonOne>Thêm vào giỏ</RButtonOne>
+            <RButtonOne onClick={()=>dispatch(addToCard({product}))}>Thêm vào giỏ</RButtonOne>
             <RButtonTwo onClick={handleFavorite}>
               {favorite ? (
                 <>

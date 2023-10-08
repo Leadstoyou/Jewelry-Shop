@@ -35,7 +35,7 @@ const Categories = () => {
       <LeftController><Title>Xem ngay các dòng sản phẩm cực hot</Title></LeftController>
       <RightController>
       {categoryElement.map((item) => (
-        <Category key={item.id} item={item} />
+        <Category key={item.id} item={item}/>
       ))}
       </RightController>
     </Container>
