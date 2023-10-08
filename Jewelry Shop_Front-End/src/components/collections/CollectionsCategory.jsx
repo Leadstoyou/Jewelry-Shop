@@ -9,6 +9,7 @@ import Product from "../collections/Product";
 import Aos from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 const Container = styled.div`
    
 `;
@@ -95,6 +96,7 @@ const PagingController = styled.div`
   
 `;
 const CollectionsCategory = () => {
+  const navigate = useNavigate()
   useEffect(() => {
     Aos.init({ duration: 2000 });
   }, []);
@@ -115,17 +117,9 @@ const CollectionsCategory = () => {
         </Text>
       </Up>
       <Bottom data-aos="fade-up">
-        <Item>
+        <Item onClick={()=>navigate('/collections')}>
             <ImageController><Image src={newest}/></ImageController>
             <TextController><TextNew>Hàng mới về</TextNew></TextController>
-        </Item>
-        <Item>
-            <ImageController><Image src={family}/></ImageController>
-            <TextController><TextNew>Tình yêu</TextNew></TextController>
-        </Item>
-        <Item>
-            <ImageController><Image src={family}/></ImageController>
-            <TextController><TextNew>Gia đình</TextNew></TextController>
         </Item>
       </Bottom>
       <hr data-aos="fade-up"/>

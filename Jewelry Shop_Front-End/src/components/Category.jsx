@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import img from "../assets/charm.jpg";
+import { useNavigate } from "react-router-dom";
 const Container = styled.div`
   border: 1px solid #d6d2d2;
   padding-bottom: 20px;
@@ -40,8 +41,9 @@ const Title = styled.div`
   }
 `;
 const Category = ({ item }) => {
+  const navigate = useNavigate()
   return (
-    <Container>
+    <Container onClick={()=> navigate('/collections')}>
       <ImageController>
         <Image src={img} />
       </ImageController>
