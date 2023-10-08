@@ -1,0 +1,158 @@
+{
+  "hash": "674d29e0",
+  "browserHash": "29941014",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "2fe98d15",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "b88f25f9",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.js",
+      "file": "react-router-dom.js",
+      "fileHash": "87dd72af",
+      "needsInterop": false
+    },
+    "styled-components": {
+      "src": "../../node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "file": "styled-components.js",
+      "fileHash": "69484b8b",
+      "needsInterop": false
+    },
+    "react-spinners/RiseLoader": {
+      "src": "../../node_modules/react-spinners/RiseLoader.js",
+      "file": "react-spinners_RiseLoader.js",
+      "fileHash": "6589e74a",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Search": {
+      "src": "../../node_modules/@mui/icons-material/Search.js",
+      "file": "@mui_icons-material_Search.js",
+      "fileHash": "b39c64b7",
+      "needsInterop": true
+    },
+    "@mui/icons-material/LocationOn": {
+      "src": "../../node_modules/@mui/icons-material/LocationOn.js",
+      "file": "@mui_icons-material_LocationOn.js",
+      "fileHash": "ff8d5deb",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Person": {
+      "src": "../../node_modules/@mui/icons-material/Person.js",
+      "file": "@mui_icons-material_Person.js",
+      "fileHash": "8badd569",
+      "needsInterop": true
+    },
+    "@mui/icons-material/ShoppingCart": {
+      "src": "../../node_modules/@mui/icons-material/ShoppingCart.js",
+      "file": "@mui_icons-material_ShoppingCart.js",
+      "fileHash": "104e4b45",
+      "needsInterop": true
+    },
+    "@mui/material/Badge": {
+      "src": "../../node_modules/@mui/material/Badge/index.js",
+      "file": "@mui_material_Badge.js",
+      "fileHash": "3614784c",
+      "needsInterop": false
+    },
+    "aos": {
+      "src": "../../node_modules/aos/dist/aos.js",
+      "file": "aos.js",
+      "fileHash": "dcc5d1e8",
+      "needsInterop": true
+    },
+    "@mui/icons-material/ArrowLeftOutlined": {
+      "src": "../../node_modules/@mui/icons-material/ArrowLeftOutlined.js",
+      "file": "@mui_icons-material_ArrowLeftOutlined.js",
+      "fileHash": "99afe203",
+      "needsInterop": true
+    },
+    "@mui/icons-material/ArrowRightOutlined": {
+      "src": "../../node_modules/@mui/icons-material/ArrowRightOutlined.js",
+      "file": "@mui_icons-material_ArrowRightOutlined.js",
+      "fileHash": "edadc09e",
+      "needsInterop": true
+    },
+    "@mui/icons-material/FavoriteBorderOutlined": {
+      "src": "../../node_modules/@mui/icons-material/FavoriteBorderOutlined.js",
+      "file": "@mui_icons-material_FavoriteBorderOutlined.js",
+      "fileHash": "b8bebf9a",
+      "needsInterop": true
+    },
+    "@mui/icons-material/FacebookOutlined": {
+      "src": "../../node_modules/@mui/icons-material/FacebookOutlined.js",
+      "file": "@mui_icons-material_FacebookOutlined.js",
+      "fileHash": "8f3275a9",
+      "needsInterop": true
+    },
+    "@mui/icons-material/YouTube": {
+      "src": "../../node_modules/@mui/icons-material/YouTube.js",
+      "file": "@mui_icons-material_YouTube.js",
+      "fileHash": "f3d373ed",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Twitter": {
+      "src": "../../node_modules/@mui/icons-material/Twitter.js",
+      "file": "@mui_icons-material_Twitter.js",
+      "fileHash": "fbe823ff",
+      "needsInterop": true
+    },
+    "@mui/icons-material/LocalShipping": {
+      "src": "../../node_modules/@mui/icons-material/LocalShipping.js",
+      "file": "@mui_icons-material_LocalShipping.js",
+      "fileHash": "1f4fa2cc",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Instagram": {
+      "src": "../../node_modules/@mui/icons-material/Instagram.js",
+      "file": "@mui_icons-material_Instagram.js",
+      "fileHash": "8ebda9e7",
+      "needsInterop": true
+    },
+    "@mui/icons-material/Pinterest": {
+      "src": "../../node_modules/@mui/icons-material/Pinterest.js",
+      "file": "@mui_icons-material_Pinterest.js",
+      "fileHash": "eb7fbe50",
+      "needsInterop": true
+    },
+    "@mui/icons-material/ArrowRight": {
+      "src": "../../node_modules/@mui/icons-material/ArrowRight.js",
+      "file": "@mui_icons-material_ArrowRight.js",
+      "fileHash": "680eb9be",
+      "needsInterop": true
+    },
+    "@mui/icons-material/FavoriteOutlined": {
+      "src": "../../node_modules/@mui/icons-material/FavoriteOutlined.js",
+      "file": "@mui_icons-material_FavoriteOutlined.js",
+      "fileHash": "a3089c59",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "chunk-OTY6O57J": {
+      "file": "chunk-OTY6O57J.js"
+    },
+    "chunk-PPHP7Y4C": {
+      "file": "chunk-PPHP7Y4C.js"
+    },
+    "chunk-WSV526PY": {
+      "file": "chunk-WSV526PY.js"
+    },
+    "chunk-3XFDIUUK": {
+      "file": "chunk-3XFDIUUK.js"
+    },
+    "chunk-2PA4WPI3": {
+      "file": "chunk-2PA4WPI3.js"
+    },
+    "chunk-ROME4SDB": {
+      "file": "chunk-ROME4SDB.js"
+    }
+  }
+}
