@@ -14,6 +14,7 @@ import Profile from './pages/Profile'
 import Forgot from './pages/ForgotPassword'
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./components/error/NotFound";
+import HistoryPage from "./pages/History";
 const Container = styled.div``
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/history" element={<HistoryPage/>} />
           <Route path="/forgot" element={<Forgot/>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
