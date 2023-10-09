@@ -43,7 +43,7 @@ const DashboardItem = styled.div`
   justify-content: start;
   flex-direction: column;
 `;
-function Example() {
+function Dashboard() {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -81,4 +81,4 @@ function Example() {
   );
 }
 
-export default Example;
+export default Dashboard;
