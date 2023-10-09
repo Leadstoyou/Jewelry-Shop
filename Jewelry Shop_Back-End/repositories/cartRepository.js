@@ -18,26 +18,11 @@ const getCartByUserId = async (userId) => {
               size,
               color,
               material,
-              quantity,
-              price,
             },
           },
         },
-        { new: true, upsert: true }
-      );
-  
-      let total = 0;
-      cart.productList.forEach((product) => {
-        total += product.price * product.quantity;
-      });
-  
-      await Cart.findOneAndUpdate(
-        { cartToken },
-        { $set: { total } },
         { new: true }
       );
-  
-      return cart;
     } catch (error) {
       throw new Error(error.message);
     }
