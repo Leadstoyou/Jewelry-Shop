@@ -36,19 +36,22 @@ const Image = styled.img`
   height: 40vh;
   
 `
-const CollectionsHeader = () => {
+const CollectionsHeader = (props) => {
+  const {category,products} = props;
+
   useEffect(() => {
     Aos.init({ duration: 2000 });
   }, []);
+
   return (
     <Container>
       <Left data-aos="fade-up">
         <LeftController>
           <Bread>
-            <BreadText>Trang chủ &nbsp;&nbsp;/&nbsp;&nbsp;<span style={{color : "#848383"}}> Vòng tay </span></BreadText>
+            <BreadText>Trang chủ &nbsp;&nbsp;/&nbsp;&nbsp;<span style={{color : "#848383"}}> {category} </span></BreadText>
           </Bread>
           <Title>
-            <TitleText style={{display:'inline-block'}}>Vòng tay</TitleText>&nbsp;&nbsp;<p style={{display:'inline-block'}}>(50)</p>
+            <TitleText style={{display:'inline-block'}}>{category}</TitleText>&nbsp;&nbsp;<p style={{display:'inline-block'}}>({products?.length})</p>
           </Title>
         </LeftController>
       </Left>

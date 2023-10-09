@@ -3,6 +3,7 @@ import pImage from "../../assets/productInCollection.jpg";
 import Aos from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 const Container = styled.div`
   margin: 1px;
   width: 100%;
@@ -78,33 +79,33 @@ const ProductTitle = styled.div`
 const Ptitle = styled.p``;
 const Pprice = styled.p``;
 
-const All = styled.div`
+const All = styled(Link)`
   z-index: 1;
   cursor: pointer;
 `;
 
-const Product = () => {
-  useEffect(() => {
-    Aos.init({ duration: 2000 });
-  }, []);
+const Product = ({ product }) => {
+
   return (
-    <Container data-aos="fade-up"> 
-      <Overlay></Overlay>
-      <Button>Mua ngay</Button>
-      <All>
-        <ProductImageController>
-          <ImageProduct style={{ overflow: "hidden" }}>
-            <Img src={pImage} />
-          </ImageProduct>
-        </ProductImageController>
-        <Control>
-          <ProductTitle>
-            <Ptitle>Charm Bạc Pandora ME Hình Cánh Thiên Thần</Ptitle>
-            <Pprice>890,000₫</Pprice>
-          </ProductTitle>
-        </Control>
-      </All>
-    </Container>
+<Link to={`/product/${product._id}`}>
+      <Container data-aos="fade-up">
+        <Overlay></Overlay>
+        <Button>Mua ngay</Button>
+        <All>
+          <ProductImageController>
+            <ImageProduct style={{ overflow: "hidden" }}>
+              <Img src={product?.productImage} />
+            </ImageProduct>
+          </ProductImageController>
+          <Control>
+            <ProductTitle>
+              <Ptitle>{product?.productName}</Ptitle>
+              <Pprice>{product?.productPrice}₫</Pprice>
+            </ProductTitle>
+          </Control>
+        </All>
+      </Container>
+    </Link>
   );
 };
 

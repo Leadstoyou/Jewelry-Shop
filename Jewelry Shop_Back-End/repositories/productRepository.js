@@ -86,15 +86,36 @@ const searchProductsByName = async (searchTerm) => {
   }
 };
 
-const getAllProducts = async () => {
+const getAllProducts = async (category,color,material,minPrice,maxPrice,sort) => {
   try {
-    const getAllProducts = await Product.find({}).exec();
-    if (!getAllProducts) {
+    const query = {};
+
+    if (color && color.length > 0) {
+      query.productColors = { $in: color };
+    }
+
+    if (material && material.length > 0) {
+      query.productMaterials = { $in: material };
+    }
+
+    if (minPrice !== undefined && maxPrice !== undefined) {
+      query.productPrice = { $gte: minPrice, $lt: maxPrice };
+    }
+
+    if (category) {
+      query.productCategory = category;
+    }
+    
+    console.log(query)
+    const getAllProducts = await Product.find(query).sort(sort).exec();
+
+    if (!getAllProducts || getAllProducts.length === 0) {
       return {
         success: false,
         message: Exception.PRODUCT_NOT_FOUND,
       };
     }
+
     return {
       success: true,
       message: "Get all product successfully!",

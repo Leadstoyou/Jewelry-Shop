@@ -4,7 +4,6 @@ import {orderRouter, cartRouter, productRouter, userRouter } from "./routers/ind
 import connect from "./database/database.js";
 import * as dotenv from "dotenv";
 dotenv.config(); 
-
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from "./middleware/swaggerMiddleware.js";
 
