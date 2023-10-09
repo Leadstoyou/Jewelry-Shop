@@ -85,7 +85,6 @@ const All = styled(Link)`
 `;
 
 const Product = ({ product }) => {
-
   return (
 <Link to={`/product/${product._id}`}>
       <Container data-aos="fade-up">

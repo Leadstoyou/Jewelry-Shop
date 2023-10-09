@@ -106,7 +106,6 @@ const getAllProducts = async (category,color,material,minPrice,maxPrice,sort) =>
       query.productCategory = category;
     }
     
-    console.log(query)
     const getAllProducts = await Product.find(query).sort(sort).exec();
 
     if (!getAllProducts || getAllProducts.length === 0) {

@@ -37,7 +37,7 @@ const Profile = () => {
     console.log("Changing password...");
   };
   return (
-    <Container style={{ marginTop: "100px" }}>
+    <Container style={{ marginTop: "100px",marginBottom:"30px" }}>
       <div className="all_information">
        
           <h1>Thông tin cá nhân</h1>

@@ -2,15 +2,7 @@ body{
     background-color: white;
   }
   
-  a{
-      text-decoration: none;
-      color: #27251f;
-      font-size: large;
-      padding-left: 10px;
-  }
-  a:hover{
-      color: rgb(216, 216, 137);
-  }
+ 
   .containers {
       background-color: white;
       width: max-width;
@@ -56,7 +48,11 @@ body{
       
   }
   .btn:hover{
-      color: rgb(5, 5, 5);
+      color: rgb(5, 5, 5) !important; 
       font-size: 14px;
   
+  }
+  .note a {
+    text-decoration: none;
+    color: black !important;
   }

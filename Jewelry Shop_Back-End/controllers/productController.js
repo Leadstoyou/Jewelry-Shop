@@ -142,25 +142,36 @@ const searchProductController = async (req, res) => {
 };
 const viewProductController = async (req, res) => {
   try {
-    const { category,color, material, minPrice, maxPrice, sort } = req.body;
+    console.log(req.body);
+    const { category, color, material, minPrice, maxPrice, sort } = req.body;
 
-    const viewProducts = await productRepository.getAllProducts(category,color, material, minPrice, maxPrice, sort);
+    const viewProducts = await productRepository.getAllProducts(
+      category,
+      color,
+      material,
+      minPrice,
+      maxPrice,
+      sort
+    );
     if (!viewProducts.success) {
-     return res.status(HttpStatusCode.BAD_REQUEST).json({
+      res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: viewProducts.message,
       });
+      return;
     }
 
-    return res.status(HttpStatusCode.OK).json({
+    res.status(HttpStatusCode.OK).json({
       status: "OK",
       message: viewProducts.message,
       data: viewProducts.data,
     });
+    return;
   } catch (exception) {
-    return res
+    res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
       .json({ status: "ERROR", message: exception.message });
+    return;
   }
 };
 

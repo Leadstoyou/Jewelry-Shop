@@ -12,7 +12,7 @@ router.patch("/update/:id", productController.updateProductController);
 
 router.get("/search/:name", productController.searchProductController);
 
-router.get("/view", productController.viewProductController);
+router.post("/view", productController.viewProductController);
 
 router.delete("/delete/:id", productController.deleteProductController);
 

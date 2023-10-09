@@ -43,6 +43,7 @@ const Title = styled.p`
 const Price = styled.p``;
 
 const Product = ({product}) => {
+  
   useEffect(() => {
     Aos.init({ duration: 2000 });
   }, []);
