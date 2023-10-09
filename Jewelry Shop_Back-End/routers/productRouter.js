@@ -12,13 +12,17 @@ router.patch("/update/:id", productController.updateProductController);
 
 router.get("/search/:name", productController.searchProductController);
 
-router.get("/view", checkUser([constants.ADMIN_ROLE_ID,constants.STAFF_ROLE_ID,constants.USER_ROLE_ID]),productController.viewProductController);
+router.post("/view", productController.viewProductController);
 
 router.delete("/delete/:id", productController.deleteProductController);
 
-router.get("/:id", productController.getOneProductController);
-
 router.get("/category/:category", productController.getProductsByCategory);
+
+router.get("/discount",productController.getProductHasDiscount);
+
+router.get("/allDiscount",productController.getAllProductHasDiscount);
+
+router.get("/:id", productController.getOneProductController);
 
 router.use(routeUnknown);
 

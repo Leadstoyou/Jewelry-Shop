@@ -13,7 +13,7 @@ const createProductController = async (req, res) => {
       productColors,
       productMaterials,
       productCategory,
-      productDiscount = 0,
+      productDiscount = [],
       productImage,
     } = req.body;
 
@@ -142,22 +142,36 @@ const searchProductController = async (req, res) => {
 };
 const viewProductController = async (req, res) => {
   try {
-    const viewProducts = await productRepository.getAllProducts();
-    if (!viewProducts) {
+    console.log(req.body);
+    const { category, color, material, minPrice, maxPrice, sort } = req.body;
+
+    const viewProducts = await productRepository.getAllProducts(
+      category,
+      color,
+      material,
+      minPrice,
+      maxPrice,
+      sort
+    );
+    if (!viewProducts.success) {
       res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: viewProducts.message,
       });
+      return;
     }
+
     res.status(HttpStatusCode.OK).json({
       status: "OK",
       message: viewProducts.message,
       data: viewProducts.data,
     });
+    return;
   } catch (exception) {
-    return res
+    res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
       .json({ status: "ERROR", message: exception.message });
+    return;
   }
 };
 
@@ -172,7 +186,7 @@ const deleteProductController = async (req, res) => {
     }
 
     const deleteProduct = await productRepository.deleteProduct(id);
-    if (!deleteProduct) {
+    if (!deleteProduct.success) {
       res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: deleteProduct.message,
@@ -245,6 +259,65 @@ const getProductsByCategory = async (req, res) => {
       .json({ status: "ERROR", message: exception.message });
   }
 };
+
+const getProductHasDiscount = async (req, res) => {
+  try {
+    const { startDate, expiredDate } = req.body;
+    if (!expiredDate || !startDate) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: Exception.INPUT_DATA_ERROR,
+      });
+    }
+
+    const products = await productRepository.getProductHasDiscount(
+      new Date(startDate),
+      new Date(expiredDate)
+    );
+
+    if (!products.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: products.message,
+      });
+    }
+
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: products.message,
+      data: products.data,
+    });
+  } catch (exception) {
+    return res
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .json({ status: "ERROR", message: exception.message });
+  }
+};
+const getAllProductHasDiscount = async (req, res) => {
+  try {
+    const products = await productRepository.getProductHasDiscount(
+      new Date(),
+      new Date(),
+      true
+    );
+
+    if (!products.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: products.message,
+      });
+    }
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: products.message,
+      data: products.data,
+    });
+  } catch (exception) {
+    return res
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .json({ status: "ERROR", message: exception.message });
+  }
+};
 export default {
   createProductController,
   updateProductController,
@@ -253,4 +326,6 @@ export default {
   deleteProductController,
   getOneProductController,
   getProductsByCategory,
+  getProductHasDiscount,
+  getAllProductHasDiscount,
 };

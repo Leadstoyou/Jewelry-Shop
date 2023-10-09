@@ -8,7 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Product from "../collections/Product";
 import Aos from "aos";
 import "aos/dist/aos.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 const Container = styled.div`
    
@@ -95,9 +95,12 @@ const PagingController = styled.div`
   justify-content: center;
   
 `;
-const CollectionsCategory = () => {
+const CollectionsCategory = (props) => {
+  const {products} = props
   const navigate = useNavigate()
+  const [foundProducts,setFoundProducts] = useState();
   useEffect(() => {
+    setFoundProducts(products)
     Aos.init({ duration: 2000 });
   }, []);
   return (
@@ -155,26 +158,10 @@ const CollectionsCategory = () => {
           </ItemOne>
       </SearchController>
       <Controller data-aos="fade-up">
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
+      {foundProducts?.map((product, index) => (
+    <Product product={product} key={index} />
+))}
+
       </Controller>
       <PagingController data-aos="fade-up" >
         <Pagination>

@@ -206,6 +206,7 @@ const userLogoutRepository = async (refreshToken) => {
         message: Exception.CANNOT_FIND_REFRESH_TOKEN_IN_USER,
       };
     }
+
     return {
       success: true,
       message: "Logout successfully!",

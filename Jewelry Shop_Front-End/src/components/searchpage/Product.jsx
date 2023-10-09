@@ -43,10 +43,10 @@ const Title = styled.p`
 const Price = styled.p``;
 
 const Product = ({product}) => {
+  
   useEffect(() => {
     Aos.init({ duration: 2000 });
   }, []);
-  console.log(product);
   return (
     <Container data-aos="fade-up" to={`/product/${product._id}`}>
       <div style={{ overflow: "hidden" }}>

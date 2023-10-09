@@ -11,7 +11,7 @@ async function fetchData() {
         },
       }
     );
-    console.log(response)
+    console.log(response.data.data.length)
 
   } catch (error) {
     console.error('Error fetching data:', error);
