@@ -346,6 +346,11 @@ const ShoppingCart = () => {
     );
     setProducts(updatedProducts);
   };
+
+  const handleFormSubmit = (e) => {
+    // e.preventDefault();
+    console.log(e);
+  }
   const total = products.reduce(
     (acc, product) => acc + product.price * product.selectedQuantity,
     0
@@ -468,10 +473,11 @@ const ShoppingCart = () => {
               I agree to the Terms of Service
             </Label>
           </CheckboxContainer>
-          <Button onClick={handlePay} disabled={!isAgreedToTerms}>
+          <form id="createOrder" action="http://localhost:9999/api/v1/payment/create_payment_url" method="POST" onSubmit={handleFormSubmit}>
+          <Button onClick={handlePay} disabled={!isAgreedToTerms} type="submit">
             THANH TOÁN
           </Button>
-
+            </form>
           <ImageUnderButton
             src="https://theme.hstatic.net/200000103143/1000942575/14/trustbadge.jpg?v=2700"
             alt="Your Image"
