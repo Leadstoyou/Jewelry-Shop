@@ -1,6 +1,6 @@
-import HttpStatusCode from "../constant/HttpStatusCode";
-import {cartRepository} from "../repositories/indexRepository"
-import {orderRepository} from "../repositories/indexRepository"
+import HttpStatusCode from "../constant/HttpStatusCode.js";
+import {cartRepository} from "../repositories/indexRepository.js"
+import {orderRepository} from "../repositories/indexRepository.js"
 const createOrder = async (req, res) => {
     try {
       const cartToken = req.params.cartToken;

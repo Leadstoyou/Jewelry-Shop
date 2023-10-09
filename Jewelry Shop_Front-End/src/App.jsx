@@ -1,4 +1,4 @@
-import './App.css';
+import "./App.css";
 // import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Homepage from "./pages/Homepage";
@@ -30,6 +30,7 @@ function App() {
      </Routes>
      </BrowserRouter>
   </Container>;
+
 }
 
 export default App;

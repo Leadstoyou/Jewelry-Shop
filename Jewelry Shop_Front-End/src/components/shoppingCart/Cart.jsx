@@ -320,7 +320,6 @@ const ShoppingCart = () => {
       priceLarge: 30,
       productCode: "P789", // Product CODE added
     },
-    // Add more products here...
   ]);
 
   const handlePay = () => {

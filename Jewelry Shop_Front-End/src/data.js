@@ -24,23 +24,23 @@ export const categoryElement = [
 export const categoryElementEvent = [
   {
     id: 1,
-    category_name: "CUNG HOÀNG ĐẠO",
+    category_name: "SẢN PHẨM BÁN CHẠY",
   },
   {
     id: 2,
-    category_name: "SINH NHẬT THÁNG 8",
+    category_name: "CHARM DƯỚI 2,000,000",
   },
   {
     id: 3,
-    category_name: "CHARM DƯỚI 2,000,000",
+    category_name: "VÒNG TAY DƯỚI 2,000,000",
   },
   {
     id: 4,
-    category_name: "NHẪN CHỈ TỪ 2,000,000",
+    category_name: "HOA TAI",
   },
   {
     id: 5,
-    category_name: "CHARM DƯỚI 2,000,000",
+    category_name: "DÂY CHUYỀN DƯỚI 2,000,000",
   },
   {
     id: 6,
