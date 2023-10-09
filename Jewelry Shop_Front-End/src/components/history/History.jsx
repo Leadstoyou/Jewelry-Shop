@@ -260,12 +260,8 @@ const HistoryPage = () => {
             </UpdateProfileButton>
           </div>
           
-          <LinkToCart to="/cart">Go to cart >></LinkToCart>
-        
-        
-          
-         
-
+          <LinkToCart to="/cart">Go to cart &gt;&gt;</LinkToCart>
+      
 
         </LeftPanel>
         <RightPanel>

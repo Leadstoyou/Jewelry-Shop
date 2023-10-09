@@ -4,7 +4,7 @@ async function fetchData() {
   try {
     const response = await axios.post(
       "http://localhost:9999/api/v1/products/view",
-      { category: "Dây Chuyền" },
+      { category: "Hoa Tai" },
       {
         headers: {
           "Content-Type": "application/json",

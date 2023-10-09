@@ -95,4 +95,7 @@ const createCart = async (cartToken) => {
       throw error;
     }
   };
+
+
+  
 export default {updateTotalPrice, updateProductInCart, createCart, removePurchasedProducts, getCartByToken, addProductToCart, removeFromCart};
