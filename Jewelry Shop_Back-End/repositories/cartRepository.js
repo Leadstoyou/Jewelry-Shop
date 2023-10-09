@@ -2,44 +2,73 @@ import { Cart } from "../models/indexModel.js";
 import mongoose from "mongoose";
 
 
-const getCartByUserId = async (userId) => {
-    const cart = await Cart.findOne({ user_id: userId });
+const getCartByToken = async (cartToken) => {
+  try {
+    const cart = await Cart.findOne({ cart_token: cartToken });
     return cart;
-  };
-
-  const addToCart = async (cartToken, user_id, product_id, size, color, material, quantity, price) => {
+  } catch (error) {
+    throw error;
+  }
+};
+const createCart = async (cartToken) => {
+  try {
+    const newCart = new Cart({ cart_token: cartToken });
+    await newCart.save();
+    return newCart;
+  } catch (error) {
+    throw error;
+  }
+};
+  const addProductToCart = async (cartId, productId, quantity, size, color, material) => {
     try {
-      const cart = await Cart.findOneAndUpdate(
-        { cartToken },
+      await Cart.findByIdAndUpdate(
+        cartId,
         {
           $push: {
-            productList: {
-              product_id,
+            products: {
+              productId,
+              quantity,
               size,
               color,
               material,
-              quantity,
-              price,
             },
           },
         },
-        { new: true, upsert: true }
-      );
-  
-      let total = 0;
-      cart.productList.forEach((product) => {
-        total += product.price * product.quantity;
-      });
-  
-      await Cart.findOneAndUpdate(
-        { cartToken },
-        { $set: { total } },
         { new: true }
       );
-  
-      return cart;
     } catch (error) {
-      throw new Error(error.message);
+      throw error;
+    }
+  };
+
+  const updateProductInCart = async (cartId, productId, quantity, size, color, material) => {
+    try {
+      await Cart.findOneAndUpdate(
+        { _id: cartId, 'products.productId': productId },
+        {
+          $set: {
+            'products.$.quantity': quantity,
+            'products.$.size': size,
+            'products.$.color': color,
+            'products.$.material': material,
+          },
+        }
+      );
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const updateTotalPrice = async (cartToken) => {
+    try {
+      const cart = await Cart.findOne({ cart_token: cartToken });
+      const totalPrice = cart.products.reduce((acc, product) => {
+        return acc + product.quantity * product.price;
+      }, 0);
+  
+      await Cart.findOneAndUpdate({ cart_token: cartToken }, { total_price: totalPrice });
+    } catch (error) {
+      throw error;
     }
   };
 
@@ -66,4 +95,4 @@ const getCartByUserId = async (userId) => {
       throw error;
     }
   };
-export default {removePurchasedProducts, getCartByUserId, addToCart, removeFromCart};
+export default {updateTotalPrice, updateProductInCart, createCart, removePurchasedProducts, getCartByToken, addProductToCart, removeFromCart};
