@@ -154,10 +154,7 @@ const viewProductController = async (req, res) => {
       sort
     );
     if (!viewProducts.success) {
-      res.status(HttpStatusCode.BAD_REQUEST).json({
-        status: "ERROR",
-        message: viewProducts.message,
-      });
+      res.status(HttpStatusCode.NO_CONTENT).end();
       return;
     }
 

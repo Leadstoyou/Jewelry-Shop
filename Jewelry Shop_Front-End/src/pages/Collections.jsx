@@ -23,35 +23,45 @@ const Index = styled.div``;
 const Collections = () => {
   const { category } = useParams();
   const [foundProducts, setFoundProducts] = useState();
+  const [colorsArray, setColorsArray] = useState();
+  const [materialArray, setMaterialArray] = useState();
+
   const [loading, setLoading] = useState(false);
+  async function fetchData(color, material,price,sort) {
+    try {
+      const categories = ["Dây Chuyền", "Vòng", "Hoa Tai", "Charm", "Nhẫn"];
+      const response = await axios.post(
+        "http://localhost:9999/api/v1/products/view",
+        { category: category, color: color, material: material,minPrice:price?.minPrice, maxPrice:price?.maxPrice,sort:sort},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = response.data?.data;
+      console.log("data",data)
+      if (!color && !material && !price && !sort) {
+        const extractUnique = (property) => [
+          ...new Set(data.flatMap((value) => value[property])),
+        ];
+        setMaterialArray(extractUnique("productMaterials"));
+        setColorsArray(extractUnique("productColors"));
+      }
+      setFoundProducts(data);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.error("Error fetching data:", error);
+    }
+  }
   useEffect(() => {
     setLoading(true);
-
-    async function fetchData() {
-      try {
-        const categories = ["Dây Chuyền", "Vòng", "Hoa Tai", "Charm","Nhẫn"];
-        
-        const response = await axios.post(
-          'http://localhost:9999/api/v1/products/view',
-          { category: category },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-        const data = response.data.data;
-        setFoundProducts(data);
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-        console.error('Error fetching data:', error);
-      }
-    }
-
     fetchData();
   }, []);
-
+  const handleDataFromChild = (color, material,price,sort) => {
+    fetchData(color, material,price,sort);
+  };
   return (
     <>
       {loading ? (
@@ -71,7 +81,12 @@ const Collections = () => {
           <Navbar />
 
           <CollectionsHeader category={category} products={foundProducts} />
-          <CollectionsCategory products={foundProducts} />
+          <CollectionsCategory
+            products={foundProducts}
+            colorsArray={colorsArray}
+            materialArray={materialArray}
+            fetchData={handleDataFromChild}
+          />
           <Footer />
         </Container>
       )}
