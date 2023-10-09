@@ -2,22 +2,27 @@ export const categoryElement = [
   {
     id: 1,
     category_name: "CHARM",
+    sub_name:"Charm"
   },
   {
     id: 2,
     category_name: "VÒNG TAY",
+    sub_name:"Vòng tay"
   },
   {
     id: 3,
     category_name: "NHẪN",
+    sub_name:"Nhẫn"
   },
   {
     id: 4,
     category_name: "HOA TAI",
+    sub_name:"Hoa Tai"
   },
   {
     id: 5,
     category_name: "DÂY CHUYỀN",
+    sub_name:"Dây Chuyền"
   }
 ];
 

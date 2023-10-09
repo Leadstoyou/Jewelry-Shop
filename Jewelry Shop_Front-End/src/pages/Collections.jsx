@@ -29,9 +29,11 @@ const Collections = () => {
 
     async function fetchData() {
       try {
+        const categories = ["Dây Chuyền", "Vòng", "Hoa Tai", "Charm","Nhẫn"];
+        
         const response = await axios.post(
           'http://localhost:9999/api/v1/products/view',
-          { category: 'Charm' },
+          { category: category },
           {
             headers: {
               'Content-Type': 'application/json',
