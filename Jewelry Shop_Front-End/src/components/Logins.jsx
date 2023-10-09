@@ -84,7 +84,7 @@ const Logins = () => {
         </div>
         <div className="note">
           <span>
-            <Link to="/">Quên mật khẩu</Link>
+            <Link to="/forgot">Quên mật khẩu</Link>
           </span>
           ?
           <span>
