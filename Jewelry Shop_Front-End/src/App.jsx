@@ -12,6 +12,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Profile from './pages/Profile'
 import Forgot from './pages/ForgotPassword'
+import HistoryPage from "./pages/History";
 const Container = styled.div``
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/forgot" element={<Forgot/>} />
+      <Route path="/history" element={<HistoryPage/>} />
      </Routes>
      </BrowserRouter>
   </Container>;
