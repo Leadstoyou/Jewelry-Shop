@@ -17,7 +17,8 @@ const viewCart = async (req, res) => {
   const addToCart = async (req, res) => {
     try {
       const cartToken = req.params.cart_token;
-      const productId = req.body.productId;
+      const userId = req.body.user_id;
+      const productId = req.body.product_id;
       const quantity = req.body.quantity;
       const size = req.body.size;
       const color = req.body.color;
@@ -33,7 +34,7 @@ const viewCart = async (req, res) => {
   
       if (!cart) {
         // Nếu giỏ hàng không tồn tại, tạo mới giỏ hàng và thêm sản phẩm vào
-        const newCart = await cartRepository.createCart(cartToken);
+        const newCart = await cartRepository.createCart(cartToken, userId);
         await cartRepository.addProductToCart(newCart._id, productId, quantity, size, color, material);
       } else {
         // Nếu giỏ hàng đã tồn tại, kiểm tra xem sản phẩm đã có trong giỏ hàng hay chưa

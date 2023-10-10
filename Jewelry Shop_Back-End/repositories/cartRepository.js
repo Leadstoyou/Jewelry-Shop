@@ -10,7 +10,7 @@ const getCartByToken = async (cartToken) => {
     throw error;
   }
 };
-const createCart = async () => {
+const createCart = async (cartToken, userId) => {
   try {
     const cartData = {
       user_id: userId,
