@@ -3,7 +3,7 @@ import {cartRepository} from "../repositories/indexRepository.js";
 import {productRepository} from "../repositories/indexRepository.js"
 const viewCart = async (req, res) => {
     try {
-      const cartToken = req.params.cartToken;
+      const cartToken = req.params.cart_token;
       const cart = await cartRepository.getCartByToken(cartToken);
       if (!cart) {
         return res.status(HttpStatusCode.NOT_FOUND).json({ message: 'Cart not found' });
@@ -16,7 +16,7 @@ const viewCart = async (req, res) => {
   };
   const addToCart = async (req, res) => {
     try {
-      const cartToken = req.params.cartToken;
+      const cartToken = req.params.cart_token;
       const productId = req.body.productId;
       const quantity = req.body.quantity;
       const size = req.body.size;
