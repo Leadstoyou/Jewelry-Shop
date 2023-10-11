@@ -13,7 +13,7 @@ import swaggerSpec from "./middleware/swaggerMiddleware.js";
 import cors from "cors";
 import  paymentRouter  from "./services/vnpayService.js";
 dotenv.config();
-
+import routeUnknown from "./middleware/routeMiddleware.js";
 const port = process.env.PORT || 4200;
 const app = express();
 const v1Router = express.Router();
@@ -28,7 +28,7 @@ v1Router.use("/products", productRouter);
 v1Router.use("/cart", cartRouter);
 v1Router.use("/order", orderRouter);
 v1Router.use("/payment", paymentRouter);
-
+v1Router.use(routeUnknown);
 app.use("/api/v1", v1Router);
 
 app.get("/", (req, res) => {

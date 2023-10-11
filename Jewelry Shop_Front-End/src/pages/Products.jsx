@@ -31,7 +31,7 @@ const Products = () => {
     async function fetchData() {
       try {
         const response = await axios.get(
-          `http://localhost:9999/api/v1/products/${id}`
+          `http://localhost:9999/api/v1/products/get/${id}`
         );
         const data = response.data.data;
         setProduct(data);

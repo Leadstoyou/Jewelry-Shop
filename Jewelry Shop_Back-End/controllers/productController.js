@@ -51,10 +51,8 @@ const createProductController = async (req, res) => {
       productImage
     );
     if (!newProduct.success) {
-      res.status(HttpStatusCode.BAD_REQUEST).json({
-        status: "ERROR",
-        message: newProduct.message,
-      });
+      res.status(HttpStatusCode.NO_CONTENT).end();
+      return;
     }
     res.status(HttpStatusCode.OK).json({
       status: "OK",
@@ -100,10 +98,8 @@ const updateProductController = async (req, res) => {
       isDeleted
     );
     if (!newProduct.success) {
-      res.status(HttpStatusCode.BAD_REQUEST).json({
-        status: "ERROR",
-        message: newProduct.message,
-      });
+      res.status(HttpStatusCode.NO_CONTENT).end();
+      return;
     }
     res.status(HttpStatusCode.OK).json({
       status: "OK",
@@ -119,14 +115,18 @@ const updateProductController = async (req, res) => {
 const searchProductController = async (req, res) => {
   try {
     const name = req.params.name;
-
-    const foundProduct = await productRepository.searchProductsByName(name);
-
-    if (foundProduct.length === 0) {
+    if (!name || name.trim().length === 0) {
       res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
-        message: foundProduct.message,
+        message: Exception.NAME_NOT_FOUND,
       });
+      return;
+    }
+    const foundProduct = await productRepository.searchProductsByName(name);
+
+    if (!foundProduct.success) {
+      res.status(HttpStatusCode.NO_CONTENT).end();
+      return;
     }
 
     res.status(HttpStatusCode.OK).json({
@@ -184,11 +184,10 @@ const deleteProductController = async (req, res) => {
 
     const deleteProduct = await productRepository.deleteProduct(id);
     if (!deleteProduct.success) {
-      res.status(HttpStatusCode.BAD_REQUEST).json({
-        status: "ERROR",
-        message: deleteProduct.message,
-      });
+      res.status(HttpStatusCode.NO_CONTENT).end();
+      return;
     }
+
     res.status(HttpStatusCode.OK).json({
       status: "OK",
       message: deleteProduct.message,
