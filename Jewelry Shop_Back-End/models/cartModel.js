@@ -5,10 +5,10 @@ export default mongoose.model(
     "Cart",
     new Schema(
         {
-            cartToken: {
-                type: mongoose.Schema.Types.ObjectId,
-                required: true
-              },
+          cart_token: {
+            type: String,
+            required: true,
+          },
               user_id: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'User'

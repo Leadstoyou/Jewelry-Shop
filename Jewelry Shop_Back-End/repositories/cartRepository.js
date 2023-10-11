@@ -1,21 +1,28 @@
 import { Cart } from "../models/indexModel.js";
 import mongoose from "mongoose";
-
+import Jwt from "jsonwebtoken";
 
 const getCartByToken = async (cartToken) => {
   try {
-    const cart = await Cart.findOne({ cart_token: cartToken });
+    const cart = await Cart.findOne({ cart_token: cartToken }).exec();
     return cart;
   } catch (error) {
     throw error;
   }
 };
-const createCart = async (cartToken) => {
+const createCart = async (cartToken, userId) => {
   try {
+    const cartData = {
+      user_id: userId,
+    };
+
+    const cartToken = Jwt.sign(cartData, process.env.ACCESS_TOKEN);
+    
     const newCart = new Cart({ cart_token: cartToken });
     await newCart.save();
     return newCart;
   } catch (error) {
+    console.error(error);
     throw error;
   }
 };
