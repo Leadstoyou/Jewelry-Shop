@@ -4,6 +4,11 @@ import Button from "react-bootstrap/Button";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import styled from "styled-components";
 import Menu from "@mui/icons-material/Menu";
+import ManageProduct from '../components/dashboard/product/ManageProduct.jsx'
+import ManageStaff from '../components/dashboard/ManageStaff.jsx'
+
+
+  
 const Container = styled.div`
   height: 1000px;
 `;
@@ -43,11 +48,23 @@ const DashboardItem = styled.div`
   justify-content: start;
   flex-direction: column;
 `;
+
 function Example() {
   const [show, setShow] = useState(false);
+  const [selectedComponent, setSelectedComponent] = useState(null);
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setShow(false);
+    setSelectedComponent(null);
+  };
+
   const handleShow = () => setShow(true);
+
+  const renderComponent = (component) => {
+    handleClose()
+    setSelectedComponent(component);
+
+  };
 
   return (
     <Container>
@@ -66,16 +83,18 @@ function Example() {
         </Offcanvas.Header>
         <Offcanvas.Body>
           <DashboardItem>
-            <ItemIn onClick={() => setBody("ManageProduct")}>
+            <ItemIn onClick={() => renderComponent(<ManageProduct />)}>
               Manage Product
             </ItemIn>
-            <ItemIn onClick={() => setBody("ManageStaff")}>Manage Staff</ItemIn>
+            <ItemIn onClick={() => renderComponent(<ManageStaff />)}>
+              Manage Staff
+            </ItemIn>
           </DashboardItem>
         </Offcanvas.Body>
       </Offcanvas>
       <InsideDashboard>
-        <Title>Dashboard</Title>
-        {}
+        {!selectedComponent && <h1 style={{ padding: "1%" }}>Dashboard</h1>}
+        {selectedComponent}
       </InsideDashboard>
     </Container>
   );

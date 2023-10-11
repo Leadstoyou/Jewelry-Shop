@@ -272,7 +272,7 @@ const ProductBody = (props) => {
           </RightTwo>
           <hr />
           <RightThree>
-            <RButtonOne onClick={()=>dispatch(addToCard({product}))}>Thêm vào giỏ</RButtonOne>
+            <RButtonOne onClick={()=>dispatch(addToCard(product))}>Thêm vào giỏ</RButtonOne>
             <RButtonTwo onClick={handleFavorite}>
               {favorite ? (
                 <>

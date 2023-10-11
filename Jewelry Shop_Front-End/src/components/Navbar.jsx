@@ -125,7 +125,7 @@ const Navbar = () => {
       if (searchQuery.trim() === "") {
         notify();
       } else {
-        navigate(`/search/${searchQuery}`);
+        navigate(`/search/${searchQuery.trim()}`);
       }
     }
   };
