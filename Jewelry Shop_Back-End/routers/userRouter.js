@@ -1,7 +1,6 @@
 import express from "express";
 import { body } from "express-validator";
 import { userController } from "../controllers/indexController.js";
-import routeUnknown from "../middleware/routeMiddleware.js";
 import {checkToken,checkUser} from "../middleware/authMiddleware.js";
 import constants from "../constant/constants.js";
 
@@ -35,6 +34,5 @@ router.put("/updateStatus",checkUser([constants.ADMIN_ROLE_ID]), userController.
 
 router.put("/updateBlock",checkUser([constants.ADMIN_ROLE_ID]), userController.userUpdateBlockController);
 
-router.use(routeUnknown);
 
 export default router;

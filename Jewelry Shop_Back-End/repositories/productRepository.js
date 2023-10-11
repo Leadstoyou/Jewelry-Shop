@@ -70,7 +70,8 @@ const searchProductsByName = async (searchTerm) => {
     };
 
     const searchResult = await Product.find(query).exec();
-    if (!searchResult) {
+    console.log(searchResult)
+    if (!searchResult || searchResult.length === 0) {
       return {
         success: false,
         message: Exception.PRODUCT_NOT_FOUND,
