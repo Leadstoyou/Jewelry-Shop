@@ -29,7 +29,7 @@ const Logins = () => {
     if (validate()) {
       try {
         
-        const response = await axios.get("https://restcountries.com/v3.1/all", {
+        const response = await axios.post("localhost:9999/api/v1/users/login", {
           email: email,
           password: password,
         });
