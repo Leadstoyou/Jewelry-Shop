@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/create", productController.createProductController);
 router.patch("/update/:id", productController.updateProductController);
 router.get("/search/:name", productController.searchProductController);
-router.post("/view", productController.viewProductController);
+router.post("/view",checkUser([constants.USER_ROLE_ID]), productController.viewProductController);
 router.delete("/delete/:id", productController.deleteProductController);
 router.get("/category/:category", productController.getProductsByCategory);
 router.get("/discount", productController.getProductHasDiscount);

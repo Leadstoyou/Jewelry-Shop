@@ -142,7 +142,6 @@ const searchProductController = async (req, res) => {
 };
 const viewProductController = async (req, res) => {
   try {
-    console.log(req.body);
     const { category, color, material, minPrice, maxPrice, sort } = req.body;
 
     const viewProducts = await productRepository.getAllProducts(

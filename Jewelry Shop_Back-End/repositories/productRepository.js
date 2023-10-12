@@ -22,7 +22,6 @@ const createNewProduct = async (
       productImage,
       constants.CLOUDINARY_PRODUCT_IMG
     );
-      console.log(productDiscount)
     const newProduct = await Product.create({
       productName,
       productDescription,
@@ -70,7 +69,6 @@ const searchProductsByName = async (searchTerm) => {
     };
 
     const searchResult = await Product.find(query).exec();
-    console.log(searchResult)
     if (!searchResult || searchResult.length === 0) {
       return {
         success: false,
@@ -106,7 +104,6 @@ const getAllProducts = async (category,color,material,minPrice,maxPrice,sort) =>
     if (category) {
       query.productCategory = category;
     }
-    console.log(sort)
     const getAllProducts = await Product.find(query).sort(sort).exec();
 
     if (!getAllProducts || getAllProducts.length === 0) {
@@ -307,7 +304,6 @@ const getProductHasDiscount = async (startDate,expiredDate,getAllDiscounts = fal
       data: products,
     };
   } catch (error) {
-    console.log("lmeo")
     console.error("Error getting products with discount:", error.message);
     throw error;
   }
