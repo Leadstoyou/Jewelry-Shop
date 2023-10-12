@@ -49,7 +49,7 @@ const DashboardItem = styled.div`
   flex-direction: column;
 `;
 
-function Example() {
+function Dashboard() {
   const [show, setShow] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState(null);
 
@@ -100,4 +100,4 @@ function Example() {
   );
 }
 
-export default Example;
+export default Dashboard;

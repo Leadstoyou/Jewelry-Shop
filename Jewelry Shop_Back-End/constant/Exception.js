@@ -20,6 +20,7 @@ export default class Exception extends Error{
     static INVALID_OBJECT_ID = "Invalid object ID"
     static INVALID_INPUT_TYPE = "Invalid input type value"
     static ID_NOT_FOUND = "ID is not found"
+    static NAME_NOT_FOUND = "Name is required for the search."
     static REFRESH_TOKEN_EXPIRED = "Refresh token was expired"
     static CATEGORY_NOT_FOUND = "Category is not found"
     constructor(message,validationErrors ={}) {

@@ -22,7 +22,7 @@ const createNewProduct = async (
       productImage,
       constants.CLOUDINARY_PRODUCT_IMG
     );
-
+      console.log(productDiscount)
     const newProduct = await Product.create({
       productName,
       productDescription,
@@ -70,7 +70,8 @@ const searchProductsByName = async (searchTerm) => {
     };
 
     const searchResult = await Product.find(query).exec();
-    if (!searchResult) {
+    console.log(searchResult)
+    if (!searchResult || searchResult.length === 0) {
       return {
         success: false,
         message: Exception.PRODUCT_NOT_FOUND,
@@ -86,15 +87,35 @@ const searchProductsByName = async (searchTerm) => {
   }
 };
 
-const getAllProducts = async () => {
+const getAllProducts = async (category,color,material,minPrice,maxPrice,sort) => {
   try {
-    const getAllProducts = await Product.find({}).exec();
-    if (!getAllProducts) {
+    const query = {};
+
+    if (color && color.length > 0) {
+      query.productColors = { $in: color };
+    }
+
+    if (material && material.length > 0) {
+      query.productMaterials = { $in: material };
+    }
+
+    if (minPrice !== undefined && maxPrice !== undefined) {
+      query.productPrice = { $gte: minPrice, $lt: maxPrice };
+    }
+
+    if (category) {
+      query.productCategory = category;
+    }
+    console.log(sort)
+    const getAllProducts = await Product.find(query).sort(sort).exec();
+
+    if (!getAllProducts || getAllProducts.length === 0) {
       return {
         success: false,
         message: Exception.PRODUCT_NOT_FOUND,
       };
     }
+
     return {
       success: true,
       message: "Get all product successfully!",
@@ -245,6 +266,53 @@ const getProductByCategories = async (categories) => {
   }
 };
 
+const getProductHasDiscount = async (startDate,expiredDate,getAllDiscounts = false) => {
+  try {
+    if (isNaN(startDate.getTime()) || isNaN(expiredDate.getTime())) {
+      return {
+        success: false,
+        message: Exception.INVALID_INPUT_TYPE,
+      };
+    }
+    let products;
+    if(!getAllDiscounts){
+       products = await Product.find({
+        "productDiscount.isActive": true,
+        $or: [
+          {
+            "productDiscount.discountStartDate": { $lte: startDate },
+            "productDiscount.discountExpiredDate": { $gte: startDate },
+          },
+          {
+            "productDiscount.discountStartDate": { $lte: expiredDate },
+            "productDiscount.discountExpiredDate": { $gte: expiredDate },
+          },
+        ],
+      });
+    } else {
+       products = await Product.find({
+        "productDiscount.isActive": true,
+      });
+    }
+
+    if (products.length === 0 ) {
+      return {
+        success: false,
+        message: Exception.PRODUCT_NOT_FOUND,
+      };
+    }
+    return {
+      success: true,
+      message: constants.PRODUCT_RETRIVED,
+      data: products,
+    };
+  } catch (error) {
+    console.log("lmeo")
+    console.error("Error getting products with discount:", error.message);
+    throw error;
+  }
+}
+
 export default {
   createNewProduct,
   searchProductsByName,
@@ -253,4 +321,5 @@ export default {
   deleteProduct,
   getProductById,
   getProductByCategories,
+  getProductHasDiscount
 };

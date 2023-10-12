@@ -3,6 +3,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "../style/Register.scss";
 
 
 import {
@@ -15,7 +16,6 @@ import {
   Button,
   Box,
 } from "@mui/material";
-import "../style/Register.scss";
 const Register = () => {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -65,7 +65,7 @@ const Register = () => {
   };
 
   const validate = () => {
-    const passwordRegex = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
     if (
       formData.fullName === "" ||
       formData.age === "" || 
@@ -90,7 +90,7 @@ const Register = () => {
       !formData.password.match(passwordRegex)
     ) {
       toast.error(
-        "Password must contain at least one number and one letter."
+        "Password must contain at least one lowercase letter, one uppercase letter, one number, and be at least 8 characters long."
       );
       return false;
     }
@@ -118,20 +118,21 @@ const Register = () => {
           onChange={handleChange}
           margin="normal"
         />
-        <Box display="flex" alignItems="center" justifyContent="start">
-          <Typography variant="subtitle1" gutterBottom>
-            Giới tính:
-          </Typography>
-          <RadioGroup
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            row
-          >
-            <FormControlLabel value="nam" control={<Radio />} label="Nam" />
-            <FormControlLabel value="nu" control={<Radio />} label="Nữ" />
-          </RadioGroup>
-        </Box>
+       <Box display="flex" alignItems="center" justifyContent="start" flexDirection="row">
+  <Typography variant="subtitle1" gutterBottom>
+    Giới tính:
+  </Typography>
+  <RadioGroup
+    name="gender"
+    value={formData.gender}
+    onChange={handleChange}
+    row
+  >
+    <FormControlLabel value="nam" control={<Radio />} label="Nam" />
+    <FormControlLabel value="nu" control={<Radio />} label="Nữ" />
+  </RadioGroup>
+</Box>
+
         <TextField
           fullWidth
           label="Số điện thoại"
@@ -191,7 +192,7 @@ const Register = () => {
         <Button type="submit" variant="contained" color="primary" fullWidth>
           Đăng Ký
         </Button>
-      <ToastContainer position="top-right" autoClose="1000" />
+      {/* <ToastContainer position="top-right" autoClose="1000" /> */}
 
       </form>
     </Container>
