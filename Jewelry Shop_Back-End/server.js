@@ -19,7 +19,13 @@ const app = express();
 const v1Router = express.Router();
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use(cors());
+const corsOptions = {
+  origin: process.env.FRONT_END_ORIGIN_URL,
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
 
 v1Router.use(cookieParser());
 v1Router.use(express.json());
