@@ -26,14 +26,13 @@ const Collections = () => {
   const [materialArray, setMaterialArray] = useState();
 
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(true);
-     CollectionAPI(category, null, null, null, null, setColorsArray, setMaterialArray, setFoundProducts, setLoading,navigate);
+     CollectionAPI(category, null, null, null, null, setColorsArray, setMaterialArray, setFoundProducts, setLoading);
   }, []);
   const handleDataFromChild = (color, material, price, sort) => {
-    CollectionAPI(category, color, material, price, sort, setColorsArray, setMaterialArray, setFoundProducts, setLoading,navigate);
+    CollectionAPI(category, color, material, price, sort, setColorsArray, setMaterialArray, setFoundProducts, setLoading);
   };
   return (
     <>
