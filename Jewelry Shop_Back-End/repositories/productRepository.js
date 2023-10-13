@@ -85,10 +85,9 @@ const searchProductsByName = async (searchTerm) => {
   }
 };
 
-const getAllProducts = async (category,color,material,minPrice,maxPrice,sort) => {
+const getAllProducts = async (category,color,material,minPrice,maxPrice,sort,page = 1,limit = Number.MAX_SAFE_INTEGER) => {
   try {
     const query = {};
-
     if (color && color.length > 0) {
       query.productColors = { $in: color };
     }
@@ -104,7 +103,29 @@ const getAllProducts = async (category,color,material,minPrice,maxPrice,sort) =>
     if (category) {
       query.productCategory = category;
     }
-    const getAllProducts = await Product.find(query).sort(sort).exec();
+    page = parseInt(page);
+    limit = parseInt(limit);
+
+    if (isNaN(page) || page < 1) {
+      return {
+        success: false,
+        message: "Invalid page value. Page must be a positive integer.",
+      };
+    }
+
+    if (isNaN(limit) || limit < 1) {
+      return {
+        success: false,
+        message: "Invalid limit value. Limit must be a positive integer.",
+      };
+    }
+
+    let skip;
+    if(page && limit) {
+      skip = (page - 1) * limit;
+    }
+    const getAllProducts = await Product.find(query).sort(sort).skip(skip).limit(limit).exec();
+    const totalPages =  Math.ceil( await Product.find(query).countDocuments().exec() / limit);
 
     if (!getAllProducts || getAllProducts.length === 0) {
       return {
@@ -112,11 +133,13 @@ const getAllProducts = async (category,color,material,minPrice,maxPrice,sort) =>
         message: Exception.PRODUCT_NOT_FOUND,
       };
     }
-
     return {
       success: true,
       message: "Get all product successfully!",
-      data: getAllProducts,
+      data: {
+        products: getAllProducts,
+        totalPages: totalPages,
+      },
     };
   } catch (exception) {
     throw new Exception(exception.message);
