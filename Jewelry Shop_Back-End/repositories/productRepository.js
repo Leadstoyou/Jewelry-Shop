@@ -85,10 +85,10 @@ const searchProductsByName = async (searchTerm) => {
   }
 };
 
-const getAllProducts = async (category,color,material,minPrice,maxPrice,sort) => {
+const getAllProducts = async (category,color,material,minPrice,maxPrice,sort,page,limit) => {
   try {
     const query = {};
-
+    console.log(category,color,material,minPrice,maxPrice,sort,page,limit)
     if (color && color.length > 0) {
       query.productColors = { $in: color };
     }
@@ -104,8 +104,30 @@ const getAllProducts = async (category,color,material,minPrice,maxPrice,sort) =>
     if (category) {
       query.productCategory = category;
     }
-    const getAllProducts = await Product.find(query).sort(sort).exec();
+    page = parseInt(page);
+    limit = parseInt(limit);
 
+    if (isNaN(page) || page < 1) {
+      return {
+        success: false,
+        message: "Invalid page value. Page must be a positive integer.",
+      };
+    }
+
+    if (isNaN(limit) || limit < 1) {
+      return {
+        success: false,
+        message: "Invalid limit value. Limit must be a positive integer.",
+      };
+    }
+
+    const skip = (page - 1) * limit;
+    let getAllProducts;
+    if(page && limit) {
+       getAllProducts = await Product.find(query).sort(sort).skip(skip).limit(limit).exec();
+    } else {
+      getAllProducts = await Product.find(query).sort(sort).exec();
+    }
     if (!getAllProducts || getAllProducts.length === 0) {
       return {
         success: false,
