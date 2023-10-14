@@ -29,10 +29,17 @@ const Logins = () => {
     if (validate()) {
       try {
         
-        const response = await axios.post("http://localhost:9999/api/v1/users/login", {
-          userEmail: email,
-          userPassword: password,
-        });
+        const response = await axios.post(
+          "http://localhost:9999/api/v1/users/login",
+          {
+            userEmail: email,
+            userPassword: password,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+          console.log(response)
 
         if (response.status === 200) {
           console.log("Login successful");

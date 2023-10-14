@@ -1,9 +1,6 @@
-import styled from "styled-components";
-import pImage from "../../assets/productInCollection.jpg";
-import Aos from "aos";
 import "aos/dist/aos.css";
-import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import styled from "styled-components";
 const Container = styled.div`
   margin: 1px;
   width: 100%;
@@ -79,14 +76,14 @@ const ProductTitle = styled.div`
 const Ptitle = styled.p``;
 const Pprice = styled.p``;
 
-const All = styled(Link)`
+const All = styled.div`
   z-index: 1;
   cursor: pointer;
 `;
 
 const Product = ({ product }) => {
   return (
-<Link to={`/product/${product._id}`}>
+    <Link to={`/product/${product._id}`}>
       <Container data-aos="fade-up">
         <Overlay></Overlay>
         <Button>Mua ngay</Button>
