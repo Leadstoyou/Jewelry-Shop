@@ -7,12 +7,13 @@ import connect from "./database/database.js";
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from "./middleware/swaggerMiddleware.js";
 import cookieParser from "cookie-parser";
+import cors from "cors"
 
 const port = process.env.PORT;
 const app = express();
 const v1Router = express.Router(); 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
+app.use(cors)                                                                                                      
 v1Router.use(cookieParser());  
 v1Router.use(express.json());
 v1Router.use("/users", userRouter);
@@ -25,6 +26,8 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
+
+
 
 app.use('/api/v1', v1Router);
 

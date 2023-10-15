@@ -283,7 +283,7 @@ const verifyEmailRepository = async (userVerifyResetToken) => {
     }
 
     existingUser.isActive = true;
-    existingUser.userPasswordChangedAt = Date.now();
+    existingUser.userVerifyAt = Date.now();
     existingUser.userVerifyResetToken = undefined;
     existingUser.userVerifyResetExpires = undefined;
     await existingUser.save();
