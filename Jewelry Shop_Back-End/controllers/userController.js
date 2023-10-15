@@ -70,6 +70,7 @@ const userLoginController = async (req, res) => {
       userEmail,
       userPassword,
     });
+
     if (!loginUser.success) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
@@ -78,16 +79,16 @@ const userLoginController = async (req, res) => {
     }
     res.cookie("accessToken", loginUser.data.accessToken, {
       maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
+      httpOnly: false,
       secure: true,
-      sameSite: "Strict",
+      sameSite: "None",
     });
 
     res.cookie("refreshToken", loginUser.data.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       secure: true,
-      sameSite: "Strict",
+      sameSite: "None",
     });
 
     return res.status(HttpStatusCode.OK).json({
@@ -103,7 +104,7 @@ const userLoginController = async (req, res) => {
   }
 };
 
-const refreshAccessTokenController = async (req, res) => {
+const refreshAccessTokenController = async (req, res, next) => {
   const { refreshToken } = req.cookies;
   if (!refreshToken) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
@@ -115,26 +116,22 @@ const refreshAccessTokenController = async (req, res) => {
     const result = await userRepository.refreshAccessTokenRepository(
       refreshToken
     );
-
     if (!result.success) {
-      return res.status(HttpStatusCode.BAD_REQUEST).json({
+      res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: result.message,
       });
+      return;
     }
+
     res.cookie("accessToken", result.data, {
       maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
+      httpOnly: false,
       secure: true,
-      sameSite: "Strict",
+      sameSite: "None",
     });
 
-
-    return res.status(HttpStatusCode.OK).json({
-      status: "OK",
-      message: result.message,
-      data: result.data,
-    });
+    return result.data;
   } catch (exception) {
     if (exception.message === Exception.REFRESH_TOKEN_EXPIRED) {
       return userLogoutController(req, res);
@@ -148,6 +145,7 @@ const refreshAccessTokenController = async (req, res) => {
 
 const userLogoutController = async (req, res) => {
   const cookie = req.cookies;
+  console.log('cookei',cookie)
   if (!cookie || !cookie.refreshToken) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
@@ -155,11 +153,12 @@ const userLogoutController = async (req, res) => {
     });
   }
   try {
-    res.clearCookie("accessToken", { httpOnly: true, secure: true });
+    res.clearCookie("accessToken", { httpOnly: false, secure: true });
     res.clearCookie("refreshToken", { httpOnly: true, secure: true });
     const logoutUser = await userRepository.userLogoutRepository(
       cookie.refreshToken
     );
+    console.log(logoutUser);
     if (!logoutUser.success) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
@@ -167,10 +166,7 @@ const userLogoutController = async (req, res) => {
       });
     }
 
-    return res.status(HttpStatusCode.OK).json({
-      status: "OK",
-      message: logoutUser.message,
-    });
+    return res.redirect(`${process.env.FRONT_END_URL}/login`);
   } catch (exception) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
@@ -495,5 +491,5 @@ export default {
   userUpdateProfileController,
   userUpdateRoleController,
   userUpdateStatusController,
-  userUpdateBlockController
+  userUpdateBlockController,
 };

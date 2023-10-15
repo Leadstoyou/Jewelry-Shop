@@ -12,26 +12,33 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Profile from './pages/Profile'
 import Forgot from './pages/ForgotPassword'
+import Dashboard from "./pages/Dashboard";
+import NotFound from "./components/error/NotFound";
+
 import HistoryPage from "./pages/History";
 const Container = styled.div``
 
 function App() {
-  return <Container>
-     <BrowserRouter basename="/Jewelry-Shop">
-     <Routes > 
-      <Route path="/" element={<Homepage />} />
-      <Route path="/search/:searchtext" element={<SearchPage />} />
-      <Route path="/collections" element={<Collections />} />
-      <Route path="/product/:id" element={<Products />} />
-      <Route path="/cart" element={<CartPage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/forgot" element={<Forgot/>} />
-      <Route path="/history" element={<HistoryPage/>} />
-     </Routes>
-     </BrowserRouter>
-  </Container>;
+  return (
+    <Container>
+      <BrowserRouter basename="/Jewelry-Shop">
+        <Routes>
+          <Route path="/" element={<Homepage />} />
+          <Route path="/search/:searchtext" element={<SearchPage />} />
+          <Route path="/collections/:category" element={<Collections />} />
+          <Route path="/product/:id" element={<Products />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/history" element={<HistoryPage/>} />
+          <Route path="/forgot" element={<Forgot/>} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </Container>
+  );
 
 }
 

@@ -5,10 +5,10 @@ export default mongoose.model(
     "Cart",
     new Schema(
         {
-            cartToken: {
-                type: String,
-                required: true
-              },
+          cart_token: {
+            type: String,
+            required: true,
+          },
               user_id: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'User'
@@ -19,18 +19,18 @@ export default mongoose.model(
                   ref: 'Product',
                   required: true
                 },
-                size: [{
-                  type: String,
+                size: {
+                  type: [String],
                   required: true
-                }],
-                color: [{
-                  type: String,
+                },
+                color: {
+                  type: [String],
                   required: true
-                }],
-                material: [{
-                  type: String,
+                },
+                material: {
+                  type: [String],
                   required: true
-                }],
+                },
                 quantity: {
                   type: Number,
                   required: true,
