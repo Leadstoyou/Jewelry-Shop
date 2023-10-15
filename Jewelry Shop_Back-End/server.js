@@ -17,7 +17,7 @@ import routeUnknown from "./middleware/routeMiddleware.js";
 const port = process.env.PORT || 4200;
 const app = express();
 const v1Router = express.Router();
-
+import bodyParser from 'body-parser';
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 const corsOptions = {
   origin: process.env.FRONT_END_ORIGIN_URL,
@@ -29,6 +29,7 @@ app.use(cors(corsOptions));
 
 v1Router.use(cookieParser());
 v1Router.use(express.json());
+v1Router.use(bodyParser.urlencoded({ extended: false }));
 v1Router.use("/users", userRouter);
 v1Router.use("/products", productRouter);
 v1Router.use("/cart", cartRouter);

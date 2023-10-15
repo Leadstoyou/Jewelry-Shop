@@ -158,6 +158,7 @@ const viewProductController = async (req, res) => {
       res.status(HttpStatusCode.NO_CONTENT).end();
       return;
     }
+    console.log(viewProducts.data.products.length)
 
     res.status(HttpStatusCode.OK).json({
       status: "OK",

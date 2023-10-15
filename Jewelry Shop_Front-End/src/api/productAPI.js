@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 
 // function getAccessTokenFromCookie() {
 //   const name = "accessToken=";
@@ -54,7 +55,8 @@ const CollectionAPI = async (
   } catch (error) {
     setLoading(false);
     setFoundProducts([]);
-    console.error("Error fetching data:", error);
+    toast.error(error.response.data.message)
+    console.error("Error fetching data:", error.response.data.message);
   }
 };
 

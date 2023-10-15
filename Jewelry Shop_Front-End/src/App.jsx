@@ -1,10 +1,10 @@
 import "./App.css";
-// import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Homepage from "./pages/Homepage";
 import styled from 'styled-components'
 import SearchPage from './pages/SearchPage';
 import 'bootstrap/dist/css/bootstrap.min.css'
+import 'react-toastify/dist/ReactToastify.css';
 import Collections from './pages/Collections';
 import Products from './pages/Products';
 import CartPage from './pages/Cart';
@@ -16,6 +16,7 @@ import Dashboard from "./pages/Dashboard";
 import NotFound from "./components/error/NotFound";
 
 import HistoryPage from "./pages/History";
+import Checkouts from "./pages/Checkouts";
 const Container = styled.div``
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/history" element={<HistoryPage/>} />
+          <Route path="/checkouts" element={<Checkouts/>} />
           <Route path="/forgot" element={<Forgot/>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
