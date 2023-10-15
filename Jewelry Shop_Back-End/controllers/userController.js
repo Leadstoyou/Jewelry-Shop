@@ -185,6 +185,14 @@ const userRegisterController = async (req, res) => {
     userAddress,
     userAge,
   } = req.body;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  if (!passwordRegex.test(userPassword)) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      message: "Password must contain at least one lowercase letter, one uppercase letter, one number, and be at least 8 characters long.",
+    });
+  }
+
   if (userPassword !== confirmPassword) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
@@ -290,6 +298,13 @@ const userResetPasswordController = async (req, res) => {
       message: "In valid Token",
     });
   }
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  if (!passwordRegex.test(newPassword)) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      message: "Password must contain at least one lowercase letter, one uppercase letter, one number, and be at least 8 characters long.",
+    });
+  }
   try {
     const result = await userRepository.userResetPasswordRepository(
       userPasswordResetToken,
@@ -315,6 +330,13 @@ const userResetPasswordController = async (req, res) => {
 
 const userChangePasswordController = async (req, res) => {
   const { userEmail, oldPassword, newPassword, confirmPassword } = req.body;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  if (!passwordRegex.test(newPassword)) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      message: "Password must contain at least one lowercase letter, one uppercase letter, one number, and be at least 8 characters long.",
+    });
+  }
   if (newPassword !== confirmPassword) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",

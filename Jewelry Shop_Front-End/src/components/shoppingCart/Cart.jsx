@@ -514,11 +514,12 @@ const ShoppingCart = () => {
             id="createOrder"
             action="http://localhost:9999/api/v1/payment/create_payment_url"
             method="POST"
+            target="_blank"
             onSubmit={handleFormSubmit}
           >
             <Button
-              onClick={handlePay}
-              disabled={!isAgreedToTerms}
+              // onClick={handlePay}
+              // disabled={!isAgreedToTerms}
               type="submit"
             >
               THANH TOÁN

@@ -246,7 +246,7 @@ paths:
                 newPassword:
                   type: string
                   example: example123 
-                token:
+                userPasswordResetToken:
                   type: string
                   example: dfsdf23423sdasdfasdf     
         required: true
