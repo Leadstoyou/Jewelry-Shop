@@ -1,353 +1,490 @@
-import {useEffect, useState} from 'react';
-import axios from 'axios';
-import swal from 'sweetalert';
-// import { useHistory } from 'react-router-dom';
+import { useState } from "react";
+import "../style/OrderDetail.css";
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
+const Checkouts = () => {
+  const [inputNameValue, setInputNameValue] = useState("");
+  const [inputEmailValue, setInputEmailValue] = useState("");
+  const [inputPhoneValue, setInputPhoneValue] = useState("");
+  const [inputAddressValue, setInputAddressValue] = useState("");
 
-function Checkouts()
-{
+  const handleInputChange = (e, setInput) => {
+    const modifiedValue =
+      e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1);
 
-    // const history = useHistory();
-/*     if(!localStorage.getItem('auth_token')){
-        history.push('/');
-        swal("Warning","Login to goto Cart Page","error");
-    } */
-    
-    const [loading, setLoading] = useState(true);
-    const [cart, setCart] = useState([]);
-    var totalCartPrice = 0;
-
-    const [checkoutInput, setCheckoutInput] = useState({
-        firstname: '',
-        lastname: '',
-        phone: '',
-        email: '',
-        address: '',
-        city: '',
-        state: '',
-        zipcode: '',
-    });
-    const [error, setError] = useState([]);
-
-    useEffect(() => {
-
-        let isMounted = true;
-        setLoading(false);
-        // axios.get(`/api/cart`).then(res=>{
-        //     if(isMounted)
-        //     {
-        //         if(res.data.status === 200)
-        //         {
-        //             setCart(res.data.cart);
-        //             setLoading(false);
-        //         }
-        //         else if(res.data.status === 401)
-        //         {
-        //             history.push('/');
-        //             swal("Warning",res.data.message,"error");
-        //         }
-        //     }
-        // }); 
- 
-        return () => {
-            isMounted = false
-        };
-    }, [history]);
-
-    const handleInput = (e) => {
-        e.persist();
-        setCheckoutInput({...checkoutInput, [e.target.name]: e.target.value });
+    setInput(modifiedValue);
+  };
+  const handleSubmitOrder = (e) => {
+    if (
+      !inputAddressValue ||
+      !inputPhoneValue ||
+      !inputEmailValue ||
+      !inputNameValue
+    ) {
+      e.preventDefault();
+      toast.error('Input all fields');
     }
+  };
+  return (
+    <div className="flexbox">
+      <div className="content">
+        <div className="wrap">
+          <div className="sidebar">
+            <div className="sidebar-content">
+              <div className="order-summary order-summary-is-collapsed">
+                <h2 className="visually-hidden">Thông tin đơn hàng</h2>
+                <div className="order-summary-sections">
+                  <div
+                    className="order-summary-section order-summary-section-product-list"
+                    data-order-summary-section="line-items"
+                  >
+                    <table className="product-table">
+                      <thead>
+                        <tr>
+                          <th scope="col">
+                            <span className="visually-hidden">Hình ảnh</span>
+                          </th>
+                          <th scope="col">
+                            <span className="visually-hidden">Mô tả</span>
+                          </th>
+                          <th scope="col">
+                            <span className="visually-hidden">Số lượng</span>
+                          </th>
+                          <th scope="col">
+                            <span className="visually-hidden">Giá</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          className="product"
+                          data-product-id="1041518282"
+                          data-variant-id="1090587759"
+                        >
+                          <td className="product-image">
+                            <div className="product-thumbnail">
+                              <div className="product-thumbnail-wrapper">
+                                <img
+                                  className="product-thumbnail-image"
+                                  alt="Dây chuyền bạc mạ vàng hồng 14k mặt hình chữ O với họa tiết trái tim trong suốt"
+                                  src="//product.hstatic.net/200000103143/product/anyconv.com__566_4dab5265aee2459cb486e3d35fee1123_198fd7fe4a3444519d5f2b6d05c59471_small.png"
+                                />
+                              </div>
+                              <span
+                                className="product-thumbnail-quantity"
+                                aria-hidden="true"
+                              >
+                                1
+                              </span>
+                            </div>
+                          </td>
+                          <td className="product-description">
+                            <span className="product-description-name order-summary-emphasis">
+                              Dây chuyền bạc mạ vàng hồng 14k mặt hình chữ O với
+                              họa tiết trái tim trong suốt
+                            </span>
 
-    // var orderinfo_data = {
-    //     firstname: checkoutInput.firstname,
-    //     lastname: checkoutInput.lastname,
-    //     phone: checkoutInput.phone,
-    //     email: checkoutInput.email,
-    //     address: checkoutInput.address,
-    //     city: checkoutInput.city,
-    //     state: checkoutInput.state,
-    //     zipcode: checkoutInput.zipcode,
-    //     payment_mode: 'Paid by PayPal',
-    //     payment_id: '',
-    // }
+                            <span className="product-description-variant order-summary-small-text">
+                              45 / Hồng / Mạ vàng hồng 14K
+                            </span>
+                          </td>
+                          <td className="product-quantity visually-hidden">
+                            1
+                          </td>
+                          <td className="product-price">
+                            <span className="order-summary-emphasis">
+                              5,390,000₫
+                            </span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div
+                    className="order-summary-section order-summary-section-total-lines payment-lines"
+                    data-order-summary-section="payment-lines"
+                  >
+                    <table className="total-line-table">
+                      <thead>
+                        <tr>
+                          <th scope="col">
+                            <span className="visually-hidden">Mô tả</span>
+                          </th>
+                          <th scope="col">
+                            <span className="visually-hidden">Giá</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="total-line total-line-subtotal">
+                          <td className="total-line-name">Tạm tính</td>
+                          <td className="total-line-price">
+                            <span
+                              className="order-summary-emphasis"
+                              data-checkout-subtotal-price-target="539000000"
+                            >
+                              5,390,000₫
+                            </span>
+                          </td>
+                        </tr>
+                        <tr className="total-line total-line-shipping">
+                          <td className="total-line-name">Phí vận chuyển</td>
+                          <td className="total-line-price">
+                            <span
+                              className="order-summary-emphasis"
+                              data-checkout-total-shipping-target="0"
+                            >
+                              —
+                            </span>
+                          </td>
+                        </tr>
+                      </tbody>
+                      <tfoot className="total-line-table-footer">
+                        <tr className="total-line">
+                          <td className="total-line-name payment-due-label">
+                            <span className="payment-due-label-total">
+                              Tổng cộng
+                            </span>
+                          </td>
+                          <td className="total-line-name payment-due">
+                            <span className="payment-due-currency">VND</span>
+                            <span
+                              className="payment-due-price"
+                              data-checkout-payment-due-target="539000000"
+                            >
+                              5,390,000₫
+                            </span>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="main">
+            <div className="main-header">
+              <a href="/" className="logo">
+                <h1 className="logo-text">Jewerly Shop</h1>
+              </a>
 
-    // Paypal Code
-    // const PayPalButton = window.paypal.Buttons.driver("react", { React, ReactDOM });
-    // const createOrder = (data, actions) =>{
-    //     return actions.order.create({
-    //       purchase_units: [
-    //         {
-    //           amount: {
-    //             value: totalCartPrice,
-    //           },
-    //         },
-    //       ],
-    //     });
-    // };
-    // const onApprove = (data, actions) => {
-    //     // return actions.order.capture();
-    //     return actions.order.capture().then(function(details) {
-    //         console.log(details);
-    //         orderinfo_data.payment_id = details.id;
+              <ul className="breadcrumb">
+                <li className="breadcrumb-item">
+                  <a href="/cart">Giỏ hàng</a>
+                </li>
 
-    //         axios.post(`/api/place-order`, orderinfo_data).then(res=>{
-    //             if(res.data.status === 200)
-    //             {
-    //                 swal("Order Placed Successfully",res.data.message,"success");
-    //                 setError([]);
-    //                 history.push('/thank-you');
-    //             }
-    //             else if(res.data.status === 422)
-    //             {
-    //                 swal("All fields are mandetory","","error");
-    //                 setError(res.data.errors);
-    //             }
-    //         });
-    //     });
-    // };
-    // // End-Paypal Code
-
-    const submitOrder = (e, payment_mode) => {
-        e.preventDefault();
-
-        var data = {
-            firstname: checkoutInput.firstname,
-            lastname: checkoutInput.lastname,
-            phone: checkoutInput.phone,
-            email: checkoutInput.email,
-            address: checkoutInput.address,
-            city: checkoutInput.city,
-            state: checkoutInput.state,
-            zipcode: checkoutInput.zipcode,
-            payment_mode: payment_mode,
-            payment_id: '',
-        }
-
-        switch (payment_mode) {
-            case 'cod':
-                axios.post(`/api/place-order`, data).then(res=>{
-                    if(res.data.status === 200)
-                    {
-                        swal("Order Placed Successfully",res.data.message,"success");
-                        setError([]);
-                        history.push('/thank-you');
-                    }
-                    else if(res.data.status === 422)
-                    {
-                        swal("All fields are mandetory","","error");
-                        setError(res.data.errors);
-                    }
-                });
-                break;
-
-            case 'razorpay':
-                axios.post(`/api/validate-order`, data).then(res=>{
-                    if(res.data.status === 200)
-                    {
-                        setError([]);
-                        var options = {
-                            "key": "rzp_test_5AEIUNtEJxBPvS",
-                            "amount": (1 * 100), 
-                            "name": "Funda Reat Ecom",
-                            "description": "Thank you for purchasing with Funda",
-                            "image": "https://example.com/your_logo",
-                            "handler": function (response){
-                                data.payment_id = response.razorpay_payment_id;
-
-                                axios.post(`/api/place-order`, data).then(place_res=>{
-                                    if(place_res.data.status === 200)
-                                    {
-                                        swal("Order Placed Successfully",place_res.data.message,"success");
-                                        history.push('/thank-you');
-                                    }
-                                });
-                            },
-                            "prefill": {
-                                "name": data.firstname + data.lastname,
-                                "email": data.email,
-                                "contact": data.phone
-                            },
-                            "theme": {
-                                "color": "#3399cc"
-                            }
-                        };
-                        var rzp = new window.Razorpay(options);
-                        rzp.open();
-                    }
-                    else if(res.data.status === 422)
-                    {
-                        swal("All fields are mandetory","","error");
-                        setError(res.data.errors);
-                    }
-                });
-                break;
-
-            case 'payonline':
-                axios.post(`/api/validate-order`, data).then(res=>{
-                    if(res.data.status === 200)
-                    {
-                        setError([]);
-                        var myModal = new window.bootstrap.Modal(document.getElementById('payOnlineModal'));
-                        myModal.show();
-                    }
-                    else if(res.data.status === 422)
-                    {
-                        swal("All fields are mandetory","","error");
-                        setError(res.data.errors);
-                    }
-                });
-                break;
-        
-            default:
-                break;
-        }
-       
-    }
-
-    if(loading)
-    {
-        return <h4>Loading Checkout...</h4>
-    }
-
-    var checkout_HTML = '';
-    // if(cart.length > 0)
-    // {
-        checkout_HTML = <div>
-            <div className="row">
-
-            <div className="col-md-7">
-                <div className="card">
-                    <div className="card-header">
-                        <h4>Basic Information</h4>
+                <li className="breadcrumb-item breadcrumb-item-current">
+                  Thông tin giao hàng
+                </li>
+              </ul>
+            </div>
+            <div className="main-content">
+              <div
+                id="checkout_order_information_changed_error_message"
+                className="hidden"
+                style={{ marginBottom: "15px" }}
+              >
+                <p className="field-message field-message-error alert alert-danger">
+                  <svg
+                    x="0px"
+                    y="0px"
+                    viewBox="0 0 286.054 286.054"
+                    style={{ enableBackground: "new 0 0 286.054 286.054" }}
+                    xmlSpace="preserve"
+                  >
+                    <g>
+                      <path
+                        style={{ fill: "#E2574C" }}
+                        d="M143.027,0C64.04,0,0,64.04,0,143.027c0,78.996,64.04,143.027,143.027,143.027 c78.996,0,143.027-64.022,143.027-143.027C286.054,64.04,222.022,0,143.027,0z M143.027,259.236 c-64.183,0-116.209-52.026-116.209-116.209S78.844,26.818,143.027,26.818s116.209,52.026,116.209,116.209 S207.21,259.236,143.027,259.236z M143.036,62.726c-10.244,0-17.995,5.346-17.995,13.981v79.201c0,8.644,7.75,13.972,17.995,13.972 c9.994,0,17.995-5.551,17.995-13.972V76.707C161.03,68.277,153.03,62.726,143.036,62.726z M143.036,187.723 c-9.842,0-17.852,8.01-17.852,17.86c0,9.833,8.01,17.843,17.852,17.843s17.843-8.01,17.843-17.843 C160.878,195.732,152.878,187.723,143.036,187.723z"
+                      />
+                    </g>
+                    <g> </g>
+                    <g> </g>
+                    <g> </g>
+                    <g> </g>
+                    <g> </g>
+                    <g> </g>
+                    <g> </g>
+                    <g> </g>
+                    <g> </g>
+                    <g> </g>
+                    <g> </g>
+                    <g> </g>
+                    <g> </g>
+                    <g> </g>
+                    <g> </g>
+                  </svg>
+                  <span></span>
+                </p>
+              </div>
+              <div className="step">
+                <div className="step-sections steps-onepage" step="1">
+                  <div className="section">
+                    <div className="section-header">
+                      <h2 className="section-title">Thông tin giao hàng</h2>
                     </div>
-                    <div className="card-body">
+                    <div className="section-content section-customer-information no-mb">
+                      <p className="section-content-text">
+                        Bạn đã có tài khoản?
+                        <a href="/account/login?urlredirect=%2Fcheckouts%2Fe0002523e9d04c87982765859ff95a08%3Fstep%3D1">
+                          Đăng nhập
+                        </a>
+                      </p>
 
-                        <div className="row">
-                            <div className="col-md-6">
-                                <div className="form-group mb-3">
-                                    <label> First Name</label>
-                                    <input type="text" name="firstname" onChange={handleInput} value={checkoutInput.firstname} className="form-control" />
-                                    <small className="text-danger">{error.firstname}</small>
-                                </div>
-                            </div>
-                            <div className="col-md-6">
-                                <div className="form-group mb-3">
-                                    <label> Last Name</label>
-                                    <input type="text" name="lastname" onChange={handleInput} value={checkoutInput.lastname} className="form-control" />
-                                    <small className="text-danger">{error.lastname}</small>
-                                </div>
-                            </div>
-                            <div className="col-md-6">
-                                <div className="form-group mb-3">
-                                    <label> Phone Number</label>
-                                    <input type="number" name="phone" onChange={handleInput} value={checkoutInput.phone} className="form-control" />
-                                    <small className="text-danger">{error.phone}</small>
-                                </div>
-                            </div>
-                            <div className="col-md-6">
-                                <div className="form-group mb-3">
-                                    <label> Email Address</label>
-                                    <input type="email" name="email" onChange={handleInput} value={checkoutInput.email} className="form-control" />
-                                    <small className="text-danger">{error.email}</small>
-                                </div>
-                            </div>
-                            <div className="col-md-12">
-                                <div className="form-group mb-3">
-                                    <label> Full Address</label>
-                                    <textarea rows="3" name="address" onChange={handleInput} value={checkoutInput.address} className="form-control"></textarea>
-                                    <small className="text-danger">{error.address}</small>
-                                </div>
-                            </div>
-                            <div className="col-md-4">
-                                <div className="form-group mb-3">
-                                    <label>City</label>
-                                    <input type="text" name="city" onChange={handleInput} value={checkoutInput.city} className="form-control" />
-                                    <small className="text-danger">{error.city}</small>
-                                </div>
-                            </div>
-                            <div className="col-md-4">
-                                <div className="form-group mb-3">
-                                    <label>State</label>
-                                    <input type="text" name="state" onChange={handleInput} value={checkoutInput.state} className="form-control" />
-                                    <small className="text-danger">{error.state}</small>
-                                </div>
-                            </div>
-                            <div className="col-md-4">
-                                <div className="form-group mb-3">
-                                    <label>Zip Code</label>
-                                    <input type="text" name="zipcode" onChange={handleInput} value={checkoutInput.zipcode} className="form-control" />
-                                    <small className="text-danger">{error.zipcode}</small>
-                                </div>
-                            </div>
-                            <div className="col-md-12">
-                                <div className="form-group text-end">
-                                    <button type="button" className="btn btn-primary mx-1" onClick={ (e) => submitOrder(e, 'cod') }>Place Order</button>
-                                    <button type="button" className="btn btn-primary mx-1" onClick={ (e) => submitOrder(e, 'razorpay') }>Pay by Razorpay</button>
-                                    <button type="button" className="btn btn-warning mx-1" onClick={ (e) => submitOrder(e, 'payonline') }>Pay Online</button>
-
-                                </div>
-                            </div>
+                      <div className="fieldset">
+                        <div className="field field-required  ">
+                          <div className="field-input-wrapper">
+                            <label
+                              className="field-label"
+                              htmlFor="billing_address_full_name"
+                            >
+                              Họ và tên
+                            </label>
+                            <input
+                              placeholder="Họ và tên"
+                              spellCheck="false"
+                              className="field-input"
+                              size="30"
+                              type="text"
+                              id="billing_address_full_name"
+                              name="billing_address[full_name]"
+                              autoComplete="false"
+                              value={inputNameValue}
+                              onChange={(e) => {
+                                handleInputChange(e, setInputNameValue);
+                              }}
+                            />
+                          </div>
                         </div>
 
+                        <div className="field field-required field-two-thirds  ">
+                          <div className="field-input-wrapper">
+                            <label
+                              className="field-label"
+                              htmlFor="checkout_user_email"
+                            >
+                              Email
+                            </label>
+                            <input
+                              autoComplete="false"
+                              placeholder="Email"
+                              autoCapitalize="off"
+                              spellCheck="false"
+                              className="field-input"
+                              size="30"
+                              type="email"
+                              id="checkout_user_email"
+                              name="checkout_user[email]"
+                              value={inputEmailValue}
+                              onChange={(e) => {
+                                handleInputChange(e, setInputEmailValue);
+                              }}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="field field-required field-third  ">
+                          <div className="field-input-wrapper">
+                            <label
+                              className="field-label"
+                              htmlFor="billing_address_phone"
+                            >
+                              Số điện thoại
+                            </label>
+                            <input
+                              autoComplete="false"
+                              placeholder="Số điện thoại"
+                              autoCapitalize="off"
+                              spellCheck="false"
+                              className="field-input"
+                              size="30"
+                              maxLength="15"
+                              type="tel"
+                              id="billing_address_phone"
+                              name="billing_address[phone]"
+                              value={inputPhoneValue}
+                              onChange={(e) => {
+                                handleInputChange(e, setInputPhoneValue);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
+                    <div className="section-content">
+                      <div className="fieldset">
+                        <form
+                          autoComplete="off"
+                          id="form_update_shipping_method"
+                          className="field default ms-0"
+                          acceptCharset="UTF-8"
+                          method="post"
+                        >
+                          <input name="utf8" type="hidden" value="✓" />
+                          <div className="content-box mt0">
+                            <div
+                              id="form_update_location_customer_shipping"
+                              className="order-checkout__loading radio-wrapper content-box-row content-box-row-padding content-box-row-secondary "
+                              htmlFor="customer_pick_at_location_false"
+                            >
+                              <input name="utf8" type="hidden" value="✓" />
+                              <div className="order-checkout__loading--box">
+                                <div className="order-checkout__loading--circle"></div>
+                              </div>
+
+                              <div className="field field-required">
+                                <div className="field-input-wrapper">
+                                  <label
+                                    className="field-label"
+                                    htmlFor="billing_address_address1"
+                                  >
+                                    Địa chỉ
+                                  </label>
+                                  <input
+                                    placeholder="Địa chỉ"
+                                    autoCapitalize="off"
+                                    spellCheck="false"
+                                    className="field-input"
+                                    size="30"
+                                    type="text"
+                                    id="billing_address_address1"
+                                    name="billing_address[address1]"
+                                    value={inputAddressValue}
+                                    onChange={(e) => {
+                                      handleInputChange(
+                                        e,
+                                        setInputAddressValue
+                                      );
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                      <div id="change_pick_location_or_shipping">
+                        <div id="section-payment-method" className="section">
+                          <div className="order-checkout__loading--box">
+                            <div className="order-checkout__loading--circle"></div>
+                          </div>
+                          <div className="section-header">
+                            <h2 className="section-title">
+                              Phương thức thanh toán
+                            </h2>
+                          </div>
+                          <div className="section-content">
+                            <div className="content-box">
+                              <div className="radio-wrapper content-box-row">
+                                <label
+                                  className="radio-label"
+                                  htmlFor="payment_method_id_1002364966"
+                                >
+                                  <div className="radio-input payment-method-checkbox">
+                                    <input
+                                      id="payment_method_id_1002364966"
+                                      className="input-radio"
+                                      name="payment_method_id"
+                                      type="radio"
+                                      value="1002364966"
+                                      checked="true"
+                                    />
+                                  </div>
+                                  <div className="radio-content-input">
+                                    <img
+                                      className="main-img"
+                                      src="https://hstatic.net/0/0/global/design/seller/image/payment/other.svg?v=5"
+                                    />
+                                    <div>
+                                      <span className="radio-label-primary">
+                                        Chuyển khoản qua ngân hàng
+                                      </span>
+                                      <span className="quick-tagline hidden"></span>
+                                    </div>
+                                  </div>
+                                </label>
+                              </div>
+                              <div
+                                className="radio-wrapper content-box-row content-box-row-secondary "
+                                htmlFor="payment_method_id_1002364966"
+                              >
+                                <div className="blank-slate">
+                                  Quý khách hàng vui lòng chuyển khoản theo
+                                  thông tin sau: - Nội dung chuyển khoản: Thanh
+                                  toán cho mã đơn hàng [Mã đơn hàng của bạn] Mã
+                                  đơn hàng của bạn sẽ hiển thị khi bấm Hoàn tất
+                                  đơn hàng
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="step-footer" id="step-footer-checkout">
+                        <form
+                          id="form_next_step"
+                          acceptCharset="UTF-8"
+                          method="post"
+                        >
+                          <input name="utf8" type="hidden" value="✓" />
+                          <form
+                            id="createOrder"
+                            action="http://localhost:9999/api/v1/payment/create_payment_url"
+                            method="POST"
+                            target="_blank"
+                          >
+                            <input
+                              type="text"
+                              style={{ display: "none" }}
+                              value={30000}
+                              name="amount"
+                            />
+                            <button
+                              type="submit"
+                              className="step-footer-continue-btn"
+                              style={{
+                                display: "inline-block",
+                                borderRadius: "4px",
+                                fontWeight: "500",
+                                padding: "1.4em 1.7em",
+                                boxSizing: "border-box",
+                                textAlign: "center",
+                                cursor: "pointer",
+                                transition:
+                                  "background-color 0.2s ease-in-out, color 0.2s ease-in-out",
+                                position: "relative",
+                                background: "#338dbc",
+                                color: "white",
+                              }}
+                              onClick={(e) => handleSubmitOrder(e)}
+                            >
+                              <span className="btn-content">
+                                Hoàn tất đơn hàng
+                              </span>
+                              <i className="btn-spinner icon icon-button-spinner"></i>
+                            </button>
+                          </form>
+                        </form>
+                        <a className="step-footer-previous-link" href="/cart">
+                          Giỏ hàng
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="hrv-coupons-popup-site-overlay"></div>
+                  <div className="main-footer footer-powered-by">
+                    Powered by SDN Group3
+                  </div>
                 </div>
+              </div>
             </div>
-
-            <div className="col-md-5">
-                <table className="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th width="50%">Product</th>
-                            <th>Price</th>
-                            <th>Qty</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {cart.map( (item, idx) => {
-                            totalCartPrice += item.product.selling_price * item.product_qty;
-                            return (
-                                <tr key={idx}>
-                                    <td>{item.product.name}</td>
-                                    <td>{item.product.selling_price}</td>
-                                    <td>{item.product_qty}</td>
-                                    <td>{item.product.selling_price * item.product_qty}</td>
-                                </tr>
-                            )
-                        })}
-                        <tr>
-                            <td colSpan="2" className="text-end fw-bold">Grand Total</td>
-                            <td colSpan="2" className="text-end fw-bold">{totalCartPrice}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            </div>
+          </div>
         </div>
-    // }
-    // else
-    // {
-    //     checkout_HTML = <div>
-    //         <div className="card card-body py-5 text-center shadow-sm">
-    //             <h4>Your Shopping Cart is Empty. You are in Checkout Page.</h4>
-    //         </div>
-    //     </div>
-    // }
-
-    return (
-        <div>
-            <div className="py-4">
-                <div className="container">
-                   {checkout_HTML}
-                </div>
-            </div>
-
-        </div>
-    )
-}
-
-
+      </div>
+    </div>
+  );
+};
 
 export default Checkouts;
