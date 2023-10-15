@@ -43,7 +43,7 @@ const Logins = () => {
         if (response.status === 200) {
           console.log("Login successful");
           navigate("/"); 
-        } else {
+        } else if(response.status === 400) {
           toast.error("Login failed");
         }
       } catch (error) {

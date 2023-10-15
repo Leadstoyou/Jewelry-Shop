@@ -14,6 +14,7 @@ import Profile from './pages/Profile'
 import Forgot from './pages/ForgotPassword'
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./components/error/NotFound";
+
 import HistoryPage from "./pages/History";
 import Checkouts from "./pages/Checkouts";
 const Container = styled.div``
@@ -40,6 +41,7 @@ function App() {
       </BrowserRouter>
     </Container>
   );
+
 }
 
 export default App;
