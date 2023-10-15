@@ -405,6 +405,25 @@ const userChangePasswordRepository = async ({
   }
 };
 
+const userViewProfileRepository = async () => {
+  try {
+    const allUsers = await User.find({});
+    if (!allUsers || allUsers.length === 0) {
+      return {
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      };
+    }
+    return {
+      success: true,
+      message: "Get all users successfully!",
+      data: allUsers,
+    };
+  } catch (exception) {
+    throw new Exception(exception.message);
+  }
+};
+
 const userUpdateProfileRepository = async ({
   userEmail,
   userName,

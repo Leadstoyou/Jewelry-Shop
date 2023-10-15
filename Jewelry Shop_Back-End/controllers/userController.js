@@ -145,7 +145,6 @@ const refreshAccessTokenController = async (req, res, next) => {
 
 const userLogoutController = async (req, res) => {
   const cookie = req.cookies;
-  console.log('cookei',cookie)
   if (!cookie || !cookie.refreshToken) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
