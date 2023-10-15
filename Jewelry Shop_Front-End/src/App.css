@@ -1,0 +1,25 @@
+body {
+  background-color: rgb(210, 207, 207);
+}
+
+.visually-hidden {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  clip: rect(0 0 0 0);
+  width: 2px;
+  height: 2px;
+  margin: -2px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+}
+
+.product-image{
+
+}
+
+td:first-child, th:first-child {
+     padding-left: 0;
+     text-align: left;
+ }
+

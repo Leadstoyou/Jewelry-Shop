@@ -1,40 +1,111 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 import "../style/Profile.scss";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-const RadioContainer = styled.div`
-  display: flex;
-  margin-bottom: 10px;
-`;
 
-const RadioInput = styled.input`
-  margin-right: 5px;
-`;
 const Profile = () => {
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
+  const [gender, setGender] = useState("nam");
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [image, setImage] = useState(null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [checkPassword, setCheckPassword] = useState("");
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const selectedImage = e.target.files[0];
     setImage(URL.createObjectURL(selectedImage));
   };
 
-  const handleChangePassword = () => {
-    // Xử lý việc đổi mật khẩu ở đây
-    console.log("Changing password...");
+  const handleSaveInformation = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:3001/Account", {
+        name: name,
+        gender: gender,
+        phoneNumber: phoneNumber,
+        age: age,
+        password: password,
+      });
+
+      if (response.status === 200) {
+        console.log("Save successful");
+      } else {
+        console.log("Registration failed");
+      }
+    } catch (error) {
+      console.log();
+      error;
+    }
   };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+  
+   
+    const isValid  = validation();
+  
+    if (isValid) {
+      try {
+        const response = await axios.post("http://localhost:3001/Account", {
+          password: currentPassword,
+          newPassword: newPassword,
+        });
+  
+        if (response.status === 200) {
+          console.log("Save successful");
+        } else {
+          console.log("Save failed");
+        }
+      } catch (error) {
+        console.error("An error occurred:", error);
+      }
+    }
+  };
+  const validation = () => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  
+    if (
+      currentPassword === "" ||
+      currentPassword === null ||
+      !currentPassword.match(passwordRegex)
+    ) {
+     toast(
+        "Current password must contain at least one lowercase letter, one uppercase letter, one number, and be at least 8 characters long."
+      );
+      return false;
+    }
+  
+    if (
+      newPassword === "" ||
+      newPassword === null ||
+      !newPassword.match(passwordRegex)
+    ) {
+      toast(
+        "New password must contain at least one lowercase letter, one uppercase letter, one number, and be at least 8 characters long."
+      );
+      return false;
+    }
+  
+    if (currentPassword !== checkPassword) {
+      toast("New password should be different from the current password");
+      return false;
+    }
+  
+    return true;
+  };
+  
   return (
-    <Container style={{ marginTop: "100px" }}>
+    <Container style={{ marginTop: "100px", marginBottom: "30px" }}>
       <div className="all_information">
         <h1>Thông tin cá nhân</h1>
         <div className="avatar">
@@ -64,18 +135,29 @@ const Profile = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-
-            <RadioContainer className="radio">
-            <span > Giới tính: </span> 
-              <label htmlFor="radio1" >
-                <RadioInput type="radio" id="radio1" value={1} />
+            <div className="radio">
+              <span>Giới tính:</span>
+              <label htmlFor="radio1">
+                <input
+                  type="radio"
+                  id="radio1"
+                  value="nam"
+                  checked={gender === "nam"} // Check if 'gender' matches the value
+                  onChange={(e) => setGender(e.target.value)}
+                />
                 Nam
               </label>
               <label htmlFor="radio2">
-                <RadioInput type="radio" id="radio2" value={2} />
+                <input
+                  type="radio"
+                  id="radio2"
+                  value="nu"
+                  checked={gender === "nu"} // Check if 'gender' matches the value
+                  onChange={(e) => setGender(e.target.value)}
+                />
                 Nữ
               </label>
-            </RadioContainer>
+            </div>
           </div>
           <div className="information_detail">
             <TextField
@@ -102,52 +184,59 @@ const Profile = () => {
               onChange={(e) => setAddress(e.target.value)}
             />
             <TextField
-               className="text"
-               label="Email"
-               variant="outlined"
-               value={email}
-               disabled   
+              className="text"
+              label="Email"
+              variant="outlined"
+              value={email}
+              disabled
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
         </div>
-        <Button variant="contained" color="primary">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSaveInformation}
+        >
           Lưu thông tin
         </Button>
       </div>
+
       <hr></hr>
-      <div className="change_password">
-        <h1 >Thay đổi mật khẩu</h1>
-        <TextField
-          className="text"
-          label="Mật khẩu hiện tại"
-          type="password"
-          value={currentPassword}
-          onChange={(e) => setCurrentPassword(e.target.value)}
-        />
-        <TextField
-          className="text"
-          label="Mật khẩu mới"
-          type="password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-        />
-        <TextField
-          className="text"
-          label="Mật khẩu mới"
-          type="password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-        />
-      </div>
-      <Button
-        style={{ margin: "  0px 30px" }}
-        variant="contained"
-        color="primary"
-        onClick={handleChangePassword}
-      >
-        Lưu mật khẩu
-      </Button>
+      <form >
+        <div className="change_password">
+          <h1>Thay đổi mật khẩu</h1>
+          <TextField
+            className="text"
+            label="Mật khẩu hiện tại"
+            type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+          />
+          <TextField
+            className="text"
+            label="Mật khẩu mới"
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+          <TextField
+            className="text"
+            label="Mật khẩu mới"
+            type="password"
+            value={checkPassword}
+            onChange={(e) => setCheckPassword(e.target.value)}
+          />
+        </div>
+        <Button
+          style={{ margin: "  0px 30px" }}
+          variant="contained"
+          color="primary"
+          onClick={handleChangePassword}
+        >
+          Lưu mật khẩu
+        </Button>
+      </form>
     </Container>
   );
 };

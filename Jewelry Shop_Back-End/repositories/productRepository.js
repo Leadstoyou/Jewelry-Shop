@@ -22,7 +22,6 @@ const createNewProduct = async (
       productImage,
       constants.CLOUDINARY_PRODUCT_IMG
     );
-
     const newProduct = await Product.create({
       productName,
       productDescription,
@@ -66,15 +65,11 @@ const searchProductsByName = async (searchTerm) => {
     const query = {
       $or: [
         { productName: new RegExp(searchTerm, "i") },
-        { productDescription: new RegExp(searchTerm, "i") },
-        { productColors: searchTerm },
-        { productCategory: new RegExp(searchTerm, "i") },
-        { productSizes: searchTerm },
       ],
     };
-
+    query.isDeleted = false;
     const searchResult = await Product.find(query).exec();
-    if (!searchResult) {
+    if (!searchResult || searchResult.length === 0) {
       return {
         success: false,
         message: Exception.PRODUCT_NOT_FOUND,
@@ -90,10 +85,52 @@ const searchProductsByName = async (searchTerm) => {
   }
 };
 
-const getAllProducts = async () => {
+const getAllProducts = async (category,color,material,minPrice,maxPrice,sort,page = 1,limit = Number.MAX_SAFE_INTEGER,isDeleted = false) => {
   try {
-    const getAllProducts = await Product.find({}).exec();
-    if (!getAllProducts) {
+    const query = {};
+    if(isDeleted) {
+      query.isDeleted = isDeleted;
+    }
+    if (color && color.length > 0) {
+      query.productColors = { $in: color };
+    }
+
+    if (material && material.length > 0) {
+      query.productMaterials = { $in: material };
+    }
+
+    if (minPrice !== undefined && maxPrice !== undefined) {
+      query.productPrice = { $gte: minPrice, $lt: maxPrice };
+    }
+
+    if (category) {
+      query.productCategory = category;
+    }
+    page = parseInt(page);
+    limit = parseInt(limit);
+
+    if (isNaN(page) || page < 1) {
+      return {
+        success: false,
+        message: "Invalid page value. Page must be a positive integer.",
+      };
+    }
+
+    if (isNaN(limit) || limit < 1) {
+      return {
+        success: false,
+        message: "Invalid limit value. Limit must be a positive integer.",
+      };
+    }
+
+    let skip;
+    if(page && limit) {
+      skip = (page - 1) * limit;
+    }
+    const getAllProducts = await Product.find(query).sort(sort).skip(skip).limit(limit).exec();
+    const totalPages =  Math.ceil( await Product.find(query).countDocuments().exec() / limit);
+
+    if (!getAllProducts || getAllProducts.length === 0) {
       return {
         success: false,
         message: Exception.PRODUCT_NOT_FOUND,
@@ -102,7 +139,10 @@ const getAllProducts = async () => {
     return {
       success: true,
       message: "Get all product successfully!",
-      data: getAllProducts,
+      data: {
+        products: getAllProducts,
+        totalPages: totalPages,
+      },
     };
   } catch (exception) {
     throw new Exception(exception.message);
@@ -249,6 +289,52 @@ const getProductByCategories = async (categories) => {
   }
 };
 
+const getProductHasDiscount = async (startDate,expiredDate,getAllDiscounts = false) => {
+  try {
+    if (isNaN(startDate.getTime()) || isNaN(expiredDate.getTime())) {
+      return {
+        success: false,
+        message: Exception.INVALID_INPUT_TYPE,
+      };
+    }
+    let products;
+    if(!getAllDiscounts){
+       products = await Product.find({
+        "productDiscount.isActive": true,
+        $or: [
+          {
+            "productDiscount.discountStartDate": { $lte: startDate },
+            "productDiscount.discountExpiredDate": { $gte: startDate },
+          },
+          {
+            "productDiscount.discountStartDate": { $lte: expiredDate },
+            "productDiscount.discountExpiredDate": { $gte: expiredDate },
+          },
+        ],
+      });
+    } else {
+       products = await Product.find({
+        "productDiscount.isActive": true,
+      });
+    }
+
+    if (products.length === 0 ) {
+      return {
+        success: false,
+        message: Exception.PRODUCT_NOT_FOUND,
+      };
+    }
+    return {
+      success: true,
+      message: constants.PRODUCT_RETRIVED,
+      data: products,
+    };
+  } catch (error) {
+    console.error("Error getting products with discount:", error.message);
+    throw error;
+  }
+}
+
 export default {
   createNewProduct,
   searchProductsByName,
@@ -257,4 +343,5 @@ export default {
   deleteProduct,
   getProductById,
   getProductByCategories,
+  getProductHasDiscount
 };

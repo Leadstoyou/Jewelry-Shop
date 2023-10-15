@@ -7,6 +7,9 @@ import Badge from "@mui/material/Badge";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import videoFile from "../assets/video.mp4"; // Import the video file using ES6 module syntax
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useSelector } from "react-redux";
 const Container = styled.div`
   background-color: #d5d3d3;
   position: relative;
@@ -21,14 +24,12 @@ const Container = styled.div`
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
   z-index: 5;
 `;
-const Logo = styled.h1`
-  
-`;
+const Logo = styled.h1``;
 
 const ControllerLogo = styled.div`
   cursor: pointer;
   z-index: 100;
-`
+`;
 const Right = styled.div`
   display: flex;
   align-items: center;
@@ -100,6 +101,20 @@ const Nav = styled.div`
   z-index: 1;
 `;
 const Navbar = () => {
+  const numberCart = useSelector((state) => state.cart.value.length);
+
+  const notify = () => {
+    toast.error("Vui lòng không để trống trường tìm kiếm !!!", {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+  };
   const navigate = useNavigate();
   // const [searchText , setSearchText] = useState("")
   const [searchQuery, setSearchQuery] = useState("");
@@ -107,21 +122,29 @@ const Navbar = () => {
   // Function to handle Enter key press
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
+      if (searchQuery.trim() === "") {
+        notify();
+      } else {
+        navigate(`/search/${searchQuery.trim()}`);
+      }
+    }
+  };
+  const handleSubmit = () => {
+    if (searchQuery.trim() === "") {
+      notify();
+    } else {
       navigate(`/search/${searchQuery}`);
     }
   };
-  const handleSubmit = ()=>{
-    navigate(`/search/${searchQuery}`);
-  }
   return (
     <Nav>
       <Container>
         <Video src={videoFile} muted autoPlay loop></Video>
-        <ControllerLogo onClick={()=>navigate('/')}>
-        <Logo >Jewelry</Logo>
+        <ControllerLogo onClick={() => navigate("/")}>
+          <Logo>Jewelry</Logo>
         </ControllerLogo>
         <Right>
-          <InputController >
+          <InputController>
             <Icon>
               <SearchIcon
                 onClick={handleSubmit}
@@ -147,14 +170,26 @@ const Navbar = () => {
             <Item>
               <PersonIcon />
             </Item>
-            <Item>
-              <Badge badgeContent={1} color="primary">
+            <Item onClick={() => navigate("/cart")}>
+              <Badge badgeContent={numberCart} color="primary">
                 <ShoppingCartIcon />
               </Badge>
             </Item>
           </ItemController>
         </Right>
       </Container>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </Nav>
   );
 };

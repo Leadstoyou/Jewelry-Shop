@@ -2,14 +2,42 @@ export const categoryElement = [
   {
     id: 1,
     category_name: "CHARM",
+    sub_name:"Charm"
   },
   {
     id: 2,
     category_name: "VÒNG TAY",
+    sub_name:"Vòng tay"
   },
   {
     id: 3,
     category_name: "NHẪN",
+    sub_name:"Nhẫn"
+  },
+  {
+    id: 4,
+    category_name: "HOA TAI",
+    sub_name:"Hoa Tai"
+  },
+  {
+    id: 5,
+    category_name: "DÂY CHUYỀN",
+    sub_name:"Dây Chuyền"
+  }
+];
+
+export const categoryElementEvent = [
+  {
+    id: 1,
+    category_name: "SẢN PHẨM BÁN CHẠY",
+  },
+  {
+    id: 2,
+    category_name: "CHARM DƯỚI 2,000,000",
+  },
+  {
+    id: 3,
+    category_name: "VÒNG TAY DƯỚI 2,000,000",
   },
   {
     id: 4,
@@ -17,30 +45,7 @@ export const categoryElement = [
   },
   {
     id: 5,
-    category_name: "DÂY CHUYỀN",
-  }
-];
-
-export const categoryElementEvent = [
-  {
-    id: 1,
-    category_name: "CUNG HOÀNG ĐẠO",
-  },
-  {
-    id: 2,
-    category_name: "SINH NHẬT THÁNG 8",
-  },
-  {
-    id: 3,
-    category_name: "CHARM DƯỚI 2,000,000",
-  },
-  {
-    id: 4,
-    category_name: "NHẪN CHỈ TỪ 2,000,000",
-  },
-  {
-    id: 5,
-    category_name: "CHARM DƯỚI 2,000,000",
+    category_name: "DÂY CHUYỀN DƯỚI 2,000,000",
   },
   {
     id: 6,

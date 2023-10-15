@@ -1,52 +1,53 @@
 .avatar{
-    display: flex;
-   align-items: center;
-   margin-bottom: 20px;
-  
+  display: flex;
+ align-items: center;
+ margin-bottom: 20px;
+
 }
 .all_information{
-  margin-bottom: 30px;
- padding-left: 50px;
+margin-bottom: 30px;
+padding-left: 50px;
 }
 .information{
-   margin-left: 20px;
-   display: flex;
- flex-direction: column;
-   .text{
-    margin-bottom: 20px;
-    margin-right: 100px;
-    width: 400px;
-    padding-top: 0px;
-    background-color: white;
-    font-size: 12px;
-    
-   }
+ margin-left: 20px;
+ display: flex;
+flex-direction: column;
+ .text{
+  margin-bottom: 20px;
+  margin-right: 100px;
+  width: 400px;
+  padding-top: 0px;
+  background-color: white;
+  font-size: 12px;
+  
+ }
 }
 
 .change_password{
-    padding:15px 50px;
-    margin-left: 20px;
-    display: flex;
-    flex-direction: column;
-    .text{
-        margin-bottom: 20px;
-        width: 400px;
-        padding-top: 0px;
-        background-color: white;
-        font-size: 12px;
-       }
+  padding:15px 50px;
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+
+  .text{
+      margin-bottom: 20px;
+      width: 400px;
+      padding-top: 0px;
+      background-color: white;
+      font-size: 12px;
+     }
 }
 
 .information_detail1{
-    display: inline-flex;
-  align-items: center;
-  span{
-    color: black;
-    font-size: large;
-    font-weight: 1000;
-  }
+  display: inline-flex;
+align-items: center;
+span{
+  color: black;
+  font-size: large;
+  font-weight: 1000;
+}
 }
 .radio {
-    
-    padding: 15px;
+  
+  padding: 15px;
 }

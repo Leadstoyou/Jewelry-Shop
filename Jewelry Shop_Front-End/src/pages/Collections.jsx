@@ -1,31 +1,39 @@
 import styled from "styled-components";
-
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import RiseLoader from "react-spinners/RiseLoader";
-import CollectionsHeader from "../components/collections/CollectionsHeader";
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import RiseLoader from "react-spinners/RiseLoader";
+import {CollectionAPI} from '../api/productAPI.js';
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 import CollectionsCategory from "../components/collections/CollectionsCategory";
-const Spinner = styled.div`
-  height: 100%;
-  flex-direction: column;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
+import CollectionsHeader from "../components/collections/CollectionsHeader";
+// const Spinner = styled.div`
+//   height: 100%;
+//   flex-direction: column;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// `;
 const Container = styled.div`
   font-family: "Jost", sans-serif;
 `;
-const Index = styled.div``;
+// const Index = styled.div``;
 
 const Collections = () => {
+  const { category } = useParams();
+  const [foundProducts, setFoundProducts] = useState();
+  const [colorsArray, setColorsArray] = useState();
+  const [materialArray, setMaterialArray] = useState();
+
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
+     CollectionAPI(category, null, null, null, null, setColorsArray, setMaterialArray, setFoundProducts, setLoading);
   }, []);
+  const handleDataFromChild = (color, material, price, sort) => {
+    CollectionAPI(category, color, material, price, sort, setColorsArray, setMaterialArray, setFoundProducts, setLoading);
+  };
   return (
     <>
       {loading ? (
@@ -44,8 +52,13 @@ const Collections = () => {
         <Container>
           <Navbar />
 
-          <CollectionsHeader />
-          <CollectionsCategory />
+          <CollectionsHeader category={category} products={foundProducts} />
+          <CollectionsCategory
+            products={foundProducts}
+            colorsArray={colorsArray}
+            materialArray={materialArray}
+            fetchData={handleDataFromChild}
+          />
           <Footer />
         </Container>
       )}

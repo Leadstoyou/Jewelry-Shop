@@ -1,9 +1,11 @@
 import HttpStatusCode from "../constant/HttpStatusCode.js";
 import {cartRepository} from "../repositories/indexRepository.js";
+import {productRepository} from "../repositories/indexRepository.js"
+
 const viewCart = async (req, res) => {
     try {
-      const userId = req.params.userId;
-      const cart = await cartRepository.getCartByUserId(userId);
+      const cartToken = req.params.cart_token;
+      const cart = await cartRepository.getCartByToken(cartToken);
       if (!cart) {
         return res.status(HttpStatusCode.NOT_FOUND).json({ message: 'Cart not found' });
       }
@@ -15,11 +17,46 @@ const viewCart = async (req, res) => {
   };
   const addToCart = async (req, res) => {
     try {
-      const { cartToken, user_id, product_id, size, color, material, quantity, price } = req.body;
-      const cart = await cartRepository.addToCart(cartToken, user_id, product_id, size, color, material, quantity, price);
-      res.status(200).json(cart);
+      const cartToken = req.params.cart_token;
+      const userId = req.body.user_id;
+      const productId = req.body.product_id;
+      const quantity = req.body.quantity;
+      const size = req.body.size;
+      const color = req.body.color;
+      const material = req.body.material;
+  
+      // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng hay chưa
+      const cart = await cartRepository.getCartByToken(cartToken);
+      const product = await productRepository.getProductById(productId);
+  
+      if (!product) {
+        return res.status(HttpStatusCode.NOT_FOUND).json({ message: 'Product not found' });
+      }
+  
+      if (!cart) {
+        // Nếu giỏ hàng không tồn tại, tạo mới giỏ hàng và thêm sản phẩm vào
+        const newCart = await cartRepository.createCart(cartToken, userId);
+        await cartRepository.addProductToCart(newCart._id, productId, quantity, size, color, material);
+      } else {
+        // Nếu giỏ hàng đã tồn tại, kiểm tra xem sản phẩm đã có trong giỏ hàng hay chưa
+        const existingProduct = cart.products.find((p) => p.productId.toString() === productId);
+  
+        if (existingProduct) {
+          // Nếu sản phẩm đã tồn tại trong giỏ hàng, cập nhật thông tin sản phẩm
+          await cartRepository.updateProductInCart(cart._id, productId, quantity, size, color, material);
+        } else {
+          // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm sản phẩm vào
+          await cartRepository.addProductToCart(cart._id, productId, quantity, size, color, material);
+        }
+      }
+  
+      // Cập nhật tổng giá trị đơn hàng
+      await cartRepository.updateTotalPrice(cartToken);
+  
+      return res.status(HttpStatusCode.OK).json({ message: 'Product added to cart successfully' });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
   };
   const removeFromCart = async (req, res) => {

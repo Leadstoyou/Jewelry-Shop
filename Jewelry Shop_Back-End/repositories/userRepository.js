@@ -126,12 +126,8 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
       { new: true }
     );
 
-    const {
-      userRole,
-      isDelete,
-      isActive,
-      ...userData
-    } = updatedUser.toObject();
+    const { userRole, isDelete, isActive, ...userData } =
+      updatedUser.toObject();
     return {
       success: true,
       message: constants.LOGIN_SUCCESSFUL,
@@ -206,6 +202,7 @@ const userLogoutRepository = async (refreshToken) => {
         message: Exception.CANNOT_FIND_REFRESH_TOKEN_IN_USER,
       };
     }
+
     return {
       success: true,
       message: "Logout successfully!",
@@ -532,11 +529,7 @@ const userUpdateStatusRepository = async ({
   }
 };
 
-const userUpdateBlockRepository = async ({
-  userEmail,
-  newBlock,
-  userRole,
-}) => {
+const userUpdateBlockRepository = async ({ userEmail, newBlock, userRole }) => {
   try {
     if (userRole !== 0) {
       return {
@@ -581,5 +574,5 @@ export default {
   userUpdateProfileRepository,
   userUpdateRoleRepository,
   userUpdateStatusRepository,
-  userUpdateBlockRepository
+  userUpdateBlockRepository,
 };

@@ -5,36 +5,32 @@ export default mongoose.model(
     "Cart",
     new Schema(
         {
-            cartToken: {
-                type: String,
-                required: true
-              },
+          cart_token: {
+            type: String,
+            required: true,
+          },
               user_id: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'User'
               },
-              product_list: [{
+              productList: [{
                 product_id: {
                   type: mongoose.Schema.Types.ObjectId,
                   ref: 'Product',
                   required: true
                 },
-                size: [{
-                  type: String,
-                  enum: {
-                    values: ['S', "M", "L", "XL"],
-                    message: '{VALUE} is not suppoted'
+                size: {
+                  type: [String],
+                  required: true
                 },
+                color: {
+                  type: [String],
                   required: true
-                }],
-                color: [{
-                  type: String,
+                },
+                material: {
+                  type: [String],
                   required: true
-                }],
-                material: [{
-                  type: String,
-                  required: true
-                }],
+                },
                 quantity: {
                   type: Number,
                   required: true,

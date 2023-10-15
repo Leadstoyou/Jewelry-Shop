@@ -1,55 +1,59 @@
-
-
-a{
-    text-decoration: none;
-    color: #27251f;
-    font-size: large;
-    padding-left: 10px;
-}
-a:hover{
-    color: rgb(216, 216, 137);
-}
-.containers {
+body{
     background-color: white;
-    padding: 0 20px;
-    width: max-width;
-    height: max-height;
-    position: absolute;
-    top: 20%;
-    left: 35%;
-    
-}
-
-
-form {
-    margin-left: 10px;
-
-}
-
-.password ,.email {
-    border: 1px solid transparent;
-    background: #ededed;
-    color: #666666;
-    padding: 5px 20px;
-    font-weight: 500;
-    margin-bottom: 12px;
-    height: 30px;
-    width: 232px;
-    
-}
-
-input[type="submit"] {
-    height: 40px;
-    width: 272px;
-    line-height: 55px;
-    text-transform: uppercase;
-    font-weight: 600;
-    margin-top: 15px;
-    font-family: Arial;
-    font-size: 13px;
-}
-input[type="submit"]:hover{
-    color: rgb(5, 5, 5);
-    font-size: 14px;
-
-}
+  }
+  
+ 
+  .containers {
+      background-color: white;
+      width: max-width;
+      height: max-height;
+      position: absolute;
+      top: 30%;
+      left: 40%;
+      padding: 40px 20px;
+      border: 1px solid rgb(124, 113, 113);
+      box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(212, 205, 205, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(146, 131, 131, 0.09) 0px -3px 5px;
+      
+  }
+  
+  
+  form {
+      margin-left: 10px;
+  
+  }
+  
+  .password ,.email {
+      border: 1px solid transparent;
+      background: hsl(0, 0%, 93%);
+      color: #666666;
+      padding: 5px 20px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      height:45px;
+      width: 280px;
+      
+  }
+  
+  .btn {
+      height:45px;
+      line-height: 55px;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-top: 15px;
+      font-family: Arial;
+      font-size: 13px;
+      border: 1px solid black;
+      padding: 0;
+      width: 268px ;
+      
+  }
+  .btn:hover{
+      color: rgb(5, 5, 5) !important; 
+      font-size: 14px;
+  
+  }
+  .note a {
+    text-decoration: none;
+    color: black !important;
+    font-weight: 450;
+  }

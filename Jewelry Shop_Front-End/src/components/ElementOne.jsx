@@ -4,6 +4,7 @@ import { categoryElementEvent } from "../data";
 import slide1 from "../assets/slide1.jpg";
 import Aos from "aos";
 import "aos/dist/aos.css";
+import { useNavigate } from "react-router-dom";
 const Container = styled.div`
   margin-top: 10vh;
 `;
@@ -97,12 +98,13 @@ const ElementOne = ({ item }) => {
   useEffect(() => {
     Aos.init({ duration: 2000 });
   }, []);
+  const navigate = useNavigate()
   return (
     <Container data-aos="fade-up">
       <Wrapper>
         <Left>
           {categoryElementEvent.map((item) => (
-            <Controller key={item.id}>
+            <Controller key={item.id} onClick={()=> navigate('/collections')}>
               <ImageController>
                 <Image src={slide1} />
               </ImageController>
@@ -114,7 +116,7 @@ const ElementOne = ({ item }) => {
         </Left>
         <Right>
           <TextRight>Hơn cả một món quà</TextRight>
-          <ButtonRight>Xem ngay</ButtonRight>
+          <ButtonRight onClick={()=> navigate('/collections')}>Xem ngay</ButtonRight>
         </Right>
       </Wrapper>
     </Container>
