@@ -24,7 +24,7 @@ const checkToken = (req, res, next) => {
       } else if (err) {
         return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
           status: "ERROR",
-          message: "Internal Server Error",
+          message: "Invalid Token",
         });
       } else {
         req.user = decode;
@@ -32,10 +32,7 @@ const checkToken = (req, res, next) => {
       }
     });
   } else {
-    return res.status(HttpStatusCode.UNAUTHORIZED).json({
-      status: "ERROR",
-      message: "Require authentication",
-    });
+    next();
   }
 };
 

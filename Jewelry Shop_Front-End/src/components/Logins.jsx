@@ -1,9 +1,8 @@
-import React, { useState ,useEffect} from "react";
-import { useNavigate, Link } from "react-router-dom";
-import "../style/Login.scss";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; 
+import "../style/Login.scss";
 
 const Logins = () => {
   const [email, setEmail] = useState("");
