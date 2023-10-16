@@ -39,13 +39,9 @@ const CollectionAPI = async (
         minPrice: price?.minPrice,
         maxPrice: price?.maxPrice,
         sort: sort,
-      },{   
-        headers: {
-          Authorization: `Bearer ${getAccessTokenFromCookie()}`
-        }
       }
     );
-
+console.log(response.data);
     const data = response.data?.data?.products;
     if (!color && !material && !price && !sort) {
       const extractUnique = (property) => [
