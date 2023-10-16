@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
+import {useNavigate} from 'react-router-dom'
 const Container = styled.div`
   display: flex;
   align-items: stretch;
@@ -324,7 +325,7 @@ const ShoppingCart = () => {
 
   //call API view cart
   const [cartData, setCartData] = useState(null);
-
+  const navigate = useNavigate();
   //Lấy product data
   useEffect(() => {
     // const cartToken = cartData.cart_token;
@@ -362,8 +363,9 @@ const ShoppingCart = () => {
   };
 
   const handlePay = () => {
+    navigate('/checkouts')
+
     if (isAgreedToTerms) {
-      // Implement your payment logic here
     } else {
       alert("Please agree to the Terms of Service.");
     }
@@ -510,21 +512,14 @@ const ShoppingCart = () => {
               I agree to the Terms of Service
             </Label>
           </CheckboxContainer>
-          <form
-            id="createOrder"
-            action="http://localhost:9999/api/v1/payment/create_payment_url"
-            method="POST"
-            target="_blank"
-            onSubmit={handleFormSubmit}
-          >
+
             <Button
-              // onClick={handlePay}
+              onClick={handlePay}
               // disabled={!isAgreedToTerms}
               type="submit"
             >
               THANH TOÁN
             </Button>
-          </form>
           <ImageUnderButton
             src="https://theme.hstatic.net/200000103143/1000942575/14/trustbadge.jpg?v=2700"
             alt="Your Image"
