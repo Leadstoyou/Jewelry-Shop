@@ -1,25 +1,34 @@
-import React, { useState }  from "react";
+import React, { useState } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "@mui/material/Button";
 import SearchIcon from "@mui/icons-material/Search";
-import { Checkbox } from '@mui/joy';
-
+import ViewDetail from "./ViewDetail";
 
 import "../style/ManagerStaff.scss";
 const ManageStaff = () => {
-  const [selectedOption, setSelectedOption] = useState('1'); // Lựa chọn mặc định
+  const [modalShow, setModalShow] = useState(false);
+  const [selectedOption, setSelectedOption] = useState("");
+  const [filterRole, setFilterRole] = useState("");
+  const [filterAction, setFilterAction] = useState("");
 
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
   };
+  const handleFilterRole = (event) => {
+    setFilterRole(event.target.value);
+  };
+  const handleFilterAction = (event) => {
+    setFilterAction(event.target.value);
+  };
+  const handleViewDetail = () => {};
   return (
     <div className="all">
       <div className="titile">
         <h1>Manager User</h1>
       </div>
       <div
-      className="search"
+        className="search"
         style={{
           display: "flex",
           alignItems: "center",
@@ -31,7 +40,25 @@ const ManageStaff = () => {
           Search
         </Button>
       </div>
-      <Table striped bordered hover  className="custom-table">
+      <div className="filter">
+        <select
+          className="select-data"
+          value={filterRole}
+          onChange={handleFilterRole}
+        >
+          <option value="staff">Staff</option>
+          <option value="customer">Customer</option>
+        </select>
+        <select
+          className="select-data"
+          value={filterAction}
+          onChange={handleFilterAction}
+        >
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+      <Table striped bordered hover className="custom-table">
         <thead>
           <tr>
             <th>No</th>
@@ -48,12 +75,13 @@ const ManageStaff = () => {
             <td>name</td>
             <td>21 </td>
             <td>0987654321 </td>
-            <td><select value={selectedOption} onChange={handleOptionChange}>
-              <option value="staff">Staff</option>
-              <option value="customer">Customer</option>
-            </select></td>
             <td>
-             
+              <select value={selectedOption} onChange={handleOptionChange}>
+                <option value="staff">Staff</option>
+                <option value="customer">Customer</option>
+              </select>
+            </td>
+            <td>
               <button className="button">View</button>
             </td>
           </tr>
@@ -62,21 +90,22 @@ const ManageStaff = () => {
             <td>name</td>
             <td>21 </td>
             <td>0987654321 </td>
-            <td><select value={2} onChange={handleOptionChange}>
-              <option value="staff">Staff</option>
-              <option value="customer">Customer</option>
-            </select></td>
             <td>
-             
-              <button className="button">View</button>
+              <select value={selectedOption} onChange={handleOptionChange}>
+                <option value="staff">Staff</option>
+                <option value="customer">Customer</option>
+              </select>
+            </td>
+            <td>
+              <button className="button"  onClick={() => setModalShow(true)}>
+                View
+              </button>
             </td>
           </tr>
+          <ViewDetail show={modalShow} onHide={() => setModalShow(false)} />
         </tbody>
       </Table>
- </div>
-    
-  
-
+    </div>
   );
 };
 

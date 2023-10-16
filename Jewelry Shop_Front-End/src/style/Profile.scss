@@ -41,13 +41,26 @@ flex-direction: column;
 .information_detail1{
   display: inline-flex;
 align-items: center;
+
 span{
   color: black;
   font-size: large;
   font-weight: 1000;
 }
+.column{
+  margin-right: 30px;
+  margin-bottom: 10px;
+
+  input{
+    width: 220px;
+    height: 40px;
+  }
+}
 }
 .radio {
   
   padding: 15px;
+}
+.modal-content{
+  width: 600px;
 }
