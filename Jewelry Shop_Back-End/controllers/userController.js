@@ -1,4 +1,4 @@
-import { validationResult } from "express-validator";
+import { validationResult, check } from "express-validator";
 import { userRepository } from "../repositories/indexRepository.js";
 import HttpStatusCode from "../constant/HttpStatusCode.js";
 import Exception from "../constant/Exception.js";
@@ -56,15 +56,24 @@ const userSearchController = async (req, res) => {
 };
 
 const userLoginController = async (req, res) => {
+  const errors = validationResult(req);
+  check('userEmail')
+    .isEmail()
+    .withMessage('Invalid email format')
+    .run(req);
+  check('userPassword')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/)
+    .withMessage('Password must contain at least one number, one lowercase letter, and one uppercase letter')
+    .run(req);
+  if (!errors.isEmpty()) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      errors: errors.array()
+    });
+  }
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(HttpStatusCode.BAD_REQUEST).json({
-        status: "ERROR",
-        message: errors.array(),
-      });
-    }
-
     const { userEmail, userPassword } = req.body;
     const loginUser = await userRepository.userLoginRepository({
       userEmail,
@@ -185,11 +194,22 @@ const userRegisterController = async (req, res) => {
     userAddress,
     userAge,
   } = req.body;
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-  if (!passwordRegex.test(userPassword)) {
+  const errors = validationResult(req);
+  check('userEmail')
+    .isEmail()
+    .withMessage('Invalid email format')
+    .run(req);
+  check('userPassword')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/)
+    .withMessage('Password must contain at least one number, one lowercase letter, and one uppercase letter')
+    .run(req);
+
+  if (!errors.isEmpty()) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
-      message: "Password must contain at least one lowercase letter, one uppercase letter, one number, and be at least 8 characters long.",
+      errors: errors.array()
     });
   }
 
@@ -263,6 +283,18 @@ const userForgotPasswordController = async (req, res) => {
     });
   }
 
+  const errors = validationResult(req);
+  check('userEmail')
+    .isEmail()
+    .withMessage('Invalid email format')
+    .run(req);
+  if (!errors.isEmpty()) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      errors: errors.array()
+    });
+  }
+
   try {
     const forgotPasswordUser =
       await userRepository.userForgotPasswordRepository(userEmail);
@@ -295,16 +327,23 @@ const userResetPasswordController = async (req, res) => {
   if (!userPasswordResetToken) {
     return res.status(HttpStatusCode.BAD_REQUEST).json({
       status: "ERROR",
-      message: "In valid Token",
+      message: "Invalid Token",
     });
   }
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-  if (!passwordRegex.test(newPassword)) {
+  const errors = validationResult(req);
+  check('newPassword')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/)
+    .withMessage('Password must contain at least one number, one lowercase letter, and one uppercase letter')
+    .run(req);
+  if (!errors.isEmpty()) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
-      message: "Password must contain at least one lowercase letter, one uppercase letter, one number, and be at least 8 characters long.",
+      errors: errors.array()
     });
   }
+
   try {
     const result = await userRepository.userResetPasswordRepository(
       userPasswordResetToken,
@@ -330,11 +369,17 @@ const userResetPasswordController = async (req, res) => {
 
 const userChangePasswordController = async (req, res) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-  if (!passwordRegex.test(newPassword)) {
+  const errors = validationResult(req);
+  check('newPassword')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/)
+    .withMessage('Password must contain at least one number, one lowercase letter, and one uppercase letter')
+    .run(req);
+  if (!errors.isEmpty()) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
-      message: "Password must contain at least one lowercase letter, one uppercase letter, one number, and be at least 8 characters long.",
+      errors: errors.array()
     });
   }
   if (newPassword !== confirmPassword) {
@@ -345,20 +390,17 @@ const userChangePasswordController = async (req, res) => {
   }
   try {
     const userId = req.user.userId;
-
     const updatedUser = await userRepository.userChangePasswordRepository({
       userId,
       oldPassword,
       newPassword,
     });
-
     if (!updatedUser.success) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: updatedUser.message,
       });
     }
-
     return res.status(HttpStatusCode.OK).json({
       status: "OK",
       message: updatedUser.message,
@@ -372,7 +414,7 @@ const userChangePasswordController = async (req, res) => {
   }
 };
 
-const userViewProfileController = async (req,res) => {
+const userViewProfileController = async (req, res) => {
   try {
     const userInfoId = req.user.userId;
     const userInfo = await userRepository.userViewProfileRepository(userInfoId);
@@ -437,7 +479,7 @@ const userUpdateProfileController = async (req, res) => {
 };
 
 const userUpdateRoleController = async (req, res) => {
-  const {newRole } = req.body;
+  const { newRole } = req.body;
   try {
     const userId = req.user.userId;
     const userRole = req.user.userRole;
@@ -467,7 +509,7 @@ const userUpdateRoleController = async (req, res) => {
 };
 
 const userUpdateStatusController = async (req, res) => {
-  const {  newStatus } = req.body;
+  const { newStatus } = req.body;
   try {
     const userId = req.user.userId;
     const userRole = req.user.userRole;
@@ -497,7 +539,7 @@ const userUpdateStatusController = async (req, res) => {
 };
 
 const userUpdateBlockController = async (req, res) => {
-  const {  newBlock } = req.body;
+  const { newBlock } = req.body;
   try {
     const userId = req.user.userId;
     const userRole = req.user.userRole;
