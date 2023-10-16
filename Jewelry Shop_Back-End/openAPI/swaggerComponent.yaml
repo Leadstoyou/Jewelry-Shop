@@ -1,6 +1,12 @@
 
 components:
   schemas: 
+    GetAllSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Get all tài khoản thành công  
     LoginSuccess:
           type: object
           properties:
@@ -151,6 +157,18 @@ components:
         message:
           type: string
           example: Đổi mật khẩu tài khoản thành công   
+     UpdateProfileSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Update tài khoản thành công 
+     ViewProfileSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: View profile tài khoản thành công   
     UpdateRoleSuccess:
       type: object
       properties:
