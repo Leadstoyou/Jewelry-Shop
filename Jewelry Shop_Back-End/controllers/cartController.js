@@ -44,14 +44,7 @@ const viewCart = async (req, res) => {
       } else {
         // Nếu giỏ hàng đã tồn tại, kiểm tra xem sản phẩm đã có trong giỏ hàng hay chưa
         const existingProduct = cart.products.find((p) => p.productId.toString() === productId);
-  
-        if (existingProduct) {
-          // Nếu sản phẩm đã tồn tại trong giỏ hàng, cập nhật thông tin sản phẩm
-          await cartRepository.updateProductInCart(cartToken, productId, quantity, size, color, material);
-        } else {
-          // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm sản phẩm vào
-          await cartRepository.addProductToCart(cartToken, productId, quantity, size, color, material,productImage, productDes);
-        }
+        await cartRepository.addProductToCart(cartToken, productId, quantity, size, color, material,productImage, productDes);
       }
   
       // Cập nhật tổng giá trị đơn hàng
