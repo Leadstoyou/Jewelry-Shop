@@ -1,6 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Homepage from "./pages/Homepage";
+
 import styled from 'styled-components'
 import SearchPage from './pages/SearchPage';
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -14,10 +15,11 @@ import Profile from './pages/Profile'
 import Forgot from './pages/ForgotPassword'
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./components/error/NotFound";
-
 import HistoryPage from "./pages/History";
+import ListDeleteProduct from "./components/dashboard/product/ListDeleteProduct"
 import Checkouts from "./pages/Checkouts";
 const Container = styled.div``
+
 
 function App() {
   return (
@@ -33,7 +35,8 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/history" element={<HistoryPage/>} />
+          <Route path="/listdelete" element={<ListDeleteProduct />} />
+          <Route path="/history" element={<HistoryPage />} />
           <Route path="/checkouts" element={<Checkouts/>} />
           <Route path="/forgot" element={<Forgot/>} />
           <Route path="*" element={<NotFound />} />

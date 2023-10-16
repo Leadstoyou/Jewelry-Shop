@@ -96,8 +96,8 @@ function MyVerticallyCenteredModal(props) {
   const [show, setShow] = useState(true);
 
   const schema = yup.object().shape({
-    dname: yup.string().required(),
-    ddesc: yup.string().required(),
+    dname: yup.string().required("Discount name is required !!!"),
+    ddesc: yup.string().required("Discount description is required !!!"),
     dstart: yup
       .mixed()
       .transform((value, originalValue) => {
@@ -108,7 +108,8 @@ function MyVerticallyCenteredModal(props) {
         return originalValue ? new Date(originalValue) : null;
       })
       .nullable()
-      .typeError("Please enter a valid date"),
+      .typeError("Please enter a valid date")
+      .required("Start date is required !!!"),
 
     dexpired: yup
       .mixed()
@@ -128,15 +129,17 @@ function MyVerticallyCenteredModal(props) {
           const { dstart } = this.parent;
           return !dstart || !value || value >= dstart;
         }
-      ),
+      )
+      .required("Expired date is required !!!"),
     dpercent: yup
       .number()
-      .positive("You must input a positive number for dpercent")
-      .typeError("You must input a number for dpercent"),
+      .max(100,"Please enter percent less than or equal 100")
+      .positive("You must input a positive number for percent")
+      .typeError("You must input percent"),
     dlimit: yup
       .number()
-      .positive("You must input a positive number for dlimit")
-      .typeError("You must input a number for dlimit"),
+      .positive("You must input a positive number for usage limit")
+      .typeError("You must input usage limit"),
   });
 
   const {
@@ -228,7 +231,7 @@ function MyVerticallyCenteredModal(props) {
                 Discount Description
               </Label>
               <div>
-                <Input
+                <textarea
                   type="text"
                   id="ddesc"
                   style={{ width: "100%" }}
@@ -308,6 +311,7 @@ function MyVerticallyCenteredModal(props) {
               style={{ fontWeight: "bolder" }}
               type="submit"
               onClick={(e) => {
+                
                 if (Object.keys(errors).length >= 0) {
                   setExist(true);
                   setTimeout(() => {
