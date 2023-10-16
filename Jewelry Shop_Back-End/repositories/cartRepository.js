@@ -10,11 +10,21 @@ const getCartByToken = async (cartToken) => {
     throw error;
   }
 };
-const createCart = async (cartToken, userId) => {
+const getCartByTokenCookie = async (cartTokenCookie) => {
   try {
-    const cartData = {
-      user_id: userId,
-    };
+    const cartCookie = await getCartByToken(cartTokenCookie);
+    return cartCookie;
+  } catch (error) {
+    throw error;
+  }
+};
+const createCart = async (userId) => {
+  try {
+    let cartData = {};
+
+    if (userId) {
+      cartData.user_id = userId;
+    }
 
     const cartToken = Jwt.sign(cartData, process.env.ACCESS_TOKEN);
     
@@ -26,18 +36,20 @@ const createCart = async (cartToken, userId) => {
     throw error;
   }
 };
-  const addProductToCart = async (cartId, productId, quantity, size, color, material) => {
+  const addProductToCart = async (cartToken, productId, quantity, size, color, material,productImage, productDes) => {
     try {
       await Cart.findByIdAndUpdate(
-        cartId,
+        cartToken,
         {
           $push: {
-            products: {
-              productId,
-              quantity,
-              size,
-              color,
-              material,
+            productList: {
+              product_id: productId,
+              quantity: quantity,
+              size: size,
+              color: color,
+              material: material,
+              productImage: productImage,
+              productDescription: productDes
             },
           },
         },
@@ -48,19 +60,21 @@ const createCart = async (cartToken, userId) => {
     }
   };
 
-  const updateProductInCart = async (cartId, productId, quantity, size, color, material) => {
+  const updateProductInCart = async (cartToken, productId, quantity, size, color, material) => {
     try {
-      await Cart.findOneAndUpdate(
-        { _id: cartId, 'products.productId': productId },
+      const updatedCart = await Cart.findOneAndUpdate(
+        { cart_token: cartToken, 'productList.product_id': productId },
         {
           $set: {
-            'products.$.quantity': quantity,
-            'products.$.size': size,
-            'products.$.color': color,
-            'products.$.material': material,
+            'productList.$.quantity': quantity,
+            'productList.$.size': size,
+            'productList.$.color': color,
+            'productList.$.material': material,
           },
-        }
+        },
+        {new: true}
       );
+      return updatedCart ;
     } catch (error) {
       throw error;
     }
@@ -79,27 +93,31 @@ const createCart = async (cartToken, userId) => {
     }
   };
 
-  const removeFromCart = async (userId, productId) => {
-    const cart = await Cart.findOne({ user_id: userId });
+  const removeFromCart = async (cartToken, productId) => {
+    try {
+      const cart = await Cart.findOne({ cart_token: cartToken });
     if (!cart) {
-      throw new Error('Cart not found');
+      throw new Error("Cart not found");
     }
-    const productIndex = cart.products.findIndex(p => p.product_id === productId);
+    const productIndex = cart.productList.findIndex(p => p.product_id.toString() === productId);
     if (productIndex === -1) {
-      throw new Error('Product not found in cart');
+      throw new Error("Product not found in cart");
     }
-    const product = cart.products[productIndex];
-    cart.products.splice(productIndex, 1);
+    const product = cart.productList[productIndex];
+    cart.productList.splice(productIndex, 1);
     cart.total -= product.price * product.quantity;
     await cart.save();
     return cart;
+    } catch (error) {
+      throw error
+    }
   };
 
   const removePurchasedProducts = async (cartId) => {
     try {
-      await Cart.findByIdAndUpdate(cartId, { $pull: { products: {} } });
+      await Cart.findByIdAndUpdate(cartId, { $pull: { productList: {} } });
     } catch (error) {
       throw error;
     }
   };
-export default {updateTotalPrice, updateProductInCart, createCart, removePurchasedProducts, getCartByToken, addProductToCart, removeFromCart};
+export default {getCartByTokenCookie, updateTotalPrice, updateProductInCart, createCart, removePurchasedProducts, getCartByToken, addProductToCart, removeFromCart};
