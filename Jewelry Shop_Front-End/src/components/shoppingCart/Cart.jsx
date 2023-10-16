@@ -363,9 +363,8 @@ const ShoppingCart = () => {
   };
 
   const handlePay = () => {
-    navigate('/checkouts')
-
     if (isAgreedToTerms) {
+    navigate('/checkouts')
     } else {
       alert("Please agree to the Terms of Service.");
     }
@@ -507,6 +506,7 @@ const ShoppingCart = () => {
               type="checkbox"
               id="termsCheckbox"
               onChange={() => setIsAgreedToTerms(!isAgreedToTerms)}
+              style={{ WebkitAppearance: 'checkbox',}}
             />
             <Label htmlFor="termsCheckbox">
               I agree to the Terms of Service
@@ -515,7 +515,7 @@ const ShoppingCart = () => {
 
             <Button
               onClick={handlePay}
-              // disabled={!isAgreedToTerms}
+              disabled={!isAgreedToTerms}
               type="submit"
             >
               THANH TOÁN
@@ -528,6 +528,7 @@ const ShoppingCart = () => {
             <BillExportCheckbox
               checked={exportBill}
               onChange={() => setExportBill(!exportBill)}
+              style={{ WebkitAppearance: 'checkbox',}}
             />
             <Label>Export Bill</Label>
           </CheckboxContainer>
