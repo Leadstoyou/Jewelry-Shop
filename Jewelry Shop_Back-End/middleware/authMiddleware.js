@@ -14,7 +14,7 @@ const checkToken = (req, res, next) => {
       } else if (err instanceof jwt.TokenExpiredError) {
        const refreshAccessToken =  await userController.refreshAccessTokenController(req, res, next);
        if(typeof refreshAccessToken === 'string') {
-        req.headers.authorization = `Bearer ${lmeo}`;
+        req.headers.authorization = `Bearer ${refreshAccessToken}`;
         checkToken(req,res,next)
        }
        if(typeof refreshAccessToken === 'undefined') {
