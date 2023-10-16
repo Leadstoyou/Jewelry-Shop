@@ -41,12 +41,31 @@ export default mongoose.model(
                 },
                 price: {
                   type: Number,
+                  ref: 'Product',
                   required: true,
                   validate:{
                     validator: (value) => value > 0 ,
                     message: 'Price must be greate than 0'
                 }
-                }
+                },
+                productDescription: {
+                  type: String,
+                  ref: 'Product',
+                  required: true,
+                  validate: {
+                    validator: (value) => validator.isLength(value, { min: 0, max: 5000 }),
+                    message: "productDescription must be between 0 and 5000 characters",
+                  },
+                },
+                productImage: {
+                  type: String,
+                  ref: 'Product',
+                  required: true,
+                  validate: {
+                    validator: validator.isURL,
+                    message: "Invalid URL for product image",
+                  },
+                },
               }],
               total: {
                 type: Number,

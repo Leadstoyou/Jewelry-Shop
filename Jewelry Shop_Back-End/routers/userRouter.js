@@ -25,7 +25,7 @@ router.put("/resetPassword", userController.userResetPasswordController);
 
 router.put("/changePassword",checkUser([constants.ADMIN_ROLE_ID,constants.STAFF_ROLE_ID,constants.USER_ROLE_ID]), userController.userChangePasswordController);
 
-router.get("/viewProfile",checkUser([constants.ADMIN_ROLE_ID,constants.STAFF_ROLE_ID,constants.USER_ROLE_ID]), userController.userViewProfileController);
+router.get("/viewProfile",checkToken, userController.userViewProfileController);
 
 router.put("/updateProfile",checkUser([constants.ADMIN_ROLE_ID,constants.STAFF_ROLE_ID,constants.USER_ROLE_ID]), userController.userUpdateProfileController);
 

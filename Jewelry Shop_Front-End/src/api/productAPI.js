@@ -23,12 +23,12 @@ const CollectionAPI = async (
   setColorsArray,
   setMaterialArray,
   setFoundProducts,
-  setLoading,
+  setLoading
 ) => {
   try {
     const categories = ["Dây Chuyền", "Vòng tay", "Hoa Tai", "Charm", "Nhẫn"];
-    if(!categories.includes(category)){
-      throw new Error("Invalid category")
+    if (!categories.includes(category)) {
+      throw new Error("Invalid category");
     }
     const response = await axios.post(
       "http://localhost:9999/api/v1/products/view",
@@ -55,7 +55,7 @@ const CollectionAPI = async (
   } catch (error) {
     setLoading(false);
     setFoundProducts([]);
-    toast.error(error.response.data.message)
+    toast.error(error.response.data.message);
     console.error("Error fetching data:", error.response.data.message);
   }
 };

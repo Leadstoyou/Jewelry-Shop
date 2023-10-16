@@ -166,7 +166,6 @@ const userLogoutController = async (req, res) => {
     const logoutUser = await userRepository.userLogoutRepository(
       cookie.refreshToken
     );
-    console.log(logoutUser);
     if (!logoutUser.success) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
