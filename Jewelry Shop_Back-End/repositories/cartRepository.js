@@ -120,4 +120,6 @@ const createCart = async (userId) => {
       throw error;
     }
   };
+
 export default {getCartByTokenCookie, updateTotalPrice, updateProductInCart, createCart, removePurchasedProducts, getCartByToken, addProductToCart, removeFromCart};
+

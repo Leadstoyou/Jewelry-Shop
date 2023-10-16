@@ -1,7 +1,6 @@
 import express from "express";
 import { body } from "express-validator";
 import { userController } from "../controllers/indexController.js";
-import routeUnknown from "../middleware/routeMiddleware.js";
 import {checkToken,checkUser} from "../middleware/authMiddleware.js";
 import constants from "../constant/constants.js";
 
@@ -27,6 +26,8 @@ router.put("/resetPassword", userController.userResetPasswordController);
 
 router.put("/changePassword",checkUser([constants.ADMIN_ROLE_ID,constants.STAFF_ROLE_ID,constants.USER_ROLE_ID]), userController.userChangePasswordController);
 
+router.get("/viewProfile",checkToken, userController.userViewProfileController);
+
 router.put("/updateProfile",checkUser([constants.ADMIN_ROLE_ID,constants.STAFF_ROLE_ID,constants.USER_ROLE_ID]), userController.userUpdateProfileController);
 
 router.put("/updateRole",checkUser([constants.ADMIN_ROLE_ID]), userController.userUpdateRoleController);
@@ -35,6 +36,5 @@ router.put("/updateStatus",checkUser([constants.ADMIN_ROLE_ID]), userController.
 
 router.put("/updateBlock",checkUser([constants.ADMIN_ROLE_ID]), userController.userUpdateBlockController);
 
-router.use(routeUnknown);
 
 export default router;

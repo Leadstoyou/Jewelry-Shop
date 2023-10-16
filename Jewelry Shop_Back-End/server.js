@@ -1,40 +1,48 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import {orderRouter, cartRouter, productRouter, userRouter } from "./routers/indexRouter.js";
+import {
+  orderRouter,
+  cartRouter,
+  productRouter,
+  userRouter,
+} from "./routers/indexRouter.js";
 import connect from "./database/database.js";
-import * as dotenv from "dotenv";
-dotenv.config(); 
-
-import swaggerUi from 'swagger-ui-express';
+import dotenv from "dotenv";
+import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./middleware/swaggerMiddleware.js";
-
-
-const port = process.env.PORT;
+import cors from "cors";
+import  paymentRouter  from "./services/vnpayService.js";
+dotenv.config();
+import routeUnknown from "./middleware/routeMiddleware.js";
+const port = process.env.PORT || 4200;
 const app = express();
-const v1Router = express.Router(); 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+const v1Router = express.Router();
+import bodyParser from 'body-parser';
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+const corsOptions = {
+  origin: process.env.FRONT_END_ORIGIN_URL,
+  credentials: true,
+};
 
-v1Router.use(cookieParser());  
+app.use(cors(corsOptions));
+
+
+v1Router.use(cookieParser());
 v1Router.use(express.json());
+v1Router.use(bodyParser.urlencoded({ extended: false }));
 v1Router.use("/users", userRouter);
 v1Router.use("/products", productRouter);
 v1Router.use("/cart", cartRouter);
-v1Router.use("/order", orderRouter)
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  next();
-});
-
-app.use('/api/v1', v1Router);
+v1Router.use("/order", orderRouter);
+v1Router.use("/payment", paymentRouter);
+v1Router.use(routeUnknown);
+app.use("/api/v1", v1Router);
 
 app.get("/", (req, res) => {
   res.send("Hello Jewelry Shop");
 });
 
-app.listen(port ?? 4200, async () => {
+app.listen(port, async () => {
   await connect();
   console.log(`Port: ${port}`);
 });

@@ -1,6 +1,8 @@
 const HttpStatusCode = {
   OK: 200, // Thành công
   CREATED: 201, // Đã tạo thành công (thường dùng cho POST)
+  NO_CONTENT: 204, // khong co du lieu tra ve
+  FOUND: 302,
   BAD_REQUEST: 400, // Yêu cầu không hợp lệ
   UNAUTHORIZED: 401, // Không xác thực
   FORBIDDEN: 403, // Bị từ chối truy cập

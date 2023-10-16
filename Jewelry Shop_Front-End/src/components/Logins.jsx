@@ -1,30 +1,49 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import "../style/Login.scss";
 import axios from "axios";
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; 
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import "../style/Login.scss";
 
 const Logins = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("email");
+    const savedPassword = localStorage.getItem("password");
+
+    if (savedEmail) {
+      setEmail(savedEmail);
+    }
+
+    if (savedPassword) {
+      setPassword(savedPassword);
+    }
+  }, []);
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (validate()) {
       try {
         
-        const response = await axios.post("http://localhost:3001/Account", {
-          email: email,
-          password: password,
-        });
+        const response = await axios.post(
+          "http://localhost:9999/api/v1/users/login",
+          {
+            userEmail: email,
+            userPassword: password,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+          console.log(response)
 
         if (response.status === 200) {
           console.log("Login successful");
           navigate("/"); 
-        } else {
+        } else if(response.status === 400) {
           toast.error("Login failed");
         }
       } catch (error) {
@@ -34,7 +53,7 @@ const Logins = () => {
   };
 
   const validate = () => {
-    const passwordRegex = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
     if (email === "" || email === null || !email.includes("@")) {
       toast.error('Email is required');
@@ -47,7 +66,7 @@ const Logins = () => {
     }
 
     if (!password.match(passwordRegex)) {
-      toast.error("Password must contain at least one number and one letter.");
+      toast.error("Password must contain at least one lowercase letter, one uppercase letter, one number, and be at least 8 characters long.");
       return false;
     }
 
@@ -84,7 +103,7 @@ const Logins = () => {
         </div>
         <div className="note">
           <span>
-            <Link to="/">Quên mật khẩu</Link>
+            <Link to="/forgot">Quên mật khẩu</Link>
           </span>
           ?
           <span>
@@ -93,8 +112,7 @@ const Logins = () => {
         </div>
         <div className="action_button">
           <input type="submit" value={"Đăng Nhập"} className="btn" />
-        </div>
-        <ToastContainer position="top-right"  autoClose ='1000' /> 
+        </div> 
       </form>
     </div>
   );

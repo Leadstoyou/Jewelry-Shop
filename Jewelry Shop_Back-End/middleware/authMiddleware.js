@@ -12,11 +12,18 @@ const checkToken = (req, res, next) => {
           message: "Invalid token format",
         });
       } else if (err instanceof jwt.TokenExpiredError) {
-        await userController.refreshAccessTokenController(req, res);
+       const refreshAccessToken =  await userController.refreshAccessTokenController(req, res, next);
+       if(typeof refreshAccessToken === 'string') {
+        req.headers.authorization = `Bearer ${lmeo}`;
+        checkToken(req,res,next)
+       }
+       if(typeof refreshAccessToken === 'undefined') {
+        // next();
+       }
       } else if (err) {
         return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
           status: "ERROR",
-          message: "Internal Server Error",
+          message: "Invalid Token",
         });
       } else {
         req.user = decode;
@@ -24,10 +31,7 @@ const checkToken = (req, res, next) => {
       }
     });
   } else {
-    return res.status(HttpStatusCode.UNAUTHORIZED).json({
-      status: "ERROR",
-      message: "Require authentication",
-    });
+    next();
   }
 };
 
@@ -36,9 +40,11 @@ const checkUser =
   (req, res, next) => {
     checkToken(req, res, (err) => {
       if (err) {
+        console.log('error:', err)
         return res.status(err.status).json(err.body);
       }
       const userRole = req.user?.userRole;
+      console.log('userRole',userRole)
 
       if (allowedRoles.includes(userRole)) {
         next();
