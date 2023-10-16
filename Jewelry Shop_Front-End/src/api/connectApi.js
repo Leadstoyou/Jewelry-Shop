@@ -4,7 +4,7 @@ import axios from "axios";
 const getAllProducts = async (setAllproduct, notify) => {
   try {
     const response = await axios.post(
-      "http://localhost:9999/api/v1/products/view"
+      `${import.meta.env.VITE_API_PRODUCTS}/view`
     );
     if (response.request.status === 200) {
       const dataNew = response.data.data;
@@ -22,7 +22,7 @@ const addProduct = async (addData, success, notify) => {
   try {
     const data = addData;
     const response = await axios.post(
-      "http://localhost:9999/api/v1/products/create",
+      `${import.meta.env.VITE_API_PRODUCTS}/create`,
       data
     );
     if (response.status === 200) {
@@ -41,7 +41,7 @@ const updateProduct = async (_id, notify, success, newData) => {
     const id = _id;
     const data = newData;
     const response = await axios.patch(
-      `http://localhost:9999/api/v1/products/update/${id}`,
+      `${import.meta.env.VITE_API_PRODUCTS}/update/${id}`,
       data
     );
     if (response.status === 200) {
@@ -60,7 +60,7 @@ const deleteProduct = async (_id) => {
   try {
     const id = _id;
     const response = await axios.delete(
-      `http://localhost:9999/api/v1/products/delete/${id}`
+      `${import.meta.env.VITE_API_PRODUCTS}/delete/${id}`
     );
     if (response.status === 204) {
      
