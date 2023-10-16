@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -321,10 +322,10 @@ const ShoppingCart = () => {
       productCode: "P789", // Product CODE added
     },
   ]);
-
+  const navigate = useNavigate();
   const handlePay = () => {
     if (isAgreedToTerms) {
-      // Implement your payment logic here
+      navigate("/checkouts");
     } else {
       alert("Please agree to the Terms of Service.");
     }
@@ -350,7 +351,7 @@ const ShoppingCart = () => {
   const handleFormSubmit = (e) => {
     // e.preventDefault();
     console.log(e);
-  }
+  };
   const total = products.reduce(
     (acc, product) => acc + product.price * product.selectedQuantity,
     0
@@ -468,16 +469,26 @@ const ShoppingCart = () => {
               type="checkbox"
               id="termsCheckbox"
               onChange={() => setIsAgreedToTerms(!isAgreedToTerms)}
+              style={{WebkitAppearance: 'checkbox'}}
             />
             <Label htmlFor="termsCheckbox">
               I agree to the Terms of Service
             </Label>
           </CheckboxContainer>
-          <form id="createOrder" action="http://localhost:9999/api/v1/payment/create_payment_url" method="POST" onSubmit={handleFormSubmit}>
-          <Button onClick={handlePay} disabled={!isAgreedToTerms} type="submit">
-            THANH TOÁN
-          </Button>
-            </form>
+          <form
+            id="createOrder"
+            action="http://localhost:9999/api/v1/payment/create_payment_url"
+            method="POST"
+            onSubmit={handleFormSubmit}
+          >
+            <Button
+              onClick={handlePay}
+              disabled={!isAgreedToTerms}
+              type="submit"
+            >
+              THANH TOÁN
+            </Button>
+          </form>
           <ImageUnderButton
             src="https://theme.hstatic.net/200000103143/1000942575/14/trustbadge.jpg?v=2700"
             alt="Your Image"
@@ -486,6 +497,7 @@ const ShoppingCart = () => {
             <BillExportCheckbox
               checked={exportBill}
               onChange={() => setExportBill(!exportBill)}
+              style={{WebkitAppearance: 'checkbox'}}
             />
             <Label>Export Bill</Label>
           </CheckboxContainer>

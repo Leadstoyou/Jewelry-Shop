@@ -31,7 +31,7 @@ const CollectionAPI = async (
       throw new Error("Invalid category");
     }
     const response = await axios.post(
-      "http://localhost:9999/api/v1/products/view",
+        `${import.meta.env.VITE_API_PRODUCTS}/view`,
       {
         category: category,
         color: color,
