@@ -1,5 +1,6 @@
 import { Cart } from "../models/indexModel.js";
-import {Product} from "../models/indexModel.js"
+import {Product} from "../models/indexModel.js";
+import {productRepository} from "./indexRepository.js";
 import mongoose from "mongoose";
 import Jwt from "jsonwebtoken";
 
@@ -75,13 +76,14 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
   }
 };
 
-  const updateProductInCart = async (cartToken, product, quantity, size, color, material) => {
+  const updateProductInCart = async (cartToken, productId, quantity, size, color, material) => {
     try {
+      const product = await productRepository.getProductById(productId);
       if(quantity > product.quantity){
         throw new Error ("Not enough quantity in stock")
       }else {
       const updatedCart = await Cart.findOneAndUpdate(
-        { cart_token: cartToken, 'productList.product_id': product._id },
+        { cart_token: cartToken, 'productList.product_id':  productId},
         {
           $set: {
             'productList.$.quantity': quantity,

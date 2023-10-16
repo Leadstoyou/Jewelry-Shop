@@ -64,8 +64,7 @@ const viewCart = async (req, res) => {
       const material = req.body.material;
       const cartToken = req.params.cart_token;
       const productId = req.body.product_id;
-      const product = await productRepository.getProductById(productId);
-      const cartUpdate = cartRepository.updateProductInCart(cartToken, product, quantity, size, color, material);
+      const cartUpdate = await cartRepository.updateProductInCart(cartToken, productId, quantity, size, color, material);
       return res.status(HttpStatusCode.OK).json(cartUpdate);
     } catch (error) {
       console.error(error);
