@@ -145,7 +145,6 @@ const refreshAccessTokenController = async (req, res, next) => {
 
 const userLogoutController = async (req, res) => {
   const cookie = req.cookies;
-  console.log('cookei',cookie)
   if (!cookie || !cookie.refreshToken) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
@@ -185,6 +184,14 @@ const userRegisterController = async (req, res) => {
     userAddress,
     userAge,
   } = req.body;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  if (!passwordRegex.test(userPassword)) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      message: "Password must contain at least one lowercase letter, one uppercase letter, one number, and be at least 8 characters long.",
+    });
+  }
+
   if (userPassword !== confirmPassword) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
@@ -290,6 +297,13 @@ const userResetPasswordController = async (req, res) => {
       message: "In valid Token",
     });
   }
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  if (!passwordRegex.test(newPassword)) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      message: "Password must contain at least one lowercase letter, one uppercase letter, one number, and be at least 8 characters long.",
+    });
+  }
   try {
     const result = await userRepository.userResetPasswordRepository(
       userPasswordResetToken,
@@ -314,7 +328,14 @@ const userResetPasswordController = async (req, res) => {
 };
 
 const userChangePasswordController = async (req, res) => {
-  const { userEmail, oldPassword, newPassword, confirmPassword } = req.body;
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  if (!passwordRegex.test(newPassword)) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      message: "Password must contain at least one lowercase letter, one uppercase letter, one number, and be at least 8 characters long.",
+    });
+  }
   if (newPassword !== confirmPassword) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
@@ -322,8 +343,10 @@ const userChangePasswordController = async (req, res) => {
     });
   }
   try {
+    const userId = req.user.userId;
+
     const updatedUser = await userRepository.userChangePasswordRepository({
-      userEmail,
+      userId,
       oldPassword,
       newPassword,
     });
@@ -348,9 +371,31 @@ const userChangePasswordController = async (req, res) => {
   }
 };
 
+const userViewProfileController = async (req,res) => {
+  try {
+    const userInfoId = req.user.userId;
+    const userInfo = await userRepository.userViewProfileRepository(userInfoId);
+    if (!userInfo.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: userInfo.message,
+      });
+    }
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: userInfo.message,
+      data: userInfo.data,
+    });
+  } catch (exception) {
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
+      message: exception.message,
+    });
+  }
+};
+
 const userUpdateProfileController = async (req, res) => {
   const {
-    userEmail,
     userName,
     userPhoneNumber,
     userGender,
@@ -360,8 +405,9 @@ const userUpdateProfileController = async (req, res) => {
   } = req.body;
 
   try {
+    const userId = req.user.userId;
     const updatedUser = await userRepository.userUpdateProfileRepository({
-      userEmail,
+      userId,
       userName,
       userPhoneNumber,
       userGender,
@@ -390,11 +436,12 @@ const userUpdateProfileController = async (req, res) => {
 };
 
 const userUpdateRoleController = async (req, res) => {
-  const { userEmail, newRole } = req.body;
+  const {newRole } = req.body;
   try {
+    const userId = req.user.userId;
     const userRole = req.user.userRole;
     const updatedUser = await userRepository.userUpdateRoleRepository({
-      userEmail,
+      userId,
       newRole,
       userRole,
     });
@@ -419,11 +466,12 @@ const userUpdateRoleController = async (req, res) => {
 };
 
 const userUpdateStatusController = async (req, res) => {
-  const { userEmail, newStatus } = req.body;
+  const {  newStatus } = req.body;
   try {
+    const userId = req.user.userId;
     const userRole = req.user.userRole;
     const updatedUser = await userRepository.userUpdateStatusRepository({
-      userEmail,
+      userId,
       newStatus,
       userRole,
     });
@@ -448,11 +496,12 @@ const userUpdateStatusController = async (req, res) => {
 };
 
 const userUpdateBlockController = async (req, res) => {
-  const { userEmail, newBlock } = req.body;
+  const {  newBlock } = req.body;
   try {
+    const userId = req.user.userId;
     const userRole = req.user.userRole;
     const updatedUser = await userRepository.userUpdateBlockRepository({
-      userEmail,
+      userId,
       newBlock,
       userRole,
     });
@@ -491,4 +540,5 @@ export default {
   userUpdateRoleController,
   userUpdateStatusController,
   userUpdateBlockController,
+  userViewProfileController
 };

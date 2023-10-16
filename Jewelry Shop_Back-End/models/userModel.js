@@ -2,7 +2,6 @@ import mongoose, { Schema, ObjectId } from "mongoose";
 import isEmail from "validator/lib/isEmail.js";
 import validator from "validator";
 import crypto from "crypto";
-import bcrypt from 'bcrypt';
 
 const userSchema = new Schema(
   {
@@ -25,6 +24,10 @@ const userSchema = new Schema(
     userPassword: {
       type: String,
       required: true,
+      validate: {
+        validator: (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value),
+        message: "Password must contain at least one letter and one number",
+      },
     },
     userPhoneNumber: {
       type: String,

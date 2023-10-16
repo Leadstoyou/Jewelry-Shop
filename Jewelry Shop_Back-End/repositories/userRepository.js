@@ -280,7 +280,7 @@ const verifyEmailRepository = async (userVerifyResetToken) => {
     }
 
     existingUser.isActive = true;
-    existingUser.userPasswordChangedAt = Date.now();
+    existingUser.userVerifyAt = Date.now();
     existingUser.userVerifyResetToken = undefined;
     existingUser.userVerifyResetExpires = undefined;
     await existingUser.save();
@@ -357,12 +357,12 @@ const userResetPasswordRepository = async (
 };
 
 const userChangePasswordRepository = async ({
-  userEmail,
+  userId,
   oldPassword,
   newPassword,
 }) => {
   try {
-    const existingUser = await User.findOne({ userEmail }).exec();
+    const existingUser = await User.findById(userId);
     if (!existingUser) {
       return {
         success: false,
@@ -405,8 +405,27 @@ const userChangePasswordRepository = async ({
   }
 };
 
+const userViewProfileRepository = async (userId) => {
+  try {
+    const userInfo = await User.findById(userId);
+    if (!userInfo || userInfo.length === 0) {
+      return {
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      };
+    }
+    return {
+      success: true,
+      message: "Get user successfully!",
+      data: userInfo,
+    };
+  } catch (exception) {
+    throw new Exception(exception.message);
+  }
+};
+
 const userUpdateProfileRepository = async ({
-  userEmail,
+  userId,
   userName,
   userPhoneNumber,
   userGender,
@@ -433,8 +452,8 @@ const userUpdateProfileRepository = async ({
       ...(userAvtUrl && { userAvatar: userAvtUrl }),
     };
 
-    const updatedUser = await User.findOneAndUpdate(
-      { userEmail },
+    const updatedUser = await User.findByIdAndUpdate(
+      { userId },
       updateFields,
       { new: true }
     ).exec();
@@ -460,7 +479,7 @@ const userUpdateProfileRepository = async ({
   }
 };
 
-const userUpdateRoleRepository = async ({ userEmail, newRole, userRole }) => {
+const userUpdateRoleRepository = async ({ userId, newRole, userRole }) => {
   try {
     if (userRole !== 0) {
       return {
@@ -469,8 +488,8 @@ const userUpdateRoleRepository = async ({ userEmail, newRole, userRole }) => {
       };
     }
 
-    const updatedUser = await User.findOneAndUpdate(
-      { userEmail },
+    const updatedUser = await User.findByIdAndUpdate(
+      { userId },
       { userRole: newRole },
       { new: true }
     ).exec();
@@ -495,7 +514,7 @@ const userUpdateRoleRepository = async ({ userEmail, newRole, userRole }) => {
 };
 
 const userUpdateStatusRepository = async ({
-  userEmail,
+  userId,
   newStatus,
   userRole,
 }) => {
@@ -507,8 +526,8 @@ const userUpdateStatusRepository = async ({
       };
     }
 
-    const updatedUser = await User.findOneAndUpdate(
-      { userEmail },
+    const updatedUser = await User.findByIdAndUpdate(
+      { userId },
       { isActive: newStatus },
       { new: true }
     ).exec();
@@ -529,7 +548,7 @@ const userUpdateStatusRepository = async ({
   }
 };
 
-const userUpdateBlockRepository = async ({ userEmail, newBlock, userRole }) => {
+const userUpdateBlockRepository = async ({ userId, newBlock, userRole }) => {
   try {
     if (userRole !== 0) {
       return {
@@ -538,8 +557,8 @@ const userUpdateBlockRepository = async ({ userEmail, newBlock, userRole }) => {
       };
     }
 
-    const updatedUser = await User.findOneAndUpdate(
-      { userEmail },
+    const updatedUser = await User.findByIdAndUpdate(
+      { userId },
       { isDelete: newBlock },
       { new: true }
     ).exec();
@@ -575,4 +594,5 @@ export default {
   userUpdateRoleRepository,
   userUpdateStatusRepository,
   userUpdateBlockRepository,
+  userViewProfileRepository
 };
