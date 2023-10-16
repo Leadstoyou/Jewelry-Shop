@@ -1,7 +1,8 @@
 import { useState } from "react";
 import "../style/OrderDetail.css";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { Link } from "react-router-dom";
 
 const Checkouts = () => {
   const [inputNameValue, setInputNameValue] = useState("");
@@ -27,7 +28,9 @@ const Checkouts = () => {
     }
   };
   return (
+    
     <div className="flexbox">
+       <ToastContainer />
       <div className="content">
         <div className="wrap">
           <div className="sidebar">
@@ -166,13 +169,13 @@ const Checkouts = () => {
           </div>
           <div className="main">
             <div className="main-header">
-              <a href="/" className="logo">
+              <Link to="/" className="logo">
                 <h1 className="logo-text">Jewerly Shop</h1>
-              </a>
+              </Link>
 
               <ul className="breadcrumb">
                 <li className="breadcrumb-item">
-                  <a href="/cart">Giỏ hàng</a>
+                  <Link to="/cart">Giỏ hàng</Link>
                 </li>
 
                 <li className="breadcrumb-item breadcrumb-item-current">
@@ -228,9 +231,9 @@ const Checkouts = () => {
                     <div className="section-content section-customer-information no-mb">
                       <p className="section-content-text">
                         Bạn đã có tài khoản?
-                        <a href="/account/login?urlredirect=%2Fcheckouts%2Fe0002523e9d04c87982765859ff95a08%3Fstep%3D1">
+                        <Link to={'/login'}>
                           Đăng nhập
-                        </a>
+                        </Link>
                       </p>
 
                       <div className="fieldset">
@@ -460,16 +463,16 @@ const Checkouts = () => {
                               }}
                               onClick={(e) => handleSubmitOrder(e)}
                             >
-                              <span className="btn-content">
+                              <span className="btn-content btnOrderDetails">
                                 Hoàn tất đơn hàng
                               </span>
                               <i className="btn-spinner icon icon-button-spinner"></i>
                             </button>
                           </form>
                         </form>
-                        <a className="step-footer-previous-link" href="/cart">
+                        <Link className="step-footer-previous-link" to="/cart">
                           Giỏ hàng
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>

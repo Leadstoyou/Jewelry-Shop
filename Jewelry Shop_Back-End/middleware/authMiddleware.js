@@ -12,13 +12,12 @@ const checkToken = (req, res, next) => {
           message: "Invalid token format",
         });
       } else if (err instanceof jwt.TokenExpiredError) {
-       const lmeo =  await userController.refreshAccessTokenController(req, res, next);
-       console.log('typeof lmeo: ',typeof lmeo );
-       if(typeof lmeo === 'string') {
+       const refreshAccessToken =  await userController.refreshAccessTokenController(req, res, next);
+       if(typeof refreshAccessToken === 'string') {
         req.headers.authorization = `Bearer ${lmeo}`;
         checkToken(req,res,next)
        }
-       if(typeof lmeo === 'undefined') {
+       if(typeof refreshAccessToken === 'undefined') {
         // next();
        }
       } else if (err) {
