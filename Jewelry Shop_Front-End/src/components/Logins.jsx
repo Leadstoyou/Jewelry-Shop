@@ -1,8 +1,9 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from 'react-toastify';
+import React, { useState ,useEffect} from "react";
+import { useNavigate, Link } from "react-router-dom";
 import "../style/Login.scss";
+import axios from "axios";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; 
 
 const Logins = () => {
   const [email, setEmail] = useState("");
@@ -28,22 +29,15 @@ const Logins = () => {
     if (validate()) {
       try {
         
-        const response = await axios.post(
-          "http://localhost:9999/api/v1/users/login",
-          {
-            userEmail: email,
-            userPassword: password,
-          },
-          {
-            withCredentials: true,
-          }
-        );
-          console.log(response)
+        const response = await axios.post("localhost:9999/api/v1/users/login", {
+          email: email,
+          password: password,
+        });
 
         if (response.status === 200) {
           console.log("Login successful");
           navigate("/"); 
-        } else if(response.status === 400) {
+        } else {
           toast.error("Login failed");
         }
       } catch (error) {
