@@ -1,4 +1,4 @@
-import { validationResult } from "express-validator";
+import { validationResult, check } from "express-validator";
 import { userRepository } from "../repositories/indexRepository.js";
 import HttpStatusCode from "../constant/HttpStatusCode.js";
 import Exception from "../constant/Exception.js";
@@ -56,20 +56,30 @@ const userSearchController = async (req, res) => {
 };
 
 const userLoginController = async (req, res) => {
+  const errors = validationResult(req);
+  check('userEmail')
+    .isEmail()
+    .withMessage('Invalid email format')
+    .run(req);
+  check('userPassword')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/)
+    .withMessage('Password must contain at least one number, one lowercase letter, and one uppercase letter')
+    .run(req);
+  if (!errors.isEmpty()) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      errors: errors.array()
+    });
+  }
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(HttpStatusCode.BAD_REQUEST).json({
-        status: "ERROR",
-        message: errors.array(),
-      });
-    }
-
     const { userEmail, userPassword } = req.body;
     const loginUser = await userRepository.userLoginRepository({
       userEmail,
       userPassword,
     });
+
     if (!loginUser.success) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
@@ -78,16 +88,16 @@ const userLoginController = async (req, res) => {
     }
     res.cookie("accessToken", loginUser.data.accessToken, {
       maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
+      httpOnly: false,
       secure: true,
-      sameSite: "Strict",
+      sameSite: "None",
     });
 
     res.cookie("refreshToken", loginUser.data.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       secure: true,
-      sameSite: "Strict",
+      sameSite: "None",
     });
 
     return res.status(HttpStatusCode.OK).json({
@@ -103,7 +113,7 @@ const userLoginController = async (req, res) => {
   }
 };
 
-const refreshAccessTokenController = async (req, res) => {
+const refreshAccessTokenController = async (req, res, next) => {
   const { refreshToken } = req.cookies;
   if (!refreshToken) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
@@ -115,26 +125,22 @@ const refreshAccessTokenController = async (req, res) => {
     const result = await userRepository.refreshAccessTokenRepository(
       refreshToken
     );
-
     if (!result.success) {
-      return res.status(HttpStatusCode.BAD_REQUEST).json({
+      res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: result.message,
       });
+      return;
     }
+
     res.cookie("accessToken", result.data, {
       maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
+      httpOnly: false,
       secure: true,
-      sameSite: "Strict",
+      sameSite: "None",
     });
 
-
-    return res.status(HttpStatusCode.OK).json({
-      status: "OK",
-      message: result.message,
-      data: result.data,
-    });
+    return result.data;
   } catch (exception) {
     if (exception.message === Exception.REFRESH_TOKEN_EXPIRED) {
       return userLogoutController(req, res);
@@ -155,7 +161,7 @@ const userLogoutController = async (req, res) => {
     });
   }
   try {
-    res.clearCookie("accessToken", { httpOnly: true, secure: true });
+    res.clearCookie("accessToken", { httpOnly: false, secure: true });
     res.clearCookie("refreshToken", { httpOnly: true, secure: true });
     const logoutUser = await userRepository.userLogoutRepository(
       cookie.refreshToken
@@ -167,10 +173,7 @@ const userLogoutController = async (req, res) => {
       });
     }
 
-    return res.status(HttpStatusCode.OK).json({
-      status: "OK",
-      message: logoutUser.message,
-    });
+    return res.redirect(`${process.env.FRONT_END_URL}/login`);
   } catch (exception) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
@@ -190,6 +193,25 @@ const userRegisterController = async (req, res) => {
     userAddress,
     userAge,
   } = req.body;
+  const errors = validationResult(req);
+  check('userEmail')
+    .isEmail()
+    .withMessage('Invalid email format')
+    .run(req);
+  check('userPassword')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/)
+    .withMessage('Password must contain at least one number, one lowercase letter, and one uppercase letter')
+    .run(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      errors: errors.array()
+    });
+  }
+
   if (userPassword !== confirmPassword) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
@@ -260,6 +282,18 @@ const userForgotPasswordController = async (req, res) => {
     });
   }
 
+  const errors = validationResult(req);
+  check('userEmail')
+    .isEmail()
+    .withMessage('Invalid email format')
+    .run(req);
+  if (!errors.isEmpty()) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      errors: errors.array()
+    });
+  }
+
   try {
     const forgotPasswordUser =
       await userRepository.userForgotPasswordRepository(userEmail);
@@ -292,9 +326,23 @@ const userResetPasswordController = async (req, res) => {
   if (!userPasswordResetToken) {
     return res.status(HttpStatusCode.BAD_REQUEST).json({
       status: "ERROR",
-      message: "In valid Token",
+      message: "Invalid Token",
     });
   }
+  const errors = validationResult(req);
+  check('newPassword')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/)
+    .withMessage('Password must contain at least one number, one lowercase letter, and one uppercase letter')
+    .run(req);
+  if (!errors.isEmpty()) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      errors: errors.array()
+    });
+  }
+
   try {
     const result = await userRepository.userResetPasswordRepository(
       userPasswordResetToken,
@@ -319,7 +367,20 @@ const userResetPasswordController = async (req, res) => {
 };
 
 const userChangePasswordController = async (req, res) => {
-  const { userEmail, oldPassword, newPassword, confirmPassword } = req.body;
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+  const errors = validationResult(req);
+  check('newPassword')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/)
+    .withMessage('Password must contain at least one number, one lowercase letter, and one uppercase letter')
+    .run(req);
+  if (!errors.isEmpty()) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
+      status: "ERROR",
+      errors: errors.array()
+    });
+  }
   if (newPassword !== confirmPassword) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
@@ -327,19 +388,18 @@ const userChangePasswordController = async (req, res) => {
     });
   }
   try {
+    const userId = req.user.userId;
     const updatedUser = await userRepository.userChangePasswordRepository({
-      userEmail,
+      userId,
       oldPassword,
       newPassword,
     });
-
     if (!updatedUser.success) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: updatedUser.message,
       });
     }
-
     return res.status(HttpStatusCode.OK).json({
       status: "OK",
       message: updatedUser.message,
@@ -353,9 +413,31 @@ const userChangePasswordController = async (req, res) => {
   }
 };
 
+const userViewProfileController = async (req, res) => {
+  try {
+    const userInfoId = req.user.userId;
+    const userInfo = await userRepository.userViewProfileRepository(userInfoId);
+    if (!userInfo.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: userInfo.message,
+      });
+    }
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: userInfo.message,
+      data: userInfo.data,
+    });
+  } catch (exception) {
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
+      message: exception.message,
+    });
+  }
+};
+
 const userUpdateProfileController = async (req, res) => {
   const {
-    userEmail,
     userName,
     userPhoneNumber,
     userGender,
@@ -365,8 +447,9 @@ const userUpdateProfileController = async (req, res) => {
   } = req.body;
 
   try {
+    const userId = req.user.userId;
     const updatedUser = await userRepository.userUpdateProfileRepository({
-      userEmail,
+      userId,
       userName,
       userPhoneNumber,
       userGender,
@@ -395,11 +478,12 @@ const userUpdateProfileController = async (req, res) => {
 };
 
 const userUpdateRoleController = async (req, res) => {
-  const { userEmail, newRole } = req.body;
+  const { newRole } = req.body;
   try {
+    const userId = req.user.userId;
     const userRole = req.user.userRole;
     const updatedUser = await userRepository.userUpdateRoleRepository({
-      userEmail,
+      userId,
       newRole,
       userRole,
     });
@@ -424,11 +508,12 @@ const userUpdateRoleController = async (req, res) => {
 };
 
 const userUpdateStatusController = async (req, res) => {
-  const { userEmail, newStatus } = req.body;
+  const { newStatus } = req.body;
   try {
+    const userId = req.user.userId;
     const userRole = req.user.userRole;
     const updatedUser = await userRepository.userUpdateStatusRepository({
-      userEmail,
+      userId,
       newStatus,
       userRole,
     });
@@ -453,11 +538,12 @@ const userUpdateStatusController = async (req, res) => {
 };
 
 const userUpdateBlockController = async (req, res) => {
-  const { userEmail, newBlock } = req.body;
+  const { newBlock } = req.body;
   try {
+    const userId = req.user.userId;
     const userRole = req.user.userRole;
     const updatedUser = await userRepository.userUpdateBlockRepository({
-      userEmail,
+      userId,
       newBlock,
       userRole,
     });
@@ -495,5 +581,6 @@ export default {
   userUpdateProfileController,
   userUpdateRoleController,
   userUpdateStatusController,
-  userUpdateBlockController
+  userUpdateBlockController,
+  userViewProfileController
 };

@@ -18,7 +18,35 @@ servers:
 tags:
   - name: users
     description: Các API LIÊN QUAN ĐẾN USER
+
 paths:
+  /users/:
+    get:
+      tags:
+        - users
+      summary: Get all các user
+      description: Get all user trong JEWELRY shop
+      operationId: getAllUser  
+      responses:
+        "200":
+          description: Get All successfully!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetAllSuccess"
+
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"
   /users/login:
     post:
       tags:
@@ -246,7 +274,7 @@ paths:
                 newPassword:
                   type: string
                   example: example123 
-                token:
+                userPasswordResetToken:
                   type: string
                   example: dfsdf23423sdasdfasdf     
         required: true
@@ -320,6 +348,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorServer"
+  /users/viewProfile:
+    get:
+      tags:
+        - users
+      summary: Lấy thông tin người dùng
+      description: Lấy thông tin người dùng trong JEWELRY shop
+      operationId: viewProfile  
+      responses:
+        "200":
+          description: View profile successfully!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ViewProfileSuccess"
+
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"
   /users/updateProfile:
     put:
       tags:
@@ -368,7 +423,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ChangePasswordSuccess"
+                $ref: "#/components/schemas/UpdateProfileSuccess"
 
         "400":
           description: Yêu cầu không hợp lệ

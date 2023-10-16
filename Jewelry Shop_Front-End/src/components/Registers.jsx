@@ -19,8 +19,9 @@ import {
 const Register = () => {
   const [formData, setFormData] = useState({
     fullName: "",
-    gender: "nam",
+    gender: "Male",
     phoneNumber: "",
+    address: "",
     age: "",
     email: "",
     password: "",
@@ -42,20 +43,25 @@ const Register = () => {
   
     if (validate()) {
       try {
-        const response = await axios.post("http://localhost:3001/Account", {
-          name:formData.fullName,
-          gender:formData.gender,
-          phoneNumber:formData.phoneNumber,
-          age:formData.age,
-          email: formData.email, 
-          password: formData.password,
+        console.log("ok");
+       const response = await axios.post("http://localhost:9999/api/v1/users/register", {
+          userName:formData.fullName,
+          userEmail:formData.email,
+          userPassword:formData.password,
+          confirmPassword:formData.checkpassword,
+          userPhoneNumber:formData.phoneNumber,
+          userGender:formData.gender,
+          userAddress:formData.address,
+          userAge:formData.age
+       
         });
 
-        if (response.status === 200) {
+        if (response.status === 201) {
           console.log("Registration successful");
           navigate("/login"); 
           
         } else {
+          console.log("check");
           toast.error("Registration failed");
         }
       } catch (error) {
@@ -69,8 +75,8 @@ const Register = () => {
     if (
       formData.fullName === "" ||
       formData.age === "" || 
-      formData.phoneNumber===""
-     
+      formData.phoneNumber===""||
+      formData.address===""
     ) {
       toast.error("Not empty ");
       return false;
@@ -118,7 +124,7 @@ const Register = () => {
           onChange={handleChange}
           margin="normal"
         />
-       <Box display="flex" alignItems="center" justifyContent="start" flexDirection="row">
+      <Box display="flex" alignItems="center" justifyContent="start" flexDirection="row">
   <Typography variant="subtitle1" gutterBottom>
     Giới tính:
   </Typography>
@@ -128,10 +134,10 @@ const Register = () => {
     onChange={handleChange}
     row
   >
-    <FormControlLabel value="nam" control={<Radio />} label="Nam" />
-    <FormControlLabel value="nu" control={<Radio />} label="Nữ" />
+    <FormControlLabel value="Male" control={<Radio />} label="Nam" />
+    <FormControlLabel value="Female" control={<Radio />} label="Nữ" />
   </RadioGroup>
-</Box>
+</Box> 
 
         <TextField
           fullWidth
@@ -156,6 +162,15 @@ const Register = () => {
             maxLength: 2,  
           }}
           value={formData.age}
+          onChange={handleChange}
+          margin="normal"
+        />
+        <TextField
+          fullWidth
+          label="Địa chỉ"
+          variant="outlined"
+          name="address"
+          value={formData.address}
           onChange={handleChange}
           margin="normal"
         />
