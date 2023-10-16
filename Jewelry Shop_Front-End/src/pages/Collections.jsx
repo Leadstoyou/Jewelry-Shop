@@ -39,7 +39,7 @@ const Collections = () => {
           },
         }
       );
-      const data = response.data?.data;
+      const data = response.data?.data.products;
       console.log("data",data)
       if (!color && !material && !price && !sort) {
         const extractUnique = (property) => [

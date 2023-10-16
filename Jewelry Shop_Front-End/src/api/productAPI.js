@@ -39,10 +39,6 @@ const CollectionAPI = async (
         minPrice: price?.minPrice,
         maxPrice: price?.maxPrice,
         sort: sort,
-      },{   
-        headers: {
-          Authorization: `Bearer ${getAccessTokenFromCookie()}`
-        }
       }
     );
 
