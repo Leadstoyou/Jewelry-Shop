@@ -471,7 +471,7 @@ const Checkouts = () => {
                                 display: "inline-block",
                                 borderRadius: "4px",
                                 fontWeight: "500",
-                                padding: "1.4em 1.7em",
+                                padding: "0",
                                 boxSizing: "border-box",
                                 textAlign: "center",
                                 cursor: "pointer",
