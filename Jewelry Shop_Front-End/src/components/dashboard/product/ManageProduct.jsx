@@ -11,13 +11,18 @@ import "react-toastify/dist/ReactToastify.css";
 import MyVerticallyCenteredModal from "./AddDiscount";
 import { createContext } from "react";
 import UpdateController from "./UpdateController";
+import { getAllProducts } from "../../../api/connectApi.js";
+import { addProduct } from "../../../api/connectApi.js";
+import { deleteProduct } from "../../../api/connectApi.js";
+import Pagination from "react-bootstrap/Pagination";
+import axios from "axios";
 const Container = styled.div``;
 const Function = styled.div`
   background-color: #dba1a1;
   position: relative;
   top: 0;
   right: -4.5%;
-  width: 95%;
+  width: 95.4%;
   padding: 10px;
 `;
 const Button = styled.button`
@@ -84,12 +89,17 @@ const ControlBody = styled.div`
 export const AddController = createContext();
 
 const Table = styled.table`
-width: 100%;
-margin-top: 20px;
+  width: 100%;
+  margin-top: 20px;
   background-color: #ffffff41;
+`;
+const TrHead = styled.tr`
+  border-collapse: collapse;
 `;
 const Tr = styled.tr`
   border-collapse: collapse;
+  background-color: #f8f6f6;
+  border-bottom: 1px solid pink;
 `;
 const Th = styled.th`
   border-collapse: collapse;
@@ -100,32 +110,39 @@ const Td = styled.td`
 
   border-collapse: collapse;
 `;
-
+const PageControl = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+`;
+const ButtonListDelete = styled.button`
+  margin-top: 10px;
+  padding: 10px;
+  color: white;
+  background-color: #f74444;
+  border-radius: 10px;
+  border-color: transparent;
+  outline: none;
+  &:hover {
+    background-color: #f42c2c;
+  }
+`;
+const BtnControl = styled.div`
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  justify-content: center;
+`;
 //manage form
-
+export const UpdateControl = createContext();
 const ManageProduct = () => {
+  const [idDelete, setIdDelete] = useState(null);
+  const [updateData, setUpdateData] = useState(null);
+  const [updateProduct, setUpdateProduct] = useState(null);
+  const [allProduct, setAllproduct] = useState([]);
   const [showUpdate, setShowUpdate] = useState(false);
-  const [addData, setAddData] = useState({
-    productName: "",
-    productDescription: "",
-    productQuantity: 0,
-    productSizes: [],
-    productPrice: 0,
-    productColors: [],
-    productMaterials: [],
-    productCategory: "",
-    productDiscount: [
-      {
-        discountName: "",
-        discountDescription: "",
-        discountStartDate: "",
-        discountExpiredDate: "",
-        discountPercentage: 0,
-        usageLimit: 0,
-      },
-    ],
-    productImage: "",
-  });
+  const [addData, setAddData] = useState({});
   const [existErr, setExist] = useState(false);
   const [modalShow, setModalShow] = useState(false);
   const notify = (text) => {
@@ -142,7 +159,7 @@ const ManageProduct = () => {
   };
 
   const success = (text) => {
-    toast.success("Add successfull !", {
+    toast.success(text, {
       position: "top-right",
       autoClose: 5000,
       hideProgressBar: false,
@@ -184,11 +201,11 @@ const ManageProduct = () => {
     size: yup.string().required("Please enter size"),
     color: yup.string().required("Please enter color"),
     material: yup.string().required("Please enter material"),
-    category: yup.string().required("Please enter category"),
+    category: yup.string(),
     img: yup
       .mixed()
       .test("fileRequired", "Please upload an image.", (value) => {
-        return value && value.length > 0; // Check if the value is not null and has a length
+        return value && value.length > 0;
       })
       .required("You need to provide a file"),
   });
@@ -202,29 +219,36 @@ const ManageProduct = () => {
     resolver: yupResolver(schema),
   });
 
+  //add product
   const onSubmit = (data) => {
     handleClose();
 
-    setTimeout(() => {
-      success("add success");
-    }, 100);
+    const lmeo = document.getElementById("img").files[0];
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const newData = {
+        ...addData,
+        productName: data.pname.trim(),
+        productDescription: data.desc.trim(),
+        productQuantity: data.quantity,
+        productSizes: data.size.trim().split(","),
+        productPrice: data.price,
+        productColors: data.color.trim().split(","),
+        productMaterials: data.material.trim().split(","),
+        productCategory: data.category.trim(),
+        productImage: reader.result,
+      };
 
-    setAddData({
-      ...addData,
-      productName: data.pname.trim(),
-      productDescription: data.desc.trim(),
-      productQuantity: data.quantity,
-      productSizes: data.size.trim().split(","),
-      productPrice: data.price,
-      productColors: data.color.trim().split(","),
-      productMaterials: data.material.trim().split(","),
-      productCategory: data.category.trim(),
-      productImage: data.img,
-    });
+      await addProduct(newData, success, notify);
+      await setAddData(newData);
+    };
+    reader.readAsDataURL(lmeo);
   };
 
+  var idNumber = 1;
   useEffect(() => {
     console.log(addData);
+    idNumber = 0;
   }, [addData]);
 
   useEffect(() => {
@@ -243,13 +267,60 @@ const ManageProduct = () => {
     }
   }, [existErr, errors]);
 
+  //delete product
+  const handleDelete = async (_id) => {
+    const confirm = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
+    if (confirm) {
+      await deleteProduct(_id);
+      await setIdDelete(_id);
+      success("Delete product successfully !!!");
+    }
+  };
+
+  //get data
+  //allProduct, setAllproduct
+  const [activePage, setActivePage] = useState(1);
+  const limitP = 5;
+  const [totalPage, setTotalpage] = useState(0);
+  useEffect(() => {
+    getAllProducts(setAllproduct, setTotalpage, notify, limitP, activePage);
+  }, [addData, updateData, updateProduct, idDelete , activePage , totalPage]);
+
+  useEffect(() => {
+    console.log(allProduct);
+    console.log(totalPage);
+  }, [allProduct]);
+
+  const categories = ["Dây Chuyền", "Vòng", "Hoa Tai", "Charm", "Nhẫn"];
+  const Allpage = [];
+  for (let i = 1; i <= totalPage; i++) {
+    Allpage.push(i);
+  }
+  console.log(Allpage);
+  const handlePrev = ()=>{
+    if(activePage > 1){
+      setActivePage(activePage-1);
+    }
+  }
+  const handleNext = ()=>{
+    if(activePage < totalPage){
+      setActivePage(activePage+1);
+    }
+  }
   return (
     <Container>
       <h1 style={{ padding: "1%" }}>Manage products</h1>
       <Function>
         <ControlAdd>
           <AddController.Provider value={{ addData, setAddData }}>
-            <Button onClick={handleShow}>Add Product</Button>
+            <BtnControl>
+              <Button onClick={handleShow}>Add Product</Button>
+              <ButtonListDelete>
+                List product you have just deleted
+              </ButtonListDelete>
+            </BtnControl>
             {/* modal add  */}
             <Modal
               show={show}
@@ -282,19 +353,7 @@ const ManageProduct = () => {
                       />
                     </div>
                   </Control>
-                  <Control>
-                    <Label htmlFor="desc" style={{ fontWeight: "bolder" }}>
-                      Description
-                    </Label>
-                    <div>
-                      <Input
-                        type="text"
-                        id="desc"
-                        style={{ width: "100%" }}
-                        {...register("desc")}
-                      />
-                    </div>
-                  </Control>
+
                   <Control>
                     <Label htmlFor="quantity" style={{ fontWeight: "bolder" }}>
                       Quantity
@@ -361,19 +420,36 @@ const ManageProduct = () => {
                     </div>
                   </Control>
                   <Control>
-                    <Label htmlFor="material" style={{ fontWeight: "bolder" }}>
+                    <Label htmlFor="category" style={{ fontWeight: "bolder" }}>
                       Category
                     </Label>
                     <div>
-                      <Input
-                        type="text"
-                        id="category"
+                      <select
                         style={{ width: "100%" }}
+                        id="category"
                         {...register("category")}
+                      >
+                        {categories.map((category, index) => (
+                          <option key={index} value={category}>
+                            {category}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </Control>
+                  <Control>
+                    <Label htmlFor="desc" style={{ fontWeight: "bolder" }}>
+                      Description
+                    </Label>
+                    <div>
+                      <textarea
+                        type="text"
+                        id="desc"
+                        style={{ width: "100%" }}
+                        {...register("desc")}
                       />
                     </div>
                   </Control>
-
                   <Control>
                     <Label htmlFor="img" style={{ fontWeight: "bolder" }}>
                       Image
@@ -398,15 +474,13 @@ const ManageProduct = () => {
                   >
                     <Button
                       variant="primary"
-                      onClick={() => setModalShow(true)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setModalShow(true);
+                      }}
                     >
                       Add discount
                     </Button>
-
-                    <MyVerticallyCenteredModal
-                      show={modalShow}
-                      onHide={() => setModalShow(false)}
-                    />
                   </div>
 
                   <div
@@ -439,68 +513,109 @@ const ManageProduct = () => {
                     </ButtonSave>
                   </div>
                 </form>
+                <MyVerticallyCenteredModal
+                  show={modalShow}
+                  onHide={() => setModalShow(false)}
+                />
               </Modal.Body>
             </Modal>
           </AddController.Provider>
         </ControlAdd>
         <ControlBody>
           <Table>
-            <Tr>
+            <TrHead>
+              <Th>#</Th>
               <Th>Name</Th>
               <Th>Image</Th>
               <Th>Quantity</Th>
               <Th>Price</Th>
               <Th>Category</Th>
               <Th></Th>
-            </Tr>
-            <Tr>
-              <Td>Name</Td>
+            </TrHead>
 
-              <Td>Image</Td>
+            {allProduct?.map(
+              (p) => (
+                // !p.isDeleted && (
+                <Tr key={p._id}>
+                  <Td>{idNumber++}</Td>
+                  <Td>{p.productName}</Td>
 
-              <Td>Quantity</Td>
+                  <Td style={{ width: "13%" }}>
+                    <img
+                      src={p.productImage}
+                      style={{
+                        width: "100%",
+                        height: "100px",
+                        objectFit: "cover",
+                        borderRadius: "50%",
+                      }}
+                    />
+                  </Td>
 
-              <Td>Price</Td>
+                  <Td>{p.productQuantity}</Td>
 
-              <Td>Category</Td>
-              <Td>
-                <button
-                  onClick={() => setShowUpdate(true)}
-                  style={{
-                    marginRight: "5px",
-                    border: "none",
-                    outline: "none",
-                    padding: "10px",
-                    borderRadius: "5px",
-                    backgroundColor: "green",
-                    color: "white",
-                    cursor: 'pointer'
-                  }}
-                >
-                  Update
-                </button>
+                  <Td>{p.productPrice.toLocaleString("vi-VN")}đ</Td>
 
-                <button
-                  style={{
-                    border: "none",
-                    outline: "none",
-                    padding: "10px",
-                    borderRadius: "5px",
-                    backgroundColor: "red",
-                    color: "white",
-                    cursor: 'pointer'
-                  }}
-                >
-                  Delete
-                </button>
-              </Td>
-            </Tr>
+                  <Td>{p.productCategory}</Td>
+                  <Td style={{ width: "20%" }}>
+                    <button
+                      onClick={() => {
+                        setUpdateProduct(p);
+                        setShowUpdate(true);
+                      }}
+                      style={{
+                        marginRight: "5px",
+                        border: "none",
+                        outline: "none",
+                        padding: "10px",
+                        borderRadius: "5px",
+                        backgroundColor: "green",
+                        color: "white",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Update
+                    </button>
+
+                    <button
+                      style={{
+                        border: "none",
+                        outline: "none",
+                        padding: "10px",
+                        borderRadius: "5px",
+                        backgroundColor: "red",
+                        color: "white",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => handleDelete(p._id)}
+                    >
+                      Delete
+                    </button>
+                  </Td>
+                </Tr>
+              )
+              // )
+            )}
           </Table>
         </ControlBody>
-        <UpdateController
-          show={showUpdate}
-          onHide={() => setShowUpdate(false)}
-        />
+        <UpdateControl.Provider value={{ updateData, setUpdateData }}>
+          <UpdateController
+            updateProduct={updateProduct}
+            show={showUpdate}
+            onHide={() => setShowUpdate(false)}
+          />
+        </UpdateControl.Provider>
+        <PageControl>
+          <Pagination>
+            <Pagination.Prev onClick={handlePrev}/>
+            {Allpage.map((page) => (
+              <Pagination.Item active={page === activePage} onClick={()=>setActivePage(page)}>
+                {page}
+              </Pagination.Item>
+            ))}
+            <Pagination.Next onClick={handleNext}/>
+          </Pagination>
+        </PageControl>
       </Function>
       <ToastContainer
         style={{ height: "500px" }}

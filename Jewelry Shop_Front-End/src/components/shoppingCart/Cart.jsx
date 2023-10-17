@@ -1,7 +1,7 @@
-import  { useEffect, useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import axios from "axios";
-import {useNavigate} from 'react-router-dom'
+
 const Container = styled.div`
   display: flex;
   align-items: stretch;
@@ -120,7 +120,7 @@ const QuantitySelect = styled.input`
   text-align: center;
   margin-right: 60px;
 `;
-const ProductCategory = styled.p`
+const ProductCode = styled.p`
   font-size: 13px;
   color: #777;
 `;
@@ -129,8 +129,9 @@ const ScrollingArea = styled.div`
   max-height: calc(100vh - 70px);
   overflow: auto;
 `;
-const BillExportCheckbox = styled.input.attrs({ type: "checkbox" })`
+const BillExportCheckbox = styled.input.attrs({ type: "checkbox"})`
   margin-right: 10px;
+  appearance: checkbox;
 `;
 const CheckboxContainer = styled.div`
   display: flex;
@@ -260,130 +261,102 @@ const ShoppingCart = () => {
   const [isAgreedToTerms, setIsAgreedToTerms] = useState(false);
   const [exportBill, setExportBill] = useState(false);
   const [giftNotes, setGiftNotes] = useState("");
-  // const [products, setProducts] = useState([
-  //   {
-  //     id: 1,
-  //     description: "Description for Product 1",
-  //     selectedQuantity: 2,
-  //     price: 10,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 20,
-  //     productCode: "P123", // Product CODE added
-  //   },
-  //   {
-  //     id: 2,
-  //     description: "Description for Product 2",
-  //     selectedQuantity: 1,
-  //     price: 15,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 25,
-  //     productCode: "P456", // Product CODE added
-  //   },
-  //   {
-  //     id: 3,
-  //     description: "Description for Product 3",
-  //     selectedQuantity: 3,
-  //     price: 20,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 30,
-  //     productCode: "P789", // Product CODE added
-  //   },
-  //   {
-  //     id: 4,
-  //     description: "Description for Product 3",
-  //     selectedQuantity: 3,
-  //     price: 20,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 30,
-  //     productCode: "P789", // Product CODE added
-  //   },
-  //   {
-  //     id: 5,
-  //     description: "Description for Product 3",
-  //     selectedQuantity: 3,
-  //     price: 20,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 30,
-  //     productCode: "P789", // Product CODE added
-  //   },
-  //   {
-  //     id: 6,
-  //     description: "Description for Product 3",
-  //     selectedQuantity: 3,
-  //     price: 20,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 30,
-  //     productCode: "P789", // Product CODE added
-  //   },
-  // ]);
-
-  //call API view cart
-  const [cartData, setCartData] = useState(null);
+  const [products, setProducts] = useState([
+    {
+      id: 1,
+      description: "Description for Product 1",
+      selectedQuantity: 2,
+      price: 10,
+      image:
+        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
+      priceLarge: 20,
+      productCode: "P123", // Product CODE added
+    },
+    {
+      id: 2,
+      description: "Description for Product 2",
+      selectedQuantity: 1,
+      price: 15,
+      image:
+        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
+      priceLarge: 25,
+      productCode: "P456", // Product CODE added
+    },
+    {
+      id: 3,
+      description: "Description for Product 3",
+      selectedQuantity: 3,
+      price: 20,
+      image:
+        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
+      priceLarge: 30,
+      productCode: "P789", // Product CODE added
+    },
+    {
+      id: 4,
+      description: "Description for Product 3",
+      selectedQuantity: 3,
+      price: 20,
+      image:
+        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
+      priceLarge: 30,
+      productCode: "P789", // Product CODE added
+    },
+    {
+      id: 5,
+      description: "Description for Product 3",
+      selectedQuantity: 3,
+      price: 20,
+      image:
+        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
+      priceLarge: 30,
+      productCode: "P789", // Product CODE added
+    },
+    {
+      id: 6,
+      description: "Description for Product 3",
+      selectedQuantity: 3,
+      price: 20,
+      image:
+        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
+      priceLarge: 30,
+      productCode: "P789", // Product CODE added
+    },
+  ]);
   const navigate = useNavigate();
-  //Lấy product data
-  useEffect(() => {
-    // const cartToken = cartData.cart_token;
-    const fetchData = async () => {
-      try {
-        const res = await axios.get(
-          `http://localhost:9999/api/v1/cart/615a8f7f4e7c3a1d3a9b6e60`
-        );
-        const data = res.data;
-        setCartData(data);
-        console.log(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-
-  //Xóa 1 sản phẩm trong giỏ hàng
-  const handleRemoveFromCart = async (productId) => {
-    const userId = cartData.user_id;
-    try {
-      await axios.delete(
-        `http://localhost:9999/api/v1/cart/${userId}/${productId}`
-      );
-      const updatedCartData = cartData.productList.filter(
-        (product) => product.product_id !== productId
-      );
-      setCartData({ ...cartData, productList: updatedCartData });
-    } catch (error) {
-      console.error("Error removing product from cart:", error);
-    }
-  };
-
   const handlePay = () => {
     if (isAgreedToTerms) {
-    navigate('/checkouts')
+      navigate("/checkouts");
     } else {
       alert("Please agree to the Terms of Service.");
     }
   };
 
   const handleQuantityChange = (productId, newQuantity) => {
-    const updatedProducts = cartData.map((product) => {
+    const updatedProducts = products.map((product) => {
       if (product.id === productId) {
         return { ...product, selectedQuantity: newQuantity };
       }
       return product;
     });
-    setCartData(updatedProducts);
+    setProducts(updatedProducts);
+  };
+
+  const handleDeleteProduct = (productId) => {
+    const updatedProducts = products.filter(
+      (product) => product.id !== productId
+    );
+    setProducts(updatedProducts);
   };
 
   const handleFormSubmit = (e) => {
+    // e.preventDefault();
     console.log(e);
   };
-
+  const total = products.reduce(
+    (acc, product) => acc + product.price * product.selectedQuantity,
+    0
+  );
   const viewedProducts = [
     {
       id: 7,
@@ -435,25 +408,16 @@ const ShoppingCart = () => {
         "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
     },
   ];
-  if (cartData === null) {
-    // Data is being fetched, you can render a loading indicator or message here.
+  if (products.length === 0) {
     return (
       <Container>
-        <div>Loading...</div>
+        <div>
+          <h2>Cart is empty</h2>
+          <a href="/">Continue Shopping</a>
+        </div>
       </Container>
     );
   }
-
-  // if (cartData.length === 0) {
-  //   return (
-  //     <Container>
-  //       <div>
-  //         <h2>Cart is empty</h2>
-  //         <a href="/">Continue Shopping</a>
-  //       </div>
-  //     </Container>
-  //   );
-  // }
 
   return (
     <div>
@@ -461,14 +425,15 @@ const ShoppingCart = () => {
         <ScrollingArea>
           <LeftPanel>
             <Title>Shopping Cart</Title>
-            {cartData.productList.map((product) => (
-              <div key={product.product_id}>
+            {products.map((product) => (
+              <div key={product.id}>
                 <ProductContainer>
-                  <ProductImage />
-                  {/* //src={} */}
+                  <ProductImage src={product.image} />
                   <ProductInfo>
-                    <h3></h3> {/* product.productDescription */}
-                    <ProductCategory>Product Category:</ProductCategory>
+                    <h3>{product.description}</h3>
+                    <ProductCode>
+                      Product CODE: {product.productCode}
+                    </ProductCode>
                     <ProductPrice>Price: ${product.price}</ProductPrice>
                   </ProductInfo>
                   <QuantityContainer>
@@ -487,10 +452,8 @@ const ShoppingCart = () => {
                       }}
                     />
                   </QuantityContainer>
-                  <ProductPrice> ${product.price}</ProductPrice>
-                  <DeleteButton
-                    onClick={() => handleRemoveFromCart(product.product_id)}
-                  >
+                  <ProductPrice> ${product.priceLarge}</ProductPrice>
+                  <DeleteButton onClick={() => handleDeleteProduct(product.id)}>
                     X
                   </DeleteButton>
                 </ProductContainer>
@@ -500,19 +463,25 @@ const ShoppingCart = () => {
           </LeftPanel>
         </ScrollingArea>
         <RightPanel>
-          <Title>Total:{cartData?.total}</Title>
+          <Title>Total:</Title>
+
           <CheckboxContainer>
             <input
               type="checkbox"
               id="termsCheckbox"
               onChange={() => setIsAgreedToTerms(!isAgreedToTerms)}
-              style={{ WebkitAppearance: 'checkbox',}}
+              style={{WebkitAppearance: 'checkbox'}}
             />
             <Label htmlFor="termsCheckbox">
               I agree to the Terms of Service
             </Label>
           </CheckboxContainer>
-
+          <form
+            id="createOrder"
+            action="http://localhost:9999/api/v1/payment/create_payment_url"
+            method="POST"
+            onSubmit={handleFormSubmit}
+          >
             <Button
               onClick={handlePay}
               disabled={!isAgreedToTerms}
@@ -520,6 +489,7 @@ const ShoppingCart = () => {
             >
               THANH TOÁN
             </Button>
+          </form>
           <ImageUnderButton
             src="https://theme.hstatic.net/200000103143/1000942575/14/trustbadge.jpg?v=2700"
             alt="Your Image"
@@ -528,7 +498,6 @@ const ShoppingCart = () => {
             <BillExportCheckbox
               checked={exportBill}
               onChange={() => setExportBill(!exportBill)}
-              style={{ WebkitAppearance: 'checkbox',}}
             />
             <Label>Export Bill</Label>
           </CheckboxContainer>

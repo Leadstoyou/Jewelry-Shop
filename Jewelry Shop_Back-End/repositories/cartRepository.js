@@ -1,4 +1,6 @@
 import { Cart } from "../models/indexModel.js";
+import {Product} from "../models/indexModel.js";
+import {productRepository} from "./indexRepository.js";
 import mongoose from "mongoose";
 import Jwt from "jsonwebtoken";
 
@@ -18,17 +20,9 @@ const getCartByTokenCookie = async (cartTokenCookie) => {
     throw error;
   }
 };
-const createCart = async (userId) => {
+const createEmptyCart = async () => {
   try {
-    let cartData = {};
-
-    if (userId) {
-      cartData.user_id = userId;
-    }
-
-    const cartToken = Jwt.sign(cartData, process.env.ACCESS_TOKEN);
-    
-    const newCart = new Cart({ cart_token: cartToken });
+    const newCart = new Cart({total: 0, cart_token: "carttoken"});
     await newCart.save();
     return newCart;
   } catch (error) {
@@ -36,45 +30,104 @@ const createCart = async (userId) => {
     throw error;
   }
 };
-  const addProductToCart = async (cartToken, productId, quantity, size, color, material,productImage, productDes) => {
-    try {
-      await Cart.findByIdAndUpdate(
-        cartToken,
-        {
-          $push: {
-            productList: {
-              product_id: productId,
-              quantity: quantity,
-              size: size,
-              color: color,
-              material: material,
-              productImage: productImage,
-              productDescription: productDes
-            },
-          },
-        },
-        { new: true }
-      );
-    } catch (error) {
-      throw error;
-    }
-  };
 
-  const updateProductInCart = async (cartToken, productId, quantity, size, color, material) => {
+const createCartToken = async (cartId, userId, productId) => {
+  try {
+    const cartData = {};
+
+    if (userId) {
+      cartData.user_id = userId;
+    }
+
+    if (productId) {
+      cartData.product_id = productId;
+    }
+
+    const cartToken = Jwt.sign(cartData, process.env.ACCESS_TOKEN);
+
+    const updatedCart = await Cart.findByIdAndUpdate(cartId, { cart_token: cartToken }, { new: true });
+
+    return updatedCart;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+const addProductToCart = async (cartToken, productId, quantity, size, color, material, price, productImage, productDes) => {
+  try {
+    const cart = await Cart.findById(cartToken);
+
+    const existingProductIndex = cart.productList.findIndex((product) => String(product.product_id) === String(productId));
+    
+    if (existingProductIndex !== -1) {
+      const existingProduct = cart.productList[existingProductIndex];
+      if (existingProduct.size[0] === size && existingProduct.color[0] === color && existingProduct.material[0] === material) {
+        const newQuantity = existingProduct.quantity + quantity;
+        existingProduct.quantity = newQuantity;
+      } else {
+        cart.productList.push({
+          product_id: productId,
+          quantity: quantity,
+          size: size,
+          color: color,
+          material: material,
+          price: price,
+          productImage: productImage,
+          productDescription: productDes
+        });
+      }
+    } else {
+      cart.productList.push({
+        product_id: productId,
+        quantity: quantity,
+        size: size,
+        color: color,
+        material: material,
+        price: price,
+        productImage: productImage,
+        productDescription: productDes
+      });
+    }
+
+    await cart.save();
+    let totalPrice = 0;
+
+    for (const product of cart.productList) {
+      if (typeof product.quantity === 'number' && typeof product.price === 'number' && !isNaN(product.quantity) && !isNaN(product.price)) {
+        totalPrice += product.quantity * product.price;
+      }
+    }
+
+    cart.total = totalPrice;
+    const updatedCart = await cart.save();
+    return updatedCart;
+  } catch (error) {
+    throw error;
+  }
+};
+
+  const updateProductInCart = async (cartToken, productId, quantity, size, color, material, price) => {
     try {
+      const product = await productRepository.getProductById(productId);
+      if(quantity > product.quantity){
+        throw new Error ("Not enough quantity in stock")
+      }else {
       const updatedCart = await Cart.findOneAndUpdate(
-        { cart_token: cartToken, 'productList.product_id': productId },
+        { cart_token: cartToken, 'productList.product_id':  productId},
         {
           $set: {
             'productList.$.quantity': quantity,
             'productList.$.size': size,
             'productList.$.color': color,
             'productList.$.material': material,
+             total: quantity*price,
           },
         },
         {new: true}
       );
       return updatedCart ;
+      }
     } catch (error) {
       throw error;
     }
@@ -83,11 +136,21 @@ const createCart = async (userId) => {
   const updateTotalPrice = async (cartToken) => {
     try {
       const cart = await Cart.findOne({ cart_token: cartToken });
-      const totalPrice = cart.products.reduce((acc, product) => {
-        return acc + product.quantity * product.price;
+      const totalPrice = cart.productList.reduce((acc, product) => {
+        if (typeof product.quantity === 'number' && typeof product.price === 'number' && !isNaN(product.quantity) && !isNaN(product.price)) {
+          return acc + product.quantity * product.price;
+        }
+        return acc;
       }, 0);
   
-      await Cart.findOneAndUpdate({ cart_token: cartToken }, { total_price: totalPrice });
+  
+      const updatedCart = await Cart.findOneAndUpdate(
+        { cart_token: cartToken },
+        { total: totalPrice, cart_token: cartToken },
+        { new: true }
+      );
+  
+      return updatedCart;
     } catch (error) {
       throw error;
     }
@@ -121,5 +184,5 @@ const createCart = async (userId) => {
     }
   };
 
-export default {getCartByTokenCookie, updateTotalPrice, updateProductInCart, createCart, removePurchasedProducts, getCartByToken, addProductToCart, removeFromCart};
+export default {getCartByTokenCookie, updateTotalPrice, updateProductInCart,createCartToken, createEmptyCart, removePurchasedProducts, getCartByToken, addProductToCart, removeFromCart};
 

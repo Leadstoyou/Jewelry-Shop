@@ -142,7 +142,7 @@ const searchProductController = async (req, res) => {
 };
 const viewProductController = async (req, res) => {
   try {
-    const { category, color, material, minPrice, maxPrice, sort, page, limit } =
+    const { category, color, material, minPrice, maxPrice, sort, page, limit,isDeleted } =
       req.body;
     const viewProducts = await productRepository.getAllProducts(
       category,
@@ -152,7 +152,8 @@ const viewProductController = async (req, res) => {
       maxPrice,
       sort,
       page,
-      limit
+      limit,
+      isDeleted
     );
     if (!viewProducts.success) {
       res.status(HttpStatusCode.NO_CONTENT).end();

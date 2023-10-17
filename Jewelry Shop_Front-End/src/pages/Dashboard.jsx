@@ -5,7 +5,7 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 import styled from "styled-components";
 import Menu from "@mui/icons-material/Menu";
 import ManageProduct from '../components/dashboard/product/ManageProduct.jsx'
-import ManageStaff from '../components/dashboard/staff/ManageStaff.jsx'
+import ManageStaff from '../components/dashboard/ManageStaff.jsx'
 
 
   
