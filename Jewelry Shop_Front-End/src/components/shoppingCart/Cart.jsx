@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
 const Container = styled.div`
@@ -8,13 +9,11 @@ const Container = styled.div`
   min-height: 50vh;
   padding: 0 20vh 0 20vh;
 
-
   @media (max-width: 1500px) {
     padding: 25px;
   }
   margin-top: 15vh;
 `;
-
 
 const LeftPanel = styled.div`
   flex: 1;
@@ -25,7 +24,6 @@ const LeftPanel = styled.div`
   height: 50vh; /* You can adjust this value based on your layout */
 `;
 
-
 const RightPanel = styled.div`
   flex: 1;
   padding: 0 0 0 10px;
@@ -35,8 +33,8 @@ const RightPanel = styled.div`
 const Title = styled.h2`
   text-align: left;
   color: #333;
+  font-weight: bold;
 `;
-
 
 const ProductContainer = styled.div`
   display: flex;
@@ -45,18 +43,15 @@ const ProductContainer = styled.div`
   padding: 10px;
 `;
 
-
 const ProductImage = styled.img`
   max-width: 100px;
   max-height: 100px;
   margin-right: 20px;
 `;
 
-
 const ProductInfo = styled.div`
   flex: 1;
 `;
-
 
 const ProductPrice = styled.span`
   margin-right: 60px;
@@ -65,7 +60,6 @@ const ProductPrice = styled.span`
   font-size: 16px;
   color: rgb(58, 57, 53);
 `;
-
 
 const Button = styled.button`
   width: 100%;
@@ -79,7 +73,6 @@ const Button = styled.button`
   outline: none;
   height: 56px;
   font-size: 19px;
-
 
   &:hover {
     background-color: #444;
@@ -102,7 +95,6 @@ const DeleteButton = styled.button`
   font-size: 11px;
 `;
 
-
 const RowSeparator = styled.div`
   border-top: 1px solid rgba(0, 0, 0, 0.09);
   margin-top: 10px;
@@ -113,14 +105,12 @@ const QuantityContainer = styled.div`
   align-items: center;
 `;
 
-
 const QuantityLabel = styled.label`
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 5px;
   margin-right: 55px;
 `;
-
 
 const QuantitySelect = styled.input`
   font-size: 16px;
@@ -146,9 +136,8 @@ const BillExportCheckbox = styled.input.attrs({ type: "checkbox" })`
 const CheckboxContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-top: 20px;
 `;
-
 
 const Label = styled.label`
   margin-left: 10px;
@@ -158,11 +147,9 @@ const DescriptionInput = styled.div`
   flex-direction: column;
   margin: 40px 0 60px 0;
 
-
   label {
     margin-bottom: 5px;
   }
-
 
   textarea {
     max-width: 100%;
@@ -180,13 +167,11 @@ const ContinueShoppingLink = styled.a`
   cursor: pointer;
 `;
 
-
 const ContinueShoppingText = styled.span`
   margin-right: 5px;
   font-weight: bold;
   font-size: 20px;
 `;
-
 
 const ArrowIcon = styled.svg`
   width: 8px;
@@ -197,24 +182,20 @@ const ArrowIcon = styled.svg`
   stroke-linecap: square;
 `;
 
-
 const PoliciesContainer = styled.div`
   padding: 20px 0 5px 0;
   border-bottom: 1px solid #e1e1e1;
   margin-bottom: 30px;
   margin: 0 20vh 0 20vh;
 
-
   @media (max-width: 768px) {
     margin: 0;
   }
 `;
 
-
 const PolicyRow = styled.div`
   display: flex;
   justify-content: space-between;
-
 
   @media (max-width: 900px) {
     flex-direction: column;
@@ -225,12 +206,10 @@ const Policy = styled.div`
   align-items: center;
   margin-bottom: 10px;
 
-
   img {
     max-width: 40px;
     height: auto;
   }
-
 
   p {
     margin: 0;
@@ -245,7 +224,6 @@ const ViewedProductsContainer = styled.div`
   border-top: 1px solid #e1e1e1;
 `;
 
-
 const ViewedProduct = styled.div`
   display: flex;
   flex-direction: column;
@@ -255,22 +233,18 @@ const ViewedProduct = styled.div`
   border-radius: 4px;
 `;
 
-
 const ViewedProductImage = styled.img`
   max-width: 200px;
   max-height: 200px;
   margin-right: 10px;
 `;
 
-
 const ViewedProductInfo = styled.div``;
-
 
 const ViewedProductDescription = styled.h4`
   margin: 20px;
   max-width: 200px;
 `;
-
 
 const ViewedProductPrice = styled.span`
   margin: 20px;
@@ -283,86 +257,34 @@ const ScrollableProducts = styled.div`
   padding: 0 100px; /* Adjust the margin from the left and right sides */
 `;
 
-
 const ShoppingCart = () => {
   const [isAgreedToTerms, setIsAgreedToTerms] = useState(false);
   const [exportBill, setExportBill] = useState(false);
   const [giftNotes, setGiftNotes] = useState("");
-  // const [products, setProducts] = useState([
-  //   {
-  //     id: 1,
-  //     description: "Description for Product 1",
-  //     selectedQuantity: 2,
-  //     price: 10,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 20,
-  //     productCode: "P123", // Product CODE added
-  //   },
-  //   {
-  //     id: 2,
-  //     description: "Description for Product 2",
-  //     selectedQuantity: 1,
-  //     price: 15,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 25,
-  //     productCode: "P456", // Product CODE added
-  //   },
-  //   {
-  //     id: 3,
-  //     description: "Description for Product 3",
-  //     selectedQuantity: 3,
-  //     price: 20,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 30,
-  //     productCode: "P789", // Product CODE added
-  //   },
-  //   {
-  //     id: 4,
-  //     description: "Description for Product 3",
-  //     selectedQuantity: 3,
-  //     price: 20,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 30,
-  //     productCode: "P789", // Product CODE added
-  //   },
-  //   {
-  //     id: 5,
-  //     description: "Description for Product 3",
-  //     selectedQuantity: 3,
-  //     price: 20,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 30,
-  //     productCode: "P789", // Product CODE added
-  //   },
-  //   {
-  //     id: 6,
-  //     description: "Description for Product 3",
-  //     selectedQuantity: 3,
-  //     price: 20,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 30,
-  //     productCode: "P789", // Product CODE added
-  //   },
-  // ]);
-
 
   //call API view cart
   const [cartData, setCartData] = useState(null);
-
-
   //Lấy product data
+
+  function getCartTokenFromCookie() {
+    const name = "cartToken=";
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const cookieArray = decodedCookie.split(";");
+
+    for (let i = 0; i < cookieArray.length; i++) {
+      let cookie = cookieArray[i].trim();
+      if (cookie.indexOf(name) === 0) {
+        return cookie.substring(name.length, cookie.length);
+      }
+    }
+    return null;
+  }
   useEffect(() => {
-    // const cartToken = cartData.cart_token;
     const fetchData = async () => {
+      const cartToken = getCartTokenFromCookie();
       try {
         const res = await axios.get(
-          `http://localhost:9999/api/v1/cart/615a8f7f4e7c3a1d3a9b6e60`
+          `http://localhost:9999/api/v1/cart/${cartToken}`
         );
         const data = res.data;
         setCartData(data);
@@ -371,21 +293,13 @@ const ShoppingCart = () => {
         console.error("Error fetching data:", error);
       }
     };
-
-
     fetchData();
   }, []);
 
-
-
-
   //Xóa 1 sản phẩm trong giỏ hàng
   const handleRemoveFromCart = async (productId) => {
-    const userId = cartData.user_id;
     try {
-      await axios.delete(
-        `http://localhost:9999/api/v1/cart/${userId}/${productId}`
-      );
+      await axios.delete(`http://localhost:9999/api/v1/cart/${productId}`);
       const updatedCartData = cartData.productList.filter(
         (product) => product.product_id !== productId
       );
@@ -395,15 +309,14 @@ const ShoppingCart = () => {
     }
   };
 
-
+  const navigate = useNavigate();
   const handlePay = () => {
     if (isAgreedToTerms) {
-      // Implement your payment logic here
+      navigate("/checkouts");
     } else {
       alert("Please agree to the Terms of Service.");
     }
   };
-
 
   const handleQuantityChange = (productId, newQuantity) => {
     const updatedProducts = cartData.map((product) => {
@@ -415,11 +328,9 @@ const ShoppingCart = () => {
     setCartData(updatedProducts);
   };
 
-
   const handleFormSubmit = (e) => {
     console.log(e);
   };
-
 
   const viewedProducts = [
     {
@@ -473,14 +384,12 @@ const ShoppingCart = () => {
     },
   ];
   if (cartData === null) {
-    // Data is being fetched, you can render a loading indicator or message here.
     return (
       <Container>
         <div>Loading...</div>
       </Container>
     );
   }
-
 
   // if (cartData.length === 0) {
   //   return (
@@ -493,7 +402,6 @@ const ShoppingCart = () => {
   //   );
   // }
 
-
   return (
     <div>
       <Container>
@@ -503,10 +411,9 @@ const ShoppingCart = () => {
             {cartData?.productList?.map((product) => (
               <div key={product.product_id}>
                 <ProductContainer>
-                  <ProductImage />
-                  {/* //src={} */}
+                  <ProductImage src={product.productImage} />
                   <ProductInfo>
-                    <h3></h3> {/* product.productDescription */}
+                    <h3></h3> {product.productDescription}
                     <ProductCategory>Product Category:</ProductCategory>
                     <ProductPrice>Price: ${product.price}</ProductPrice>
                   </ProductInfo>
@@ -545,6 +452,7 @@ const ShoppingCart = () => {
               type="checkbox"
               id="termsCheckbox"
               onChange={() => setIsAgreedToTerms(!isAgreedToTerms)}
+              style={{ WebkitAppearance: "checkbox" }}
             />
             <Label htmlFor="termsCheckbox">
               I agree to the Terms of Service
@@ -572,10 +480,10 @@ const ShoppingCart = () => {
             <BillExportCheckbox
               checked={exportBill}
               onChange={() => setExportBill(!exportBill)}
+              style={{ WebkitAppearance: "checkbox" }}
             />
             <Label>Export Bill</Label>
           </CheckboxContainer>
-
 
           <DescriptionInput>
             <label>Enter gift notes or special delivery instructions</label>
@@ -652,8 +560,4 @@ const ShoppingCart = () => {
   );
 };
 
-
 export default ShoppingCart;
-
-
-

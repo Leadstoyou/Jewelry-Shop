@@ -1,4 +1,6 @@
 import { Cart } from "../models/indexModel.js";
+import {Product} from "../models/indexModel.js";
+import {productRepository} from "./indexRepository.js";
 import mongoose from "mongoose";
 import Jwt from "jsonwebtoken";
 
@@ -36,34 +38,52 @@ const createCart = async (userId) => {
     throw error;
   }
 };
-  const addProductToCart = async (cartToken, productId, quantity, size, color, material,productImage, productDes) => {
-    try {
-      await Cart.findByIdAndUpdate(
-        cartToken,
-        {
-          $push: {
-            productList: {
-              product_id: productId,
-              quantity: quantity,
-              size: size,
-              color: color,
-              material: material,
-              productImage: productImage,
-              productDescription: productDes
-            },
-          },
-        },
-        { new: true }
-      );
-    } catch (error) {
-      throw error;
+const addProductToCart = async (cartToken, productId, quantity, size, color, material, productImage, productDes) => {
+  try {
+    const cart = await Cart.findById(cartToken);
+
+    const existingProduct = cart.productList.find((product) => product.product_id === productId);
+
+    if (existingProduct) {
+      if (existingProduct.size === size && existingProduct.color === color && existingProduct.material === material) {
+        existingProduct.quantity += quantity;
+      } else {
+        cart.productList.push({
+          product_id: productId,
+          quantity: quantity,
+          size: size,
+          color: color,
+          material: material,
+          productImage: productImage,
+          productDescription: productDes
+        });
+      }
+    } else {
+      cart.productList.push({
+        product_id: productId,
+        quantity: quantity,
+        size: size,
+        color: color,
+        material: material,
+        productImage: productImage,
+        productDescription: productDes
+      });
     }
-  };
+
+    await cart.save();
+  } catch (error) {
+    throw error;
+  }
+};
 
   const updateProductInCart = async (cartToken, productId, quantity, size, color, material) => {
     try {
+      const product = await productRepository.getProductById(productId);
+      if(quantity > product.quantity){
+        throw new Error ("Not enough quantity in stock")
+      }else {
       const updatedCart = await Cart.findOneAndUpdate(
-        { cart_token: cartToken, 'productList.product_id': productId },
+        { cart_token: cartToken, 'productList.product_id':  productId},
         {
           $set: {
             'productList.$.quantity': quantity,
@@ -75,6 +95,7 @@ const createCart = async (userId) => {
         {new: true}
       );
       return updatedCart ;
+      }
     } catch (error) {
       throw error;
     }

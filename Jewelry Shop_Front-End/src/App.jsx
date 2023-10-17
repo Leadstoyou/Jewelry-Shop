@@ -15,9 +15,9 @@ import Forgot from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./components/error/NotFound";
 import HistoryPage from "./pages/History";
-import ListDeleteProduct from "./components/dashboard/product/ListDeleteProduct"
+import ListDeleteProduct from "./components/dashboard/product/ListDeleteProduct";
+import Checkouts from "./pages/Checkouts";
 const Container = styled.div``;
-
 function App() {
   return (
     <Container>
@@ -31,6 +31,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/checkouts" element={<Checkouts />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/listdelete" element={<ListDeleteProduct />} />
           <Route path="/history" element={<HistoryPage />} />

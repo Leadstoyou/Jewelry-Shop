@@ -42,16 +42,9 @@ const viewCart = async (req, res) => {
         const newCart = await cartRepository.createCart(userId);
         await cartRepository.addProductToCart(newCart.cart_token, productId, quantity, size, color, material,productImage, productDes);
       } else {
-        // Nếu giỏ hàng đã tồn tại, kiểm tra xem sản phẩm đã có trong giỏ hàng hay chưa
-        const existingProduct = cart.products.find((p) => p.productId.toString() === productId);
-  
-        if (existingProduct) {
-          // Nếu sản phẩm đã tồn tại trong giỏ hàng, cập nhật thông tin sản phẩm
-          await cartRepository.updateProductInCart(cartToken, productId, quantity, size, color, material);
-        } else {
-          // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm sản phẩm vào
-          await cartRepository.addProductToCart(cartToken, productId, quantity, size, color, material,productImage, productDes);
-        }
+
+        await cartRepository.addProductToCart(cartToken, productId, quantity, size, color, material,productImage, productDes);
+        
       }
   
       // Cập nhật tổng giá trị đơn hàng
@@ -63,6 +56,21 @@ const viewCart = async (req, res) => {
       return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
   };
+  const updatedCart = async(req,res)=> {
+    try {
+      const quantity = req.body.quantity;
+      const size = req.body.size;
+      const color = req.body.color;
+      const material = req.body.material;
+      const cartToken = req.params.cart_token;
+      const productId = req.body.product_id;
+      const cartUpdate = await cartRepository.updateProductInCart(cartToken, productId, quantity, size, color, material);
+      return res.status(HttpStatusCode.OK).json(cartUpdate);
+    } catch (error) {
+      console.error(error);
+      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+  }
   const removeFromCart = async (req, res) => {
     try {
       const cartToken = req.params.cart_token;
@@ -74,4 +82,4 @@ const viewCart = async (req, res) => {
       return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
   };
-  export default {removeFromCart, viewCart, addToCart}
+  export default {removeFromCart, viewCart, addToCart, updatedCart}

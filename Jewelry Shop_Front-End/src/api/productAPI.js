@@ -31,7 +31,7 @@ const CollectionAPI = async (
       throw new Error("Invalid category");
     }
     const response = await axios.post(
-      "http://localhost:9999/api/v1/products/view",
+        `${import.meta.env.VITE_API_PRODUCTS}/view`,
       {
         category: category,
         color: color,
@@ -39,13 +39,9 @@ const CollectionAPI = async (
         minPrice: price?.minPrice,
         maxPrice: price?.maxPrice,
         sort: sort,
-      },{   
-        headers: {
-          Authorization: `Bearer ${getAccessTokenFromCookie()}`
-        }
       }
     );
-
+console.log(response.data);
     const data = response.data?.data?.products;
     if (!color && !material && !price && !sort) {
       const extractUnique = (property) => [
