@@ -47,6 +47,61 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorServer"
+  /users/search:
+    get:
+      tags:
+        - users
+      summary: Tìm kiếm người dùng
+      description: Tìm kiếm người dùng theo chuỗi tìm kiếm và vai trò
+      operationId: userSearch
+      parameters:
+        - name: page
+          in: query
+          description: Trang kết quả (mặc định là 1)
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: size
+          in: query
+          description: Số lượng kết quả trên mỗi trang (tối đa 6)
+          required: false
+          schema:
+            type: integer
+            example: 6
+        - name: searchString
+          in: query
+          description: Chuỗi tìm kiếm người dùng
+          required: false
+          schema:
+            type: string
+            example: John
+        - name: searchRole
+          in: query
+          description: Vai trò người dùng cần tìm kiếm (mặc định là 2)
+          required: false
+          schema:
+            type: integer
+            example: 2
+      responses:
+        "200":
+          description: Lấy kết quả tìm kiếm thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchSuccess"
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"
   /users/login:
     post:
       tags:

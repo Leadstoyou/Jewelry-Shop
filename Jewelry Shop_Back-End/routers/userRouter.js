@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get("/",checkUser([constants.ADMIN_ROLE_ID]), userController.userGetAllUsersController);
 
-router.post("/", userController.userSearchController);
+router.get("/search", userController.userSearchController);
 
 router.post("/login", userController.userLoginController);
 
