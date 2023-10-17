@@ -82,4 +82,13 @@ const deleteProduct = async (_id) => {
   }
 };
 
+//addToCart
+const addToCart = async (notify,success)=>{
+  try {
+    
+  } catch (error) {
+    notify('Add to cart failed !!!')
+  }
+}
+
 export { getAllProducts, addProduct, updateProduct, deleteProduct };
