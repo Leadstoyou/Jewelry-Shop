@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
@@ -12,7 +12,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 const Profile = () => {
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
-  const [gender, setGender] = useState("nam");
+  const [gender, setGender] = useState("Female");
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -20,6 +20,97 @@ const Profile = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [checkPassword, setCheckPassword] = useState("");
+  const [calledApi, setCalledApi] = useState(false);
+
+
+  // Hàm để lấy giá trị từ một cookie theo tên
+function getCookieValue(cookieName) {
+  const cookies = document.cookie.split('; ');
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i].split('=');
+    if (cookie[0] === cookieName) {
+      return decodeURIComponent(cookie[1]);
+    }
+  }
+  return null; // Trả về null nếu không tìm thấy cookie
+}
+
+// Lấy access token từ cookie
+const accessToken = getCookieValue('accessToken');
+
+if (accessToken) {
+  // Tạo đối tượng cấu hình Axios với access token
+  const axiosConfig = {
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+    },
+  };
+  useEffect(() => {
+     if (!calledApi) {
+      axios.get('http://localhost:9999/api/v1/users/viewProfile', axiosConfig)
+      .then(response => {
+        if (response.status === 200) {
+          console.log(response);
+          console.log('Yêu cầu thành công');
+          const userName =response.data.data.userName;
+          const userAvatar =response.data.data.userAvatar;
+          const userEmail =response.data.data.userEmail;
+          const userGender =response.data.data.userGender;
+          const userAddress =response.data.data.userAddress;
+          const userPhoneNumber =response.data.data.userPhoneNumber;
+          const userAge =response.data.data.userAge;
+          setName(userName);
+          setEmail(userEmail);
+          setGender(userGender);
+          setAddress(userAddress);
+          setPhone(userPhoneNumber);
+          setAge(userAge);
+          setImage(userAvatar);
+  
+        } else {
+          console.log('Yêu cầu thất bại');
+        }
+      })
+      .catch(error => {
+        console.error('Lỗi:', error);
+      });
+       axios.get('http://localhost:9999/api/v1/users/viewProfile', axiosConfig)
+    .then(response => {
+      if (response.status === 200) {
+        console.log(response);
+        console.log('Yêu cầu thành công');
+        const userName =response.data.data.userName;
+        const userAvatar =response.data.data.userAvatar;
+        const userEmail =response.data.data.userEmail;
+        const userGender =response.data.data.userGender;
+        const userAddress =response.data.data.userAddress;
+        const userPhoneNumber =response.data.data.userPhoneNumber;
+        const userAge =response.data.data.userAge;
+        setName(userName);
+        setEmail(userEmail);
+        setGender(userGender);
+        setAddress(userAddress);
+        setPhone(userPhoneNumber);
+        setAge(userAge);
+        setImage(userAvatar);
+
+      } else {
+        console.log('Yêu cầu thất bại');
+      }
+    })
+    .catch(error => {
+      console.error('Lỗi:', error);
+    });
+    setCalledApi(true);
+      }
+   
+});
+  // Thực hiện yêu cầu API sử dụng access token
+ 
+} else {
+  console.log('Không tìm thấy access token trong cookie.');
+}
+
 
   const handleImageUpload = async (e) => {
     const selectedImage = e.target.files[0];
@@ -142,7 +233,7 @@ const Profile = () => {
                   type="radio"
                   id="radio1"
                   value="nam"
-                  checked={gender === "nam"} // Check if 'gender' matches the value
+                  checked={gender === "Male"} // Check if 'gender' matches the value
                   onChange={(e) => setGender(e.target.value)}
                 />
                 Nam
@@ -152,7 +243,7 @@ const Profile = () => {
                   type="radio"
                   id="radio2"
                   value="nu"
-                  checked={gender === "nu"} // Check if 'gender' matches the value
+                  checked={gender === "Female"} // Check if 'gender' matches the value
                   onChange={(e) => setGender(e.target.value)}
                 />
                 Nữ
