@@ -111,7 +111,7 @@ const productSchema = new Schema(
     productCategory: {
       type: String,
       required: true,
-      enum: ["Dây Chuyền", "Vòng", "Hoa Tai", "Charm","Nhẫn"],
+      enum: ["Dây Chuyền", "Vòng tay", "Hoa Tai", "Charm","Nhẫn"],
       validate: {
         validator: (value) => validator.isLength(value, { min: 2, max: 20 }),
         message: "productCategory must be between 2 and 20 characters",
