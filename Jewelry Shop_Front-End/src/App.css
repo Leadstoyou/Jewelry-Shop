@@ -1,7 +1,19 @@
 body{
      background-color: rgb(210, 207, 207);
 }
-
+.btnOrderDetails {
+     display: inline-block;
+     border-radius: 4px;
+     font-weight: 500;
+     padding: 1.4em 1.7em;
+     box-sizing: border-box;
+     text-align: center;
+     cursor: pointer;
+     transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+     position: relative;
+     background: #338dbc;
+     color: white;
+ }
  *, ::after, ::before {
      box-sizing: unset;
      /* Thêm các thuộc tính khác bạn muốn loại bỏ ở đây */

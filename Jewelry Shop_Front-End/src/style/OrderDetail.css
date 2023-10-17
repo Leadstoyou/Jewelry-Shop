@@ -1,0 +1,15 @@
+a {
+    text-decoration: none;
+    color: #338dbc;
+    transition: color 0.2s ease-in-out;
+    display: inline-block;
+}
+
+a:focus {
+    outline: none;
+}
+
+a:hover {
+    /* color: #2b78a0; */
+    filter: brightness(1.2);
+}
