@@ -1,10 +1,15 @@
+import styled from "styled-components";
+import newest from "../../assets/new.jpg";
+import love from "../../assets/love.jpg";
+import Pagination from "react-bootstrap/Pagination";
+import family from "../../assets/family.jpg";
+import PageItem from "react-bootstrap/PageItem";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Product from "../collections/Product";
 import Aos from "aos";
 import "aos/dist/aos.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import newest from "../../assets/new.jpg";
-import Product from "../collections/Product";
 const Container = styled.div``;
 const Up = styled.div`
   background-color: #c1c1c1;
@@ -154,7 +159,7 @@ const CollectionsCategory = (props) => {
               )
             }
           >
-            <TextInDropdown value=""  >
+            <TextInDropdown value="" selected>
               Màu sắc
             </TextInDropdown>
             {colorsArrayTemp?.map((color, index) => (
@@ -185,7 +190,7 @@ const CollectionsCategory = (props) => {
               )
             }
           >
-            <TextInDropdown   value="">
+            <TextInDropdown selected value="">
               Chất Liệu
             </TextInDropdown>
             {materialArrayTemp?.map((material, index) => (
@@ -216,7 +221,7 @@ const CollectionsCategory = (props) => {
             }
           >
             <TextInDropdown
-               
+              selected
               value={JSON.stringify({
                 minPrice: 0,
                 maxPrice: 100000000,
@@ -278,7 +283,7 @@ const CollectionsCategory = (props) => {
               )
             }
           >
-            <TextInDropdown   value={JSON.stringify({})}>
+            <TextInDropdown selected value={JSON.stringify({})}>
               Mặc định
             </TextInDropdown>
             <TextInDropdown value={JSON.stringify({ updatedAt: 1 })}>

@@ -1,9 +1,9 @@
+import styled from "styled-components";
+import collections from "../../assets/collections.jpg";
 import Aos from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
-import collections from "../../assets/collections.jpg";
 const Container = styled.div`
   margin-top: 70px;
   margin-bottom: 0;

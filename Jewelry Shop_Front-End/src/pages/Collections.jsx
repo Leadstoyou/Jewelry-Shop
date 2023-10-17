@@ -1,23 +1,25 @@
 import styled from "styled-components";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import RiseLoader from "react-spinners/RiseLoader";
-import {CollectionAPI} from '../api/productAPI.js';
-import Footer from "../components/Footer";
+
 import Navbar from "../components/Navbar";
-import CollectionsCategory from "../components/collections/CollectionsCategory";
+import Footer from "../components/Footer";
+import RiseLoader from "react-spinners/RiseLoader";
 import CollectionsHeader from "../components/collections/CollectionsHeader";
-// const Spinner = styled.div`
-//   height: 100%;
-//   flex-direction: column;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-// `;
+import { useEffect, useState } from "react";
+import CollectionsCategory from "../components/collections/CollectionsCategory";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import { CollectionAPI } from "../api/productAPI";
+const Spinner = styled.div`
+  height: 100%;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 const Container = styled.div`
   font-family: "Jost", sans-serif;
 `;
-// const Index = styled.div``;
+const Index = styled.div``;
 
 const Collections = () => {
   const { category } = useParams();
@@ -29,11 +31,32 @@ const Collections = () => {
 
   useEffect(() => {
     setLoading(true);
-     CollectionAPI(category, null, null, null, null, setColorsArray, setMaterialArray, setFoundProducts, setLoading);
+    CollectionAPI(
+      category,
+      null,
+      null,
+      null,
+      null,
+      setColorsArray,
+      setMaterialArray,
+      setFoundProducts,
+      setLoading
+    );
   }, []);
   const handleDataFromChild = (color, material, price, sort) => {
-    CollectionAPI(category, color, material, price, sort, setColorsArray, setMaterialArray, setFoundProducts, setLoading);
+    CollectionAPI(
+      category,
+      color,
+      material,
+      price,
+      sort,
+      setColorsArray,
+      setMaterialArray,
+      setFoundProducts,
+      setLoading
+    );
   };
+
   return (
     <>
       {loading ? (
