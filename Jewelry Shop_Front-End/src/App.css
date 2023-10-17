@@ -2,40 +2,6 @@ body{
      background-color: rgb(210, 207, 207);
 }
 
-.visually-hidden {
-     border: 0;
-     clip: rect(0, 0, 0, 0);
-     clip: rect(0 0 0 0);
-     width: 2px;
-     height: 2px;
-     margin: -2px;
-     overflow: hidden;
-     padding: 0;
-     position: absolute;
- }
-
- .td-firstChild{
-     padding-left: 0;
-    text-align: left;
- }
- .td-className{
-     padding: 0;
-    padding-left: 1em;
- }
-
- .btnOrderDetails {
-     display: inline-block;
-     border-radius: 4px;
-     font-weight: 500;
-     padding: 1.4em 1.7em;
-     box-sizing: border-box;
-     text-align: center;
-     cursor: pointer;
-     transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-     position: relative;
-     background: #338dbc;
-     color: white;
- }
  *, ::after, ::before {
      box-sizing: unset;
      /* Thêm các thuộc tính khác bạn muốn loại bỏ ở đây */
@@ -2537,3 +2503,5 @@ body{
  .order-summary-section.order-summary-section-total-lines.payment-lines[data-order-summary-section="payment-lines"] {
      padding-top: 1em !important;
  }
+
+ 

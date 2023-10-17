@@ -31,10 +31,30 @@ const Collections = () => {
 
   useEffect(() => {
     setLoading(true);
-     CollectionAPI(category, null, null, null, null, setColorsArray, setMaterialArray, setFoundProducts, setLoading);
+    CollectionAPI(
+      category,
+      null,
+      null,
+      null,
+      null,
+      setColorsArray,
+      setMaterialArray,
+      setFoundProducts,
+      setLoading
+    );
   }, []);
   const handleDataFromChild = (color, material, price, sort) => {
-    CollectionAPI(category, color, material, price, sort, setColorsArray, setMaterialArray, setFoundProducts, setLoading);
+    CollectionAPI(
+      category,
+      color,
+      material,
+      price,
+      sort,
+      setColorsArray,
+      setMaterialArray,
+      setFoundProducts,
+      setLoading
+    );
   };
 
   return (

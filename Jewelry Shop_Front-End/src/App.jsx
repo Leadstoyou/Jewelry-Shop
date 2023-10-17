@@ -24,6 +24,7 @@ function App() {
       <BrowserRouter basename="/Jewelry-Shop">
         <Routes>
           <Route path="/" element={<Homepage />} />
+          
           <Route path="/search/:searchtext" element={<SearchPage />} />
           <Route path="/collections/:category" element={<Collections />} />
           <Route path="/product/:id" element={<Products />} />
