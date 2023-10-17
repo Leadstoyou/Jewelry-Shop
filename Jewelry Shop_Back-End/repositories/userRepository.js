@@ -453,7 +453,7 @@ const userUpdateProfileRepository = async ({
     };
 
     const updatedUser = await User.findByIdAndUpdate(
-      { userId },
+      userId,
       updateFields,
       { new: true }
     ).exec();
@@ -489,7 +489,7 @@ const userUpdateRoleRepository = async ({ userId, newRole, userRole }) => {
     }
 
     const updatedUser = await User.findByIdAndUpdate(
-      { userId },
+      userId,
       { userRole: newRole },
       { new: true }
     ).exec();
@@ -513,11 +513,7 @@ const userUpdateRoleRepository = async ({ userId, newRole, userRole }) => {
   }
 };
 
-const userUpdateStatusRepository = async ({
-  userId,
-  newStatus,
-  userRole,
-}) => {
+const userUpdateStatusRepository = async ({ userId, newStatus, userRole }) => {
   try {
     if (userRole !== 0) {
       return {
@@ -527,7 +523,7 @@ const userUpdateStatusRepository = async ({
     }
 
     const updatedUser = await User.findByIdAndUpdate(
-      { userId },
+      userId,
       { isActive: newStatus },
       { new: true }
     ).exec();
@@ -558,7 +554,7 @@ const userUpdateBlockRepository = async ({ userId, newBlock, userRole }) => {
     }
 
     const updatedUser = await User.findByIdAndUpdate(
-      { userId },
+      userId,
       { isDelete: newBlock },
       { new: true }
     ).exec();
@@ -594,5 +590,5 @@ export default {
   userUpdateRoleRepository,
   userUpdateStatusRepository,
   userUpdateBlockRepository,
-  userViewProfileRepository
+  userViewProfileRepository,
 };

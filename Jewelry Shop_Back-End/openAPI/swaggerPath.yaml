@@ -314,10 +314,6 @@ paths:
             schema:
               type: object
               properties:
-                userEmail:
-                  type: string
-                  format: email
-                  example: abcd@example.com
                 oldPassword:
                   type: string
                   example: example
@@ -385,15 +381,12 @@ paths:
       security:  
        - BearerAuth: []  
       requestBody:
-        description: Change password
+        description: Change profile
         content:
           application/json:
             schema:
               type: object
               properties:
-                userEmail: 
-                  type: string
-                  example: abc@gmail.com
                 userName:
                   type: string
                   example: John Doe
@@ -443,19 +436,16 @@ paths:
         - users
       summary: Đổi role tài khoản
       description: Đổi role tài khoản trong JEWELRY shop
-      operationId: updateProfile
+      operationId: updateRole
       security:  
        - BearerAuth: []  
       requestBody:
-        description: Change password
+        description: Change Role
         content:
           application/json:
             schema:
               type: object
               properties:
-                userEmail: 
-                  type: string
-                  example: abc@gmail.com
                 newRole:
                   type: number
                   example: 1
@@ -490,22 +480,19 @@ paths:
       security:  
        - BearerAuth: []  
       requestBody:
-        description: Change password
+        description: Change Status
         content:
           application/json:
             schema:
               type: object
               properties:
-                userEmail: 
-                  type: string
-                  example: abc@gmail.com
                 newStatus:
                   type: boolean
                   example: false
         required: true
       responses:
         "200":
-          description: Update role successfully!
+          description: Update status successfully!
           content:
             application/json:
               schema:
@@ -527,22 +514,19 @@ paths:
     put:
       tags:
         - users
-      summary: Đổi status tài khoản
-      description: Đổi status tài khoản trong JEWELRY shop
-      operationId: updateStatus
+      summary: Đổi Block tài khoản
+      description: Đổi Block tài khoản trong JEWELRY shop
+      operationId: updateBlock
       security:  
        - BearerAuth: []  
       requestBody:
-        description: Change password
+        description: Change Block
         content:
           application/json:
             schema:
               type: object
               properties:
-                userEmail: 
-                  type: string
-                  example: abc@gmail.com
-                newStatus:
+                newBlock:
                   type: boolean
                   example: false
         required: true
