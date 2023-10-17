@@ -17,23 +17,18 @@ export default mongoose.model(
                 product_id: {
                   type: mongoose.Schema.Types.ObjectId,
                   ref: 'Product',
-                  required: true
                 },
                 size: {
                   type: [String],
-                  required: true
                 },
                 color: {
                   type: [String],
-                  required: true
                 },
                 material: {
                   type: [String],
-                  required: true
                 },
                 quantity: {
                   type: Number,
-                  required: true,
                   validate:{
                     validator: (value) => value > 0 ,
                     message: 'Quantity must be greate than 0'
@@ -42,7 +37,6 @@ export default mongoose.model(
                 price: {
                   type: Number,
                   ref: 'Product',
-                  required: true,
                   validate:{
                     validator: (value) => value > 0 ,
                     message: 'Price must be greate than 0'
@@ -51,7 +45,6 @@ export default mongoose.model(
                 productDescription: {
                   type: String,
                   ref: 'Product',
-                  required: true,
                   validate: {
                     validator: (value) => validator.isLength(value, { min: 0, max: 5000 }),
                     message: "productDescription must be between 0 and 5000 characters",
@@ -60,7 +53,6 @@ export default mongoose.model(
                 productImage: {
                   type: String,
                   ref: 'Product',
-                  required: true,
                   validate: {
                     validator: validator.isURL,
                     message: "Invalid URL for product image",
