@@ -130,8 +130,9 @@ const ScrollingArea = styled.div`
   max-height: calc(100vh - 70px);
   overflow: auto;
 `;
-const BillExportCheckbox = styled.input.attrs({ type: "checkbox" })`
+const BillExportCheckbox = styled.input.attrs({ type: "checkbox"})`
   margin-right: 10px;
+  appearance: checkbox;
 `;
 const CheckboxContainer = styled.div`
   display: flex;
@@ -480,7 +481,7 @@ const ShoppingCart = () => {
             <BillExportCheckbox
               checked={exportBill}
               onChange={() => setExportBill(!exportBill)}
-              style={{ WebkitAppearance: "checkbox" }}
+              style={{WebkitAppearance: 'checkbox'}}
             />
             <Label>Export Bill</Label>
           </CheckboxContainer>

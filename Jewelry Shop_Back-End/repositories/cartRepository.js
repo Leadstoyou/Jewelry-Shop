@@ -20,17 +20,9 @@ const getCartByTokenCookie = async (cartTokenCookie) => {
     throw error;
   }
 };
-const createCart = async (userId) => {
+const createEmptyCart = async () => {
   try {
-    let cartData = {};
-
-    if (userId) {
-      cartData.user_id = userId;
-    }
-
-    const cartToken = Jwt.sign(cartData, process.env.ACCESS_TOKEN);
-    
-    const newCart = new Cart({ cart_token: cartToken });
+    const newCart = new Cart({total: 0, cart_token: "carttoken"});
     await newCart.save();
     return newCart;
   } catch (error) {
@@ -38,15 +30,41 @@ const createCart = async (userId) => {
     throw error;
   }
 };
-const addProductToCart = async (cartToken, productId, quantity, size, color, material, productImage, productDes) => {
+
+const createCartToken = async (cartId, userId, productId) => {
+  try {
+    const cartData = {};
+
+    if (userId) {
+      cartData.user_id = userId;
+    }
+
+    if (productId) {
+      cartData.product_id = productId;
+    }
+
+    const cartToken = Jwt.sign(cartData, process.env.ACCESS_TOKEN);
+
+    const updatedCart = await Cart.findByIdAndUpdate(cartId, { cart_token: cartToken }, { new: true });
+
+    return updatedCart;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+const addProductToCart = async (cartToken, productId, quantity, size, color, material, price, productImage, productDes) => {
   try {
     const cart = await Cart.findById(cartToken);
 
-    const existingProduct = cart.productList.find((product) => product.product_id === productId);
-
-    if (existingProduct) {
-      if (existingProduct.size === size && existingProduct.color === color && existingProduct.material === material) {
-        existingProduct.quantity += quantity;
+    const existingProductIndex = cart.productList.findIndex((product) => String(product.product_id) === String(productId));
+    
+    if (existingProductIndex !== -1) {
+      const existingProduct = cart.productList[existingProductIndex];
+      if (existingProduct.size[0] === size && existingProduct.color[0] === color && existingProduct.material[0] === material) {
+        const newQuantity = existingProduct.quantity + quantity;
+        existingProduct.quantity = newQuantity;
       } else {
         cart.productList.push({
           product_id: productId,
@@ -54,6 +72,7 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
           size: size,
           color: color,
           material: material,
+          price: price,
           productImage: productImage,
           productDescription: productDes
         });
@@ -65,18 +84,30 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
         size: size,
         color: color,
         material: material,
+        price: price,
         productImage: productImage,
         productDescription: productDes
       });
     }
 
     await cart.save();
+    let totalPrice = 0;
+
+    for (const product of cart.productList) {
+      if (typeof product.quantity === 'number' && typeof product.price === 'number' && !isNaN(product.quantity) && !isNaN(product.price)) {
+        totalPrice += product.quantity * product.price;
+      }
+    }
+
+    cart.total = totalPrice;
+    const updatedCart = await cart.save();
+    return updatedCart;
   } catch (error) {
     throw error;
   }
 };
 
-  const updateProductInCart = async (cartToken, productId, quantity, size, color, material) => {
+  const updateProductInCart = async (cartToken, productId, quantity, size, color, material, price) => {
     try {
       const product = await productRepository.getProductById(productId);
       if(quantity > product.quantity){
@@ -90,6 +121,7 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
             'productList.$.size': size,
             'productList.$.color': color,
             'productList.$.material': material,
+             total: quantity*price,
           },
         },
         {new: true}
@@ -104,11 +136,21 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
   const updateTotalPrice = async (cartToken) => {
     try {
       const cart = await Cart.findOne({ cart_token: cartToken });
-      const totalPrice = cart.products.reduce((acc, product) => {
-        return acc + product.quantity * product.price;
+      const totalPrice = cart.productList.reduce((acc, product) => {
+        if (typeof product.quantity === 'number' && typeof product.price === 'number' && !isNaN(product.quantity) && !isNaN(product.price)) {
+          return acc + product.quantity * product.price;
+        }
+        return acc;
       }, 0);
   
-      await Cart.findOneAndUpdate({ cart_token: cartToken }, { total_price: totalPrice });
+  
+      const updatedCart = await Cart.findOneAndUpdate(
+        { cart_token: cartToken },
+        { total: totalPrice, cart_token: cartToken },
+        { new: true }
+      );
+  
+      return updatedCart;
     } catch (error) {
       throw error;
     }
@@ -142,5 +184,5 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
     }
   };
 
-export default {getCartByTokenCookie, updateTotalPrice, updateProductInCart, createCart, removePurchasedProducts, getCartByToken, addProductToCart, removeFromCart};
+export default {getCartByTokenCookie, updateTotalPrice, updateProductInCart,createCartToken, createEmptyCart, removePurchasedProducts, getCartByToken, addProductToCart, removeFromCart};
 

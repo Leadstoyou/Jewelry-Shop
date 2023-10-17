@@ -26,10 +26,9 @@ const viewCart = async (req, res) => {
       const material = req.body.material;
       const productImage = req.body.productImage;
       const productDes = req.body.productDescription;
-      const cartTokenCookie = req.cookies.cart_token;
+      const price = req.body.price;
 
       // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng hay chưa
-      const cartCookie = await cartRepository.getCartByTokenCookie(cartTokenCookie);
       const cart = await cartRepository.getCartByToken(cartToken);
       const product = await productRepository.getProductById(productId);
   
@@ -37,18 +36,17 @@ const viewCart = async (req, res) => {
         return res.status(HttpStatusCode.NOT_FOUND).json({ message: 'Product not found' });
       }
   
-      if (!cart || !cartCookie) {
+      if (!cart) {
         // Nếu giỏ hàng không tồn tại, tạo mới giỏ hàng và thêm sản phẩm vào
-        const newCart = await cartRepository.createCart(userId);
-        await cartRepository.addProductToCart(newCart.cart_token, productId, quantity, size, color, material,productImage, productDes);
+        const newCart = await cartRepository.createEmptyCart();
+        await cartRepository.addProductToCart(newCart._id, productId, quantity, size, color, material, price, productImage, productDes);
+        await cartRepository.createCartToken(newCart._id, userId, productId);
       } else {
 
-        await cartRepository.addProductToCart(cartToken, productId, quantity, size, color, material,productImage, productDes);
+        await cartRepository.addProductToCart(cart._id, productId, quantity, size, color, material, price, productImage, productDes);
         
       }
   
-      // Cập nhật tổng giá trị đơn hàng
-      await cartRepository.updateTotalPrice(cartToken);
   
       return res.status(HttpStatusCode.OK).json({ message: 'Product added to cart successfully' });
     } catch (error) {
@@ -62,9 +60,10 @@ const viewCart = async (req, res) => {
       const size = req.body.size;
       const color = req.body.color;
       const material = req.body.material;
+      const price = req.body.price;
       const cartToken = req.params.cart_token;
       const productId = req.body.product_id;
-      const cartUpdate = await cartRepository.updateProductInCart(cartToken, productId, quantity, size, color, material);
+      const cartUpdate = await cartRepository.updateProductInCart(cartToken, productId, quantity, size, color, material, price);
       return res.status(HttpStatusCode.OK).json(cartUpdate);
     } catch (error) {
       console.error(error);
