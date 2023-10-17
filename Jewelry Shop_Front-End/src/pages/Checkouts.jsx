@@ -454,7 +454,7 @@ const Checkouts = () => {
                           <input name="utf8" type="hidden" value="✓" />
                           <form
                             id="createOrder"
-                            action="http://localhost:9999/api/v1/payment/create_payment_url"
+                            action={`${import.meta.env.VITE_API_PAYMENT}/create_payment_url`}
                             method="POST"
                             target="_blank"
                           >
