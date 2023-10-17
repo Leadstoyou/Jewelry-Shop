@@ -26,10 +26,8 @@ const viewCart = async (req, res) => {
       const material = req.body.material;
       const productImage = req.body.productImage;
       const productDes = req.body.productDescription;
-      const cartTokenCookie = req.cookies.cart_token;
 
       // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng hay chưa
-      const cartCookie = await cartRepository.getCartByTokenCookie(cartTokenCookie);
       const cart = await cartRepository.getCartByToken(cartToken);
       const product = await productRepository.getProductById(productId);
   
@@ -47,8 +45,6 @@ const viewCart = async (req, res) => {
         
       }
   
-      // Cập nhật tổng giá trị đơn hàng
-      await cartRepository.updateTotalPrice(cartToken);
   
       return res.status(HttpStatusCode.OK).json({ message: 'Product added to cart successfully' });
     } catch (error) {
