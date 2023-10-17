@@ -131,7 +131,7 @@ const ButtonListDelete = styled.button`
 const BtnControl = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  /* align-items: center; */
   justify-content: center;
 `;
 //manage form
@@ -140,7 +140,7 @@ const ManageProduct = () => {
   const [idDelete, setIdDelete] = useState(null);
   const [updateData, setUpdateData] = useState(null);
   const [updateProduct, setUpdateProduct] = useState(null);
-  const [allProduct, setAllproduct] = useState(null);
+  const [allProduct, setAllproduct] = useState([]);
   const [showUpdate, setShowUpdate] = useState(false);
   const [addData, setAddData] = useState({});
   const [existErr, setExist] = useState(false);
@@ -281,16 +281,34 @@ const ManageProduct = () => {
 
   //get data
   //allProduct, setAllproduct
+  const [activePage, setActivePage] = useState(1);
+  const limitP = 5;
+  const [totalPage, setTotalpage] = useState(0);
   useEffect(() => {
-    getAllProducts(setAllproduct, notify);
-  }, [addData, updateData, updateProduct, idDelete]);
+    getAllProducts(setAllproduct, setTotalpage, notify, limitP, activePage);
+  }, [addData, updateData, updateProduct, idDelete , activePage , totalPage]);
 
   useEffect(() => {
     console.log(allProduct);
+    console.log(totalPage);
   }, [allProduct]);
 
   const categories = ["Dây Chuyền", "Vòng", "Hoa Tai", "Charm", "Nhẫn"];
-
+  const Allpage = [];
+  for (let i = 1; i <= totalPage; i++) {
+    Allpage.push(i);
+  }
+  console.log(Allpage);
+  const handlePrev = ()=>{
+    if(activePage > 1){
+      setActivePage(activePage-1);
+    }
+  }
+  const handleNext = ()=>{
+    if(activePage < totalPage){
+      setActivePage(activePage+1);
+    }
+  }
   return (
     <Container>
       <h1 style={{ padding: "1%" }}>Manage products</h1>
@@ -514,67 +532,69 @@ const ManageProduct = () => {
               <Th>Category</Th>
               <Th></Th>
             </TrHead>
+
             {allProduct?.map(
-              (p) =>
-                !p.isDeleted && (
-                  <Tr key={p._id}>
-                    <Td>{idNumber++}</Td>
-                    <Td>{p.productName}</Td>
+              (p) => (
+                // !p.isDeleted && (
+                <Tr key={p._id}>
+                  <Td>{idNumber++}</Td>
+                  <Td>{p.productName}</Td>
 
-                    <Td style={{ width: "13%" }}>
-                      <img
-                        src={p.productImage}
-                        style={{
-                          width: "100%",
-                          height: "100px",
-                          objectFit: "cover",
-                          borderRadius: "50%",
-                        }}
-                      />
-                    </Td>
+                  <Td style={{ width: "13%" }}>
+                    <img
+                      src={p.productImage}
+                      style={{
+                        width: "100%",
+                        height: "100px",
+                        objectFit: "cover",
+                        borderRadius: "50%",
+                      }}
+                    />
+                  </Td>
 
-                    <Td>{p.productQuantity}</Td>
+                  <Td>{p.productQuantity}</Td>
 
-                    <Td>{p.productPrice.toLocaleString("vi-VN")}đ</Td>
+                  <Td>{p.productPrice.toLocaleString("vi-VN")}đ</Td>
 
-                    <Td>{p.productCategory}</Td>
-                    <Td style={{ width: "20%" }}>
-                      <button
-                        onClick={() => {
-                          setUpdateProduct(p);
-                          setShowUpdate(true);
-                        }}
-                        style={{
-                          marginRight: "5px",
-                          border: "none",
-                          outline: "none",
-                          padding: "10px",
-                          borderRadius: "5px",
-                          backgroundColor: "green",
-                          color: "white",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Update
-                      </button>
+                  <Td>{p.productCategory}</Td>
+                  <Td style={{ width: "20%" }}>
+                    <button
+                      onClick={() => {
+                        setUpdateProduct(p);
+                        setShowUpdate(true);
+                      }}
+                      style={{
+                        marginRight: "5px",
+                        border: "none",
+                        outline: "none",
+                        padding: "10px",
+                        borderRadius: "5px",
+                        backgroundColor: "green",
+                        color: "white",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Update
+                    </button>
 
-                      <button
-                        style={{
-                          border: "none",
-                          outline: "none",
-                          padding: "10px",
-                          borderRadius: "5px",
-                          backgroundColor: "red",
-                          color: "white",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => handleDelete(p._id)}
-                      >
-                        Delete
-                      </button>
-                    </Td>
-                  </Tr>
-                )
+                    <button
+                      style={{
+                        border: "none",
+                        outline: "none",
+                        padding: "10px",
+                        borderRadius: "5px",
+                        backgroundColor: "red",
+                        color: "white",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => handleDelete(p._id)}
+                    >
+                      Delete
+                    </button>
+                  </Td>
+                </Tr>
+              )
+              // )
             )}
           </Table>
         </ControlBody>
@@ -587,9 +607,13 @@ const ManageProduct = () => {
         </UpdateControl.Provider>
         <PageControl>
           <Pagination>
-            <Pagination.Prev />
-            <Pagination.Item>{1}</Pagination.Item>
-            <Pagination.Next />
+            <Pagination.Prev onClick={handlePrev}/>
+            {Allpage.map((page) => (
+              <Pagination.Item active={page === activePage} onClick={()=>setActivePage(page)}>
+                {page}
+              </Pagination.Item>
+            ))}
+            <Pagination.Next onClick={handleNext}/>
           </Pagination>
         </PageControl>
       </Function>
