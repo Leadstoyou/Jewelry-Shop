@@ -26,7 +26,8 @@ const userGetAllUsersController = async (req, res) => {
 };
 
 const userSearchController = async (req, res) => {
-  let { page = 1, size = 6, searchString = "", searchRole = 2 } = req.query;
+  let { page = 1, size = 6, searchString = "", searchRole } = req.query;
+  searchRole = searchRole == undefined ? 2 : searchRole;
   size = size >= 6 ? 6 : size;
   try {
     const searchRoleNumber = parseInt(searchRole);
@@ -173,7 +174,7 @@ const userLogoutController = async (req, res) => {
       });
     }
 
-    return res.redirect(`${process.env.FRONT_END_URL}/login`);
+    return res.redirect(`${process.env.FRONT_END_URL}/login`); // thang dat lam gi the nay
   } catch (exception) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",

@@ -386,8 +386,8 @@ const userChangePasswordRepository = async ({
       parseInt(process.env.SALT_ROUNDS)
     );
 
-    const updatedUser = await User.findOneAndUpdate(
-      { userEmail },
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
       { userPassword: hashedPassword },
       { new: true }
     ).exec();
@@ -414,10 +414,12 @@ const userViewProfileRepository = async (userId) => {
         message: Exception.CANNOT_FIND_USER,
       };
     }
+
+    const {userPassword,  ...userData} = userInfo.toObject();                                                    
     return {
       success: true,
       message: "Get user successfully!",
-      data: userInfo,
+      data: userData,
     };
   } catch (exception) {
     throw new Exception(exception.message);
@@ -453,10 +455,9 @@ const userUpdateProfileRepository = async ({
     };
 
     const updatedUser = await User.findByIdAndUpdate(
-      { userId },
-      updateFields,
-      { new: true }
-    ).exec();
+      userId, 
+      updateFields, 
+      {new: true}).exec();
     if (!updatedUser) {
       return {
         success: false,
@@ -489,7 +490,7 @@ const userUpdateRoleRepository = async ({ userId, newRole, userRole }) => {
     }
 
     const updatedUser = await User.findByIdAndUpdate(
-      { userId },
+      userId,
       { userRole: newRole },
       { new: true }
     ).exec();
@@ -513,11 +514,7 @@ const userUpdateRoleRepository = async ({ userId, newRole, userRole }) => {
   }
 };
 
-const userUpdateStatusRepository = async ({
-  userId,
-  newStatus,
-  userRole,
-}) => {
+const userUpdateStatusRepository = async ({ userId, newStatus, userRole }) => {
   try {
     if (userRole !== 0) {
       return {
@@ -527,7 +524,7 @@ const userUpdateStatusRepository = async ({
     }
 
     const updatedUser = await User.findByIdAndUpdate(
-      { userId },
+      userId,
       { isActive: newStatus },
       { new: true }
     ).exec();
@@ -558,7 +555,7 @@ const userUpdateBlockRepository = async ({ userId, newBlock, userRole }) => {
     }
 
     const updatedUser = await User.findByIdAndUpdate(
-      { userId },
+      userId,
       { isDelete: newBlock },
       { new: true }
     ).exec();
@@ -594,5 +591,5 @@ export default {
   userUpdateRoleRepository,
   userUpdateStatusRepository,
   userUpdateBlockRepository,
-  userViewProfileRepository
+  userViewProfileRepository,
 };

@@ -17,9 +17,6 @@ const checkToken = (req, res, next) => {
         req.headers.authorization = `Bearer ${refreshAccessToken}`;
         checkToken(req,res,next)
        }
-       if(typeof refreshAccessToken === 'undefined') {
-        // next();
-       }
       } else if (err) {
         return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
           status: "ERROR",
