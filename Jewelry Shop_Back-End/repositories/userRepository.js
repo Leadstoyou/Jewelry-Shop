@@ -414,10 +414,12 @@ const userViewProfileRepository = async (userId) => {
         message: Exception.CANNOT_FIND_USER,
       };
     }
+
+    const {userPassword,  ...userData} = userInfo.toObject();                                                    
     return {
       success: true,
       message: "Get user successfully!",
-      data: userInfo,
+      data: userData,
     };
   } catch (exception) {
     throw new Exception(exception.message);
