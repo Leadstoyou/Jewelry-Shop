@@ -1,11 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import {
-  orderRouter,
-  cartRouter,
-  productRouter,
-  userRouter,
-} from "./routers/indexRouter.js";
+import {orderRouter, cartRouter, productRouter, userRouter,} from "./routers/indexRouter.js";
 import connect from "./database/database.js";
 import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
@@ -14,18 +9,19 @@ import cors from "cors";
 import  paymentRouter  from "./services/vnpayService.js";
 dotenv.config();
 import routeUnknown from "./middleware/routeMiddleware.js";
+
 const port = process.env.PORT || 4200;
 const app = express();
 const v1Router = express.Router();
 import bodyParser from 'body-parser';
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 const corsOptions = {
   origin: process.env.FRONT_END_ORIGIN_URL,
   credentials: true,
 };
 
 app.use(cors(corsOptions));
-
 
 v1Router.use(cookieParser());
 v1Router.use(express.json());

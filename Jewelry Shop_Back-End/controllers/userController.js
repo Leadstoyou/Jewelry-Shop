@@ -173,7 +173,7 @@ const userLogoutController = async (req, res) => {
       });
     }
 
-    return res.redirect(`${process.env.FRONT_END_URL}/login`);
+    return res.redirect(`${process.env.FRONT_END_URL}/login`); // thang dat lam gi the nay
   } catch (exception) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
