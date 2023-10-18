@@ -131,13 +131,16 @@ const Profile = () => {
 
     if (isValid) {
       try {
-        const response = await axios.post("http://localhost:3001/Account", {
-          password: currentPassword,
+        const response = await axios.put("http://localhost:9999/api/v1/users/changePassword", {
+          oldPassword: currentPassword,
           newPassword: newPassword,
+          confirmPassword: checkPassword,
+
         });
 
         if (response.status === 200) {
           console.log("Save successful");
+          toast.success("Change Password Success");
         } else {
           console.log("Save failed");
         }
@@ -178,6 +181,7 @@ const Profile = () => {
 
     return true;
   };
+
 
   return (
     <Container style={{ marginTop: "100px", marginBottom: "30px" }}>
