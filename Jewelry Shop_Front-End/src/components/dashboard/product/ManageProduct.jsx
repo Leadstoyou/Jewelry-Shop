@@ -293,7 +293,7 @@ const ManageProduct = () => {
     console.log(totalPage);
   }, [allProduct]);
 
-  const categories = ["Dây Chuyền", "Vòng", "Hoa Tai", "Charm", "Nhẫn"];
+  const categories = ["Dây Chuyền", "Vòng tay", "Hoa Tai", "Charm", "Nhẫn"];
   const Allpage = [];
   for (let i = 1; i <= totalPage; i++) {
     Allpage.push(i);

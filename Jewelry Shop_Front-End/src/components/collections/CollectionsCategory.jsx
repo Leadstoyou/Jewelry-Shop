@@ -69,12 +69,13 @@ const ItemOne = styled.div`
 `;
 const DropdownOne = styled.select`
   padding: 5px;
-  border: none;
+  border: 5px solid grey;
 `;
 const TextInDropdown = styled.option``;
 const TextSearch = styled.div``;
 
 const Controller = styled.div`
+  position: relative;
   display: grid;
   grid-template-columns: 24.125% 24.125% 24.125% 24.125%;
   gap: 1%;
@@ -308,9 +309,11 @@ const CollectionsCategory = (props) => {
         </ItemOne>
       </SearchController>
       <Controller data-aos="fade-up">
-        {foundProducts?.map((product, index) => (
+        { foundProducts ? (foundProducts?.map((product, index) => (
           <Product product={product} key={index} />
-        ))}
+        ))) : ( <div style={{ position:'absolute' ,right:'25%' }}>
+        <h1>Not found product you have just filtered !!!</h1>
+      </div>)}
       </Controller>
       <PagingController data-aos="fade-up">
         {/* <Pagination>
