@@ -31,7 +31,11 @@ const checkToken = (req, res, next) => {
       }
     });
   } else {
-    next();
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
+      message: "You not user",
+    });
+      next();
   }
 };
 
