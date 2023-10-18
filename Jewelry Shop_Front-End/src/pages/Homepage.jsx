@@ -17,12 +17,12 @@ const Spinner = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`
+`;
 const Container = styled.div`
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
 `;
 
-function Homepage() {
+function Homepage(props) {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(true);
@@ -33,7 +33,15 @@ function Homepage() {
   return (
     <>
       {loading ? (
-        <Container  style={{ height: '100vh',display: 'flex', flexDirection: 'column',alignItems: 'center',justifyContent: 'center'}}>
+        <Container
+          style={{
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <RiseLoader color={"#575855"} size={30} loading={loading} />
         </Container>
       ) : (
@@ -45,9 +53,9 @@ function Homepage() {
           <ListProduct />
           <Album />
           <Footer />
-          </Container>
+        </Container>
       )}
-   </>
+    </>
   );
 }
 
