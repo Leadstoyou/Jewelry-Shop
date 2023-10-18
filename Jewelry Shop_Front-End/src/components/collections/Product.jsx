@@ -68,7 +68,7 @@ const Img = styled.img`
   height: 100%;
   transition: all 0.5s ease-in;
   ${Container}:hover & {
-    transform: scale(1.4);
+    transform: scale(1.2);
   }
 `;
 
@@ -104,6 +104,7 @@ const Pprice = styled.p`
 
 const All = styled(Link)`
   z-index: 1;
+  width: 100%;
   cursor: pointer;
 `;
 
