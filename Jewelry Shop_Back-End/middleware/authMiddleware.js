@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { userController } from "../controllers/indexController.js";
 
 const checkToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
   if (req?.headers?.authorization?.startsWith("Bearer")) {
     const token = req.headers?.authorization.split(" ")[1];
     jwt.verify(token, process.env.ACCESS_TOKEN, async (err, decode) => {
@@ -14,9 +15,19 @@ const checkToken = (req, res, next) => {
       } else if (err instanceof jwt.TokenExpiredError) {
        const refreshAccessToken =  await userController.refreshAccessTokenController(req, res, next);
        if(typeof refreshAccessToken === 'string') {
+        console.log("refresh success!");
         req.headers.authorization = `Bearer ${refreshAccessToken}`;
         checkToken(req,res,next)
        }
+      //  else {
+      //   return res.status(HttpStatusCode.BAD_REQUEST).json({
+      //     status: "ERROR",
+      //     message: "refresh token invalid - access token time out"
+      //   })
+      //  }
+     if(typeof refreshAccessToken === "undefined"){
+        next()
+      }
       } else if (err) {
         return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
           status: "ERROR",
@@ -41,7 +52,6 @@ const checkUser =
         return res.status(err.status).json(err.body);
       }
       const userRole = req.user?.userRole;
-      console.log('userRole',userRole)
 
       if (allowedRoles.includes(userRole)) {
         next();
