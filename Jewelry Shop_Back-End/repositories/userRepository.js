@@ -386,8 +386,8 @@ const userChangePasswordRepository = async ({
       parseInt(process.env.SALT_ROUNDS)
     );
 
-    const updatedUser = await User.findOneAndUpdate(
-      { userEmail },
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
       { userPassword: hashedPassword },
       { new: true }
     ).exec();
@@ -455,10 +455,9 @@ const userUpdateProfileRepository = async ({
     };
 
     const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      updateFields,
-      { new: true }
-    ).exec();
+      userId, 
+      updateFields, 
+      {new: true}).exec();
     if (!updatedUser) {
       return {
         success: false,
