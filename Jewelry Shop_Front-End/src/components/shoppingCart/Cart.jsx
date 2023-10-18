@@ -264,7 +264,7 @@ const ShoppingCart = () => {
   const [giftNotes, setGiftNotes] = useState("");
 
   //call API view cart
-  const [cartData, setCartData] = useState(null);
+  const [cartData, setCartData] = useState([]);
   //Lấy product data
 
   function getCartTokenFromCookie() {
@@ -292,7 +292,7 @@ const ShoppingCart = () => {
       const cartToken = getCartTokenFromCookie();
       try {
         const res = await axios.get(
-          `http://localhost:9999/api/v1/cart/${cartToken}`
+          `${import.meta.env.VITE_API_CART}/${cartToken}`
         );
         const data = res.data;
         setCartData(data);
@@ -383,13 +383,13 @@ const ShoppingCart = () => {
         "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
     },
   ];
-  if (cartData === null) {
-    return (
-      <Container>
-        <div>Loading...</div>
-      </Container>
-    );
-  }
+  // if (cartData === null) {
+  //   return (
+  //     <Container>
+  //       <div>Loading...</div>
+  //     </Container>
+  //   );
+  // }
 
   // if (cartData.length === 0) {
   //   return (
@@ -417,7 +417,6 @@ const ShoppingCart = () => {
                      {truncateDescription(product.productDescription, 100)}
                      onMouseEnter={() => setHoveredDescription(product.productDescription)}
                    onMouseLeave={() => setHoveredDescription(null)}
-        >
           {hoveredDescription === product.productDescription
             ? product.productDescription
             : truncateDescription(product.productDescription, 13)}
