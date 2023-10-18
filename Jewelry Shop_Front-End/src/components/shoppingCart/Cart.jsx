@@ -1,7 +1,7 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-
+import axios from "axios";
 const Container = styled.div`
   display: flex;
   align-items: stretch;
@@ -33,6 +33,7 @@ const RightPanel = styled.div`
 const Title = styled.h2`
   text-align: left;
   color: #333;
+  font-weight: bold;
 `;
 
 const ProductContainer = styled.div`
@@ -120,7 +121,7 @@ const QuantitySelect = styled.input`
   text-align: center;
   margin-right: 60px;
 `;
-const ProductCode = styled.p`
+const ProductCategory = styled.p`
   font-size: 13px;
   color: #777;
 `;
@@ -129,14 +130,14 @@ const ScrollingArea = styled.div`
   max-height: calc(100vh - 70px);
   overflow: auto;
 `;
-const BillExportCheckbox = styled.input.attrs({ type: "checkbox"})`
+const BillExportCheckbox = styled.input.attrs({ type: "checkbox" })`
   margin-right: 10px;
   appearance: checkbox;
 `;
 const CheckboxContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-top: 20px;
 `;
 
 const Label = styled.label`
@@ -261,68 +262,62 @@ const ShoppingCart = () => {
   const [isAgreedToTerms, setIsAgreedToTerms] = useState(false);
   const [exportBill, setExportBill] = useState(false);
   const [giftNotes, setGiftNotes] = useState("");
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      description: "Description for Product 1",
-      selectedQuantity: 2,
-      price: 10,
-      image:
-        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-      priceLarge: 20,
-      productCode: "P123", // Product CODE added
-    },
-    {
-      id: 2,
-      description: "Description for Product 2",
-      selectedQuantity: 1,
-      price: 15,
-      image:
-        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-      priceLarge: 25,
-      productCode: "P456", // Product CODE added
-    },
-    {
-      id: 3,
-      description: "Description for Product 3",
-      selectedQuantity: 3,
-      price: 20,
-      image:
-        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-      priceLarge: 30,
-      productCode: "P789", // Product CODE added
-    },
-    {
-      id: 4,
-      description: "Description for Product 3",
-      selectedQuantity: 3,
-      price: 20,
-      image:
-        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-      priceLarge: 30,
-      productCode: "P789", // Product CODE added
-    },
-    {
-      id: 5,
-      description: "Description for Product 3",
-      selectedQuantity: 3,
-      price: 20,
-      image:
-        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-      priceLarge: 30,
-      productCode: "P789", // Product CODE added
-    },
-    {
-      id: 6,
-      description: "Description for Product 3",
-      selectedQuantity: 3,
-      price: 20,
-      image:
-        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-      priceLarge: 30,
-      productCode: "P789", // Product CODE added
-    },
-  ]);
+
+  //call API view cart
+  const [cartData, setCartData] = useState(null);
+  //Lấy product data
+
+  function getCartTokenFromCookie() {
+    const name = "cartToken=";
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const cookieArray = decodedCookie.split(";");
+
+    for (let i = 0; i < cookieArray.length; i++) {
+      let cookie = cookieArray[i].trim();
+      if (cookie.indexOf(name) === 0) {
+        return cookie.substring(name.length, cookie.length);
+      }
+    }
+    return null;
+  }
+  function truncateDescription(description, maxLength) {
+    if (description.length > maxLength) {
+      return description.slice(0, maxLength) + " ...";
+    }
+    return description;
+  }
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      const cartToken = getCartTokenFromCookie();
+      try {
+        const res = await axios.get(
+          `http://localhost:9999/api/v1/cart/${cartToken}`
+        );
+        const data = res.data;
+        setCartData(data);
+        console.log(data.productList);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  //Xóa 1 sản phẩm trong giỏ hàng
+  const handleRemoveFromCart = async (productId) => {
+    const cartToken = getCartTokenFromCookie();
+    try {
+      await axios.delete(`http://localhost:9999/api/v1/cart/delete/${cartToken}`);
+      const updatedCartData = cartData.productList.filter(
+        (product) => product.product_id !== productId
+      );
+      setCartData({ ...cartData, productList: updatedCartData });
+    } catch (error) {
+      console.error("Error removing product from cart:", error);
+    }
+  };
+
   const navigate = useNavigate();
   const handlePay = () => {
     if (isAgreedToTerms) {
@@ -332,31 +327,11 @@ const ShoppingCart = () => {
     }
   };
 
-  const handleQuantityChange = (productId, newQuantity) => {
-    const updatedProducts = products.map((product) => {
-      if (product.id === productId) {
-        return { ...product, selectedQuantity: newQuantity };
-      }
-      return product;
-    });
-    setProducts(updatedProducts);
-  };
-
-  const handleDeleteProduct = (productId) => {
-    const updatedProducts = products.filter(
-      (product) => product.id !== productId
-    );
-    setProducts(updatedProducts);
-  };
 
   const handleFormSubmit = (e) => {
-    // e.preventDefault();
     console.log(e);
   };
-  const total = products.reduce(
-    (acc, product) => acc + product.price * product.selectedQuantity,
-    0
-  );
+
   const viewedProducts = [
     {
       id: 7,
@@ -408,16 +383,24 @@ const ShoppingCart = () => {
         "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
     },
   ];
-  if (products.length === 0) {
+  if (cartData === null) {
     return (
       <Container>
-        <div>
-          <h2>Cart is empty</h2>
-          <a href="/">Continue Shopping</a>
-        </div>
+        <div>Loading...</div>
       </Container>
     );
   }
+
+  // if (cartData.length === 0) {
+  //   return (
+  //     <Container>
+  //       <div>
+  //         <h2>Cart is empty</h2>
+  //         <a href="/">Continue Shopping</a>
+  //       </div>
+  //     </Container>
+  //   );
+  // }
 
   return (
     <div>
@@ -425,35 +408,32 @@ const ShoppingCart = () => {
         <ScrollingArea>
           <LeftPanel>
             <Title>Shopping Cart</Title>
-            {products.map((product) => (
-              <div key={product.id}>
+            {cartData?.productList?.map((product, index) => (
+              <div key={index}>
                 <ProductContainer>
-                  <ProductImage src={product.image} />
+                  <ProductImage src={product.productImage} />
                   <ProductInfo>
-                    <h3>{product.description}</h3>
-                    <ProductCode>
-                      Product CODE: {product.productCode}
-                    </ProductCode>
+                    <h6>
+                     {truncateDescription(product.productDescription, 100)}
+                     onMouseEnter={() => setHoveredDescription(product.productDescription)}
+                   onMouseLeave={() => setHoveredDescription(null)}
+        >
+          {hoveredDescription === product.productDescription
+            ? product.productDescription
+            : truncateDescription(product.productDescription, 13)}
+                    </h6> 
+                    <ProductCategory>Product Category:</ProductCategory>
                     <ProductPrice>Price: ${product.price}</ProductPrice>
                   </ProductInfo>
                   <QuantityContainer>
                     <QuantityLabel>Quantity</QuantityLabel>
-                    <QuantitySelect
-                      type="number"
-                      min="1"
-                      max="100"
-                      value={product.selectedQuantity}
-                      onChange={(e) => {
-                        let newQuantity = parseInt(e.target.value);
-                        if (isNaN(newQuantity)) newQuantity = 1;
-                        if (newQuantity < 1) newQuantity = 1;
-                        if (newQuantity > 10) newQuantity = 10;
-                        handleQuantityChange(product.id, newQuantity);
-                      }}
-                    />
+                    <QuantitySelect value={product.quantity} />
+                   
                   </QuantityContainer>
-                  <ProductPrice> ${product.priceLarge}</ProductPrice>
-                  <DeleteButton onClick={() => handleDeleteProduct(product.id)}>
+                  <ProductPrice> ${product.price}</ProductPrice>
+                  <DeleteButton
+                    onClick={() => handleRemoveFromCart(product.product_id)}
+                  >
                     X
                   </DeleteButton>
                 </ProductContainer>
@@ -463,14 +443,13 @@ const ShoppingCart = () => {
           </LeftPanel>
         </ScrollingArea>
         <RightPanel>
-          <Title>Total:</Title>
-
+          <Title>Total:{cartData?.total}</Title>
           <CheckboxContainer>
             <input
               type="checkbox"
               id="termsCheckbox"
               onChange={() => setIsAgreedToTerms(!isAgreedToTerms)}
-              style={{WebkitAppearance: 'checkbox'}}
+              style={{ WebkitAppearance: "checkbox" }}
             />
             <Label htmlFor="termsCheckbox">
               I agree to the Terms of Service
@@ -498,6 +477,7 @@ const ShoppingCart = () => {
             <BillExportCheckbox
               checked={exportBill}
               onChange={() => setExportBill(!exportBill)}
+              style={{ WebkitAppearance: "checkbox" }}
             />
             <Label>Export Bill</Label>
           </CheckboxContainer>
