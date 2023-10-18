@@ -27,35 +27,11 @@ function SearchPage() {
 
   useEffect(() => {
     setLoading(true);
-    function getAccessTokenFromCookie() {
-      const name = "accessToken=";
-      const decodedCookie = decodeURIComponent(document.cookie);
-      const cookieArray = decodedCookie.split(";");
-
-      for (let i = 0; i < cookieArray.length; i++) {
-        let cookie = cookieArray[i].trim();
-        if (cookie.indexOf(name) === 0) {
-          console.log(cookie.substring(name.length, cookie.length));
-          return cookie.substring(name.length, cookie.length);
-        }
-      }
-
-      return null;
-    }
-
     async function fetchData() {
       try {
-        const accessToken = getAccessTokenFromCookie();
-        console.log(accessToken);
         const response = await axios.get(
-          `http://localhost:9999/api/v1/products/search/${searchtext}`,
-          {
-            headers: {
-              Authorization: `Bearer ${getAccessTokenFromCookie()}`,
-            },
-          }
+          `http://localhost:9999/api/v1/products/search/${searchtext}`
         );
-
         const data = response.data.data;
         setFoundProducts(data);
         setLoading(false);

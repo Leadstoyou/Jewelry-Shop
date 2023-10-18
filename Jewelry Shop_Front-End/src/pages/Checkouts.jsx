@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "../style/OrderDetail.css";
 import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 
 const Checkouts = () => {
@@ -24,13 +24,12 @@ const Checkouts = () => {
       !inputNameValue
     ) {
       e.preventDefault();
-      toast.error('Input all fields');
+      toast.error("Input all fields");
     }
   };
   return (
-    
     <div className="flexbox">
-       <ToastContainer />
+      <ToastContainer />
       <div className="content">
         <div className="wrap">
           <div className="sidebar">
@@ -229,13 +228,34 @@ const Checkouts = () => {
                       <h2 className="section-title">Thông tin giao hàng</h2>
                     </div>
                     <div className="section-content section-customer-information no-mb">
-                      <p className="section-content-text">
+                      {/* <p className="section-content-text">
                         Bạn đã có tài khoản?
                         <Link to={'/login'}>
                           Đăng nhập
                         </Link>
-                      </p>
-
+                      </p> */}
+                      {/* Login*/}
+                      <div className="logged-in-customer-information">
+                        &nbsp;
+                        <div className="logged-in-customer-information-avatar-wrapper">
+                          <div
+                            className="logged-in-customer-information-avatar gravatar"
+                            style={{
+                              backgroundImage: `url(${'https://ftw.usatoday.com/wp-content/uploads/sites/90/2022/09/genshin-impact-ganyu-1.jpg?w=1000&h=600&crop=1'})`,
+                              filter:
+                                "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
+                                'https://ftw.usatoday.com/wp-content/uploads/sites/90/2022/09/genshin-impact-ganyu-1.jpg?w=1000&h=600&crop=1' +
+                                "', sizingMethod='scale')",
+                            }}
+                          ></div>
+                        </div>
+                        <p className="logged-in-customer-information-paragraph">
+                          Đạt Trịnh (trinhtiendat2510@gmail.com)
+                          <br />
+                          <Link to={"/login"}>Đăng xuất</Link>
+                        </p>
+                      </div>
+                      {/* Login*/}
                       <div className="fieldset">
                         <div className="field field-required  ">
                           <div className="field-input-wrapper">
@@ -434,7 +454,7 @@ const Checkouts = () => {
                           <input name="utf8" type="hidden" value="✓" />
                           <form
                             id="createOrder"
-                            action="http://localhost:9999/api/v1/payment/create_payment_url"
+                            action={`${import.meta.env.VITE_API_PAYMENT}/create_payment_url`}
                             method="POST"
                             target="_blank"
                           >
@@ -451,7 +471,7 @@ const Checkouts = () => {
                                 display: "inline-block",
                                 borderRadius: "4px",
                                 fontWeight: "500",
-                                padding: "1.4em 1.7em",
+                                padding: "0",
                                 boxSizing: "border-box",
                                 textAlign: "center",
                                 cursor: "pointer",

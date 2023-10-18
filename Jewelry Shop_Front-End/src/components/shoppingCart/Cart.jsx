@@ -1,7 +1,7 @@
-import  { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
-import {useNavigate} from 'react-router-dom'
 const Container = styled.div`
   display: flex;
   align-items: stretch;
@@ -33,6 +33,7 @@ const RightPanel = styled.div`
 const Title = styled.h2`
   text-align: left;
   color: #333;
+  font-weight: bold;
 `;
 
 const ProductContainer = styled.div`
@@ -131,11 +132,12 @@ const ScrollingArea = styled.div`
 `;
 const BillExportCheckbox = styled.input.attrs({ type: "checkbox" })`
   margin-right: 10px;
+  appearance: checkbox;
 `;
 const CheckboxContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-top: 20px;
 `;
 
 const Label = styled.label`
@@ -260,99 +262,53 @@ const ShoppingCart = () => {
   const [isAgreedToTerms, setIsAgreedToTerms] = useState(false);
   const [exportBill, setExportBill] = useState(false);
   const [giftNotes, setGiftNotes] = useState("");
-  // const [products, setProducts] = useState([
-  //   {
-  //     id: 1,
-  //     description: "Description for Product 1",
-  //     selectedQuantity: 2,
-  //     price: 10,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 20,
-  //     productCode: "P123", // Product CODE added
-  //   },
-  //   {
-  //     id: 2,
-  //     description: "Description for Product 2",
-  //     selectedQuantity: 1,
-  //     price: 15,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 25,
-  //     productCode: "P456", // Product CODE added
-  //   },
-  //   {
-  //     id: 3,
-  //     description: "Description for Product 3",
-  //     selectedQuantity: 3,
-  //     price: 20,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 30,
-  //     productCode: "P789", // Product CODE added
-  //   },
-  //   {
-  //     id: 4,
-  //     description: "Description for Product 3",
-  //     selectedQuantity: 3,
-  //     price: 20,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 30,
-  //     productCode: "P789", // Product CODE added
-  //   },
-  //   {
-  //     id: 5,
-  //     description: "Description for Product 3",
-  //     selectedQuantity: 3,
-  //     price: 20,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 30,
-  //     productCode: "P789", // Product CODE added
-  //   },
-  //   {
-  //     id: 6,
-  //     description: "Description for Product 3",
-  //     selectedQuantity: 3,
-  //     price: 20,
-  //     image:
-  //       "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-  //     priceLarge: 30,
-  //     productCode: "P789", // Product CODE added
-  //   },
-  // ]);
 
   //call API view cart
   const [cartData, setCartData] = useState(null);
-  const navigate = useNavigate();
   //Lấy product data
+
+  function getCartTokenFromCookie() {
+    const name = "cartToken=";
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const cookieArray = decodedCookie.split(";");
+
+    for (let i = 0; i < cookieArray.length; i++) {
+      let cookie = cookieArray[i].trim();
+      if (cookie.indexOf(name) === 0) {
+        return cookie.substring(name.length, cookie.length);
+      }
+    }
+    return null;
+  }
+  function truncateDescription(description, maxLength) {
+    if (description.length > maxLength) {
+      return description.slice(0, maxLength) + " ...";
+    }
+    return description;
+  }
+  
   useEffect(() => {
-    // const cartToken = cartData.cart_token;
     const fetchData = async () => {
+      const cartToken = getCartTokenFromCookie();
       try {
         const res = await axios.get(
-          `http://localhost:9999/api/v1/cart/615a8f7f4e7c3a1d3a9b6e60`
+          `http://localhost:9999/api/v1/cart/${cartToken}`
         );
         const data = res.data;
         setCartData(data);
-        console.log(data);
+        console.log(data.productList);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-
     fetchData();
   }, []);
 
-
   //Xóa 1 sản phẩm trong giỏ hàng
   const handleRemoveFromCart = async (productId) => {
-    const userId = cartData.user_id;
+    const cartToken = getCartTokenFromCookie();
     try {
-      await axios.delete(
-        `http://localhost:9999/api/v1/cart/${userId}/${productId}`
-      );
+      await axios.delete(`http://localhost:9999/api/v1/cart/delete/${cartToken}`);
       const updatedCartData = cartData.productList.filter(
         (product) => product.product_id !== productId
       );
@@ -362,24 +318,15 @@ const ShoppingCart = () => {
     }
   };
 
+  const navigate = useNavigate();
   const handlePay = () => {
-    navigate('/checkouts')
-
     if (isAgreedToTerms) {
+      navigate("/checkouts");
     } else {
       alert("Please agree to the Terms of Service.");
     }
   };
 
-  const handleQuantityChange = (productId, newQuantity) => {
-    const updatedProducts = cartData.map((product) => {
-      if (product.id === productId) {
-        return { ...product, selectedQuantity: newQuantity };
-      }
-      return product;
-    });
-    setCartData(updatedProducts);
-  };
 
   const handleFormSubmit = (e) => {
     console.log(e);
@@ -437,7 +384,6 @@ const ShoppingCart = () => {
     },
   ];
   if (cartData === null) {
-    // Data is being fetched, you can render a loading indicator or message here.
     return (
       <Container>
         <div>Loading...</div>
@@ -462,31 +408,27 @@ const ShoppingCart = () => {
         <ScrollingArea>
           <LeftPanel>
             <Title>Shopping Cart</Title>
-            {cartData.productList.map((product) => (
-              <div key={product.product_id}>
+            {cartData?.productList?.map((product, index) => (
+              <div key={index}>
                 <ProductContainer>
-                  <ProductImage />
-                  {/* //src={} */}
+                  <ProductImage src={product.productImage} />
                   <ProductInfo>
-                    <h3></h3> {/* product.productDescription */}
+                    <h6>
+                     {truncateDescription(product.productDescription, 100)}
+                     onMouseEnter={() => setHoveredDescription(product.productDescription)}
+                   onMouseLeave={() => setHoveredDescription(null)}
+        >
+          {hoveredDescription === product.productDescription
+            ? product.productDescription
+            : truncateDescription(product.productDescription, 13)}
+                    </h6> 
                     <ProductCategory>Product Category:</ProductCategory>
                     <ProductPrice>Price: ${product.price}</ProductPrice>
                   </ProductInfo>
                   <QuantityContainer>
                     <QuantityLabel>Quantity</QuantityLabel>
-                    <QuantitySelect
-                      type="number"
-                      min="1"
-                      max="100"
-                      value={product.selectedQuantity}
-                      onChange={(e) => {
-                        let newQuantity = parseInt(e.target.value);
-                        if (isNaN(newQuantity)) newQuantity = 1;
-                        if (newQuantity < 1) newQuantity = 1;
-                        if (newQuantity > 10) newQuantity = 10;
-                        handleQuantityChange(product.id, newQuantity);
-                      }}
-                    />
+                    <QuantitySelect value={product.quantity} />
+                   
                   </QuantityContainer>
                   <ProductPrice> ${product.price}</ProductPrice>
                   <DeleteButton
@@ -507,19 +449,26 @@ const ShoppingCart = () => {
               type="checkbox"
               id="termsCheckbox"
               onChange={() => setIsAgreedToTerms(!isAgreedToTerms)}
+              style={{ WebkitAppearance: "checkbox" }}
             />
             <Label htmlFor="termsCheckbox">
               I agree to the Terms of Service
             </Label>
           </CheckboxContainer>
-
+          <form
+            id="createOrder"
+            action="http://localhost:9999/api/v1/payment/create_payment_url"
+            method="POST"
+            onSubmit={handleFormSubmit}
+          >
             <Button
               onClick={handlePay}
-              // disabled={!isAgreedToTerms}
+              disabled={!isAgreedToTerms}
               type="submit"
             >
               THANH TOÁN
             </Button>
+          </form>
           <ImageUnderButton
             src="https://theme.hstatic.net/200000103143/1000942575/14/trustbadge.jpg?v=2700"
             alt="Your Image"
@@ -528,6 +477,7 @@ const ShoppingCart = () => {
             <BillExportCheckbox
               checked={exportBill}
               onChange={() => setExportBill(!exportBill)}
+              style={{ WebkitAppearance: "checkbox" }}
             />
             <Label>Export Bill</Label>
           </CheckboxContainer>

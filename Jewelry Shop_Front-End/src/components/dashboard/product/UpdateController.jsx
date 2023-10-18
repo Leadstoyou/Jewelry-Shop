@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState , useContext } from "react";
 import { format, parse } from "date-fns";
 import styled from "styled-components";
 import Modal from "react-bootstrap/Modal";
@@ -9,6 +9,8 @@ import * as yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createContext } from "react";
+import { UpdateControl } from "./ManageProduct.jsx";
+import { updateProduct } from "../../../api/connectApi.js";
 import MyVerticallyCenteredModal from "./UpdateDiscount";
 
 const ButtonClose = styled.button`
@@ -54,32 +56,20 @@ const Button = styled.button`
     background-color: rgb(57, 57, 246);
   }
 `;
-export const UpdateControl = createContext();
+const ImgControle = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+`;
+
 
 //manage form
 
 const UpdateController = (props) => {
-  const [updateData, setUpdateData] = useState({
-    productName: "",
-    productDescription: "",
-    productQuantity: 0,
-    productSizes: [],
-    productPrice: 0,
-    productColors: [],
-    productMaterials: [],
-    productCategory: "",
-    productDiscount: [
-      {
-        discountName: "",
-        discountDescription: "",
-        discountStartDate: "",
-        discountExpiredDate: "",
-        discountPercentage: 0,
-        usageLimit: 0,
-      },
-    ],
-    productImage: "",
-  });
+  const productUpdate = props.updateProduct;
+  console.log(productUpdate);
+  const { updateData, setUpdateData } = useContext(UpdateControl);
   const [existErr, setExist] = useState(false);
   const [modalShow, setModalShow] = useState(false);
   const notify = (text) => {
@@ -131,10 +121,12 @@ const UpdateController = (props) => {
     category: yup.string().required("Please enter category"),
     img: yup
       .mixed()
-      .test("fileRequired", "Please upload an image.", (value) => {
-        return value && value.length > 0; // Check if the value is not null and has a length
-      })
-      .required("You need to provide a file"),
+      .test("fileSize", "File size is too large. Max 2MB allowed.", (value) => {
+        if (!value || !value[0]) {
+          return true;
+        }
+        return value[0].size <= 2 * 1024 * 1024; // 2MB in bytes
+      }),
   });
 
   const {
@@ -146,28 +138,52 @@ const UpdateController = (props) => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     props.onHide();
-    setTimeout(() => {
-      success("update successfully !!!");
-    }, 100);
+    const lmeo = document.getElementById("img").files[0];
 
-    setUpdateData({
-      ...updateData,
-      productName: data.pname.trim(),
-      productDescription: data.desc.trim(),
-      productQuantity: data.quantity,
-      productSizes: data.size.trim().split(","),
-      productPrice: data.price,
-      productColors: data.color.trim().split(","),
-      productMaterials: data.material.trim().split(","),
-      productCategory: data.category.trim(),
-      productImage: data.img,
-    });
+    if (lmeo) {
+      const reader = new FileReader();
+      reader.onload = async function () {
+        const newData = {
+          ...updateData,
+          productName: data.pname.trim(),
+          productDescription: data.desc.trim(),
+          productQuantity: data.quantity,
+          productSizes: data.size.trim().split(","),
+          productPrice: data.price,
+          productColors: data.color.trim().split(","),
+          productMaterials: data.material.trim().split(","),
+          productCategory: data.category.trim(),
+          productImage: reader.result,
+        };
+        console.log("hello");
+        console.log(newData);
+        await updateProduct(productUpdate._id, notify, success, newData);
+        setUpdateData(newData);
+      };
+      reader.readAsDataURL(lmeo);
+    } else {
+      const newData = {
+        ...updateData,
+        productName: data.pname.trim(),
+        productDescription: data.desc.trim(),
+        productQuantity: data.quantity,
+        productSizes: data.size.trim().split(","),
+        productPrice: data.price,
+        productColors: data.color.trim().split(","),
+        productMaterials: data.material.trim().split(","),
+        productCategory: data.category.trim(),
+      };
+      console.log("hello");
+      console.log(newData);
+      await updateProduct(productUpdate._id, notify, success, newData);
+      setUpdateData(newData);
+    }
   };
 
   useEffect(() => {
-    console.log(updateData);
+    // console.log(updateData);
   }, [updateData]);
 
   useEffect(() => {
@@ -192,13 +208,15 @@ const UpdateController = (props) => {
     }
   }, [props.show]);
 
+  const categories = ["Dây Chuyền", "Vòng tay", "Hoa Tai", "Charm", "Nhẫn"];
+
   return (
     <Modal
       show={props.show}
       onHide={props.onHide}
       style={{ borderRadius: "5%", color: "white" }}
     >
-      <UpdateControl.Provider value={{ updateData, setUpdateData }}>
+      
         <Modal.Body
           style={{
             backgroundImage: `url(${background})`,
@@ -212,6 +230,12 @@ const UpdateController = (props) => {
             <h2 style={{ marginBottom: "8%" }}>Update product</h2>
           </Modal.Title>
           <form id="formController" onSubmit={handleSubmit(onSubmit)}>
+            <ImgControle>
+              <img
+                src={productUpdate && productUpdate?.productImage}
+                style={{ width: "50%", height: "150px", borderRadius: "50%" }}
+              />
+            </ImgControle>
             <Control>
               <Label htmlFor="pname" style={{ fontWeight: "bolder" }}>
                 Product name
@@ -221,23 +245,12 @@ const UpdateController = (props) => {
                   type="text"
                   id="pname"
                   style={{ width: "100%" }}
+                  defaultValue={productUpdate && productUpdate?.productName}
                   {...register("pname")}
                 />
               </div>
             </Control>
-            <Control>
-              <Label htmlFor="desc" style={{ fontWeight: "bolder" }}>
-                Description
-              </Label>
-              <div>
-                <Input
-                  type="text"
-                  id="desc"
-                  style={{ width: "100%" }}
-                  {...register("desc")}
-                />
-              </div>
-            </Control>
+
             <Control>
               <Label htmlFor="quantity" style={{ fontWeight: "bolder" }}>
                 Quantity
@@ -247,6 +260,7 @@ const UpdateController = (props) => {
                   type="text"
                   id="quantity"
                   style={{ width: "100%" }}
+                  defaultValue={productUpdate && productUpdate?.productQuantity}
                   {...register("quantity")}
                 />
               </div>
@@ -260,6 +274,7 @@ const UpdateController = (props) => {
                   type="text"
                   id="price"
                   style={{ width: "100%" }}
+                  defaultValue={productUpdate && productUpdate?.productPrice}
                   {...register("price")}
                 />
               </div>
@@ -273,6 +288,7 @@ const UpdateController = (props) => {
                   type="text"
                   id="size"
                   style={{ width: "100%" }}
+                  defaultValue={productUpdate && productUpdate?.productSizes}
                   {...register("size")}
                 />
               </div>
@@ -286,6 +302,7 @@ const UpdateController = (props) => {
                   type="text"
                   id="color"
                   style={{ width: "100%" }}
+                  defaultValue={productUpdate && productUpdate?.productColors}
                   {...register("color")}
                 />
               </div>
@@ -299,6 +316,9 @@ const UpdateController = (props) => {
                   type="text"
                   id="material"
                   style={{ width: "100%" }}
+                  defaultValue={
+                    productUpdate && productUpdate?.productMaterials
+                  }
                   {...register("material")}
                 />
               </div>
@@ -308,18 +328,39 @@ const UpdateController = (props) => {
                 Category
               </Label>
               <div>
-                <Input
-                  type="text"
-                  id="category"
+                <select
                   style={{ width: "100%" }}
+                  id="category"
                   {...register("category")}
+                  defaultValue={productUpdate?.productCategory}
+                >
+                  {categories.map((category, index) => (
+                    <option key={index} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </Control>
+            <Control>
+              <Label htmlFor="desc" style={{ fontWeight: "bolder" }}>
+                Description
+              </Label>
+              <div>
+                <textarea
+                  type="text"
+                  id="desc"
+                  style={{ width: "100%" }}
+                  defaultValue={
+                    productUpdate && productUpdate?.productDescription
+                  }
+                  {...register("desc")}
                 />
               </div>
             </Control>
-
             <Control>
               <Label htmlFor="img" style={{ fontWeight: "bolder" }}>
-                Image
+                Update Image
               </Label>
               <div style={{ backgroundColor: "white", color: "black" }}>
                 <Input
@@ -339,14 +380,15 @@ const UpdateController = (props) => {
                 justifyContent: "center",
               }}
             >
-              <Button variant="primary" onClick={() => setModalShow(true)}>
+              <Button
+                variant="primary"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setModalShow(true);
+                }}
+              >
                 Update discount
               </Button>
-
-              <MyVerticallyCenteredModal
-                show={modalShow}
-                onHide={() => setModalShow(false)}
-              />
             </div>
 
             <div
@@ -375,12 +417,17 @@ const UpdateController = (props) => {
                   }
                 }}
               >
-               Update
+                Update
               </ButtonSave>
             </div>
           </form>
+          <MyVerticallyCenteredModal
+            productUpdate={productUpdate?.productDiscount}
+            show={modalShow}
+            onHide={() => setModalShow(false)}
+          />
         </Modal.Body>
-      </UpdateControl.Provider>
+    
 
       <ToastContainer
         style={{ height: "500px" }}

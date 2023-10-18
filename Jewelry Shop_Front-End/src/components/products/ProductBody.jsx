@@ -6,12 +6,18 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { useEffect, useState } from "react";
 import { Button } from "bootstrap";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Comment from "./Comment";
 import { grey } from "@mui/material/colors";
 import ListProduct from "../ListProduct";
 import List from "./List";
 import { useDispatch } from "react-redux";
-import {addToCard} from '../../redux/Cart.jsx'
+import { addToCard } from "../../redux/Cart.jsx";
+import { addToCartAPI } from "../../api/connectApi.js";
+import { viewCartAPI } from "../../api/connectApi.js";
+import { useContext } from "react";
+import { cartValue } from "../../App.jsx";
 const FooterProduct = styled.div`
   margin-bottom: 5%;
 `;
@@ -40,7 +46,7 @@ const Image = styled.img`
   transition: all 1s ease-in;
 
   &:hover {
-    transform: scale(1.6);
+    transform: scale(1.2);
   }
 `;
 const SuggestImg = styled.div`
@@ -79,6 +85,7 @@ const DropdownOne = styled.select`
 `;
 const InControl = styled.div`
   margin-bottom: 3%;
+
 `;
 const RightThree = styled.div`
   display: flex;
@@ -124,6 +131,8 @@ const CommentAction = styled.div`
 const CommentDisplay = styled.div``;
 const CommentController = styled.div``;
 const ProductBody = (props) => {
+  const { cartView, setViewCart } = useContext(cartValue);
+  const { cartData, setCartData , setShowCartPopup} = useContext(cartValue);
   const { product } = props;
   const [comdisplay, setCom] = useState(true);
   const [desc, setDesc] = useState(true);
@@ -132,6 +141,31 @@ const ProductBody = (props) => {
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedMaterial, setSelectedMaterial] = useState("");
   const [productDetail, setProductDetail] = useState(product);
+  const notify = (text) => {
+    toast.error(text, {
+      position: "top-right",
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+  };
+
+  const success = (text) => {
+    toast.success(text, {
+      position: "top-right",
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+  };
   useEffect(() => {
     setProductDetail(product);
   }, []);
@@ -165,8 +199,36 @@ const ProductBody = (props) => {
     setSelectedMaterial("");
   };
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const handleAddTocart = async () => {
+    if (
+      selectedColor === null ||
+      selectedMaterial === null ||
+      selectedSize === null ||
+      selectedColor === "" ||
+      selectedMaterial === "" ||
+      selectedSize === ""
+    ) {
+      notify("One of color , material and size is not selected !!!");
+    } else {
+      const newCart = {
+        cart_token: "615a8f7f4e7c3a1d3a9b6e60",
+        product_id: productDetail._id,
+        quantity: 1,
+        size: selectedSize,
+        color: selectedColor,
+        material: selectedMaterial,
+        price: 4490000,
+        productImage: productDetail.productImage,
+        productDescription: productDetail.productDescription,
+      };
 
+      await addToCartAPI(notify, success, newCart);
+      setCartData(newCart);
+      setShowCartPopup(true);
+    }
+  };
+  console.log(cartView);
   return (
     <Container>
       <ItemOne>
@@ -272,7 +334,7 @@ const ProductBody = (props) => {
           </RightTwo>
           <hr />
           <RightThree>
-            <RButtonOne onClick={()=>dispatch(addToCard(product))}>Thêm vào giỏ</RButtonOne>
+            <RButtonOne onClick={handleAddTocart}>Thêm vào giỏ</RButtonOne>
             <RButtonTwo onClick={handleFavorite}>
               {favorite ? (
                 <>
@@ -293,7 +355,11 @@ const ProductBody = (props) => {
         <ControllerTwo>
           <h1>Thông tin sản phẩm</h1>
           <Action style={{ display: desc ? "block" : "none" }}>
-            <p>{productDetail.productDescription}</p>
+            <p>
+              {" "}
+              <span style={{ fontWeight: "bolder" }}>Thông tin:</span>{" "}
+              {productDetail.productDescription}
+            </p>
             <p>
               <span style={{ fontWeight: "bolder" }}>Mã sản phẩm:</span>{" "}
               {productDetail._id}
@@ -342,6 +408,19 @@ const ProductBody = (props) => {
       <FooterProduct>
         <List />
       </FooterProduct>
+      <ToastContainer
+        style={{ height: "500px" }}
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </Container>
   );
 };

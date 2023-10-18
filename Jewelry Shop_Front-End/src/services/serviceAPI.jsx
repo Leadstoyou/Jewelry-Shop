@@ -13,3 +13,5 @@ const searchPage =  async function fetchData(searchtext) {
       console.error("Error fetching data:", error);
     }
   }
+
+  
