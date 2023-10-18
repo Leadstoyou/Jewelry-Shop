@@ -22,7 +22,7 @@ const Container = styled.div`
   padding-right: 5vw;
   box-sizing: border-box;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
-  z-index: 5;
+  z-index: 50;
 `;
 const Logo = styled.h1``;
 
@@ -98,10 +98,10 @@ const Nav = styled.div`
   top: 0;
   width: 100%;
   background-color: white;
-  z-index: 1;
+  z-index: 2;
 `;
-const Navbar = () => {
-  const numberCart = useSelector((state) => state.cart.value.length);
+const Navbar = (props) => {
+  const numberCart = useSelector((state) => state?.getNumber?.value);
 
   const notify = () => {
     toast.error("Vui lòng không để trống trường tìm kiếm !!!", {
@@ -171,7 +171,10 @@ const Navbar = () => {
               <PersonIcon />
             </Item>
             <Item onClick={() => navigate("/cart")}>
-              <Badge badgeContent={numberCart} color="primary">
+              <Badge
+                badgeContent={numberCart}
+                color="primary"
+              >
                 <ShoppingCartIcon />
               </Badge>
             </Item>
