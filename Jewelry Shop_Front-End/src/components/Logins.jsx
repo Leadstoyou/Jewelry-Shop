@@ -36,20 +36,15 @@ const Logins = () => {
         },{
           withCredentials: true,
         });
-
         if (response.status === 200) {
           console.log(response);
           console.log("Login successful");
           navigate("/"); 
-        } else {
-          toast.error("Login failed");
-          if(response.status === 400){
-            toast.error(response.data.message);
-          }
         }
       } catch (error) {
-        console.error("An error occurred:", error);
-      }
+        toast.error(error.response.data.message);
+        console.log('dasd', error)
+      } 
     }
   };
 
