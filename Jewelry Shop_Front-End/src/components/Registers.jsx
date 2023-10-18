@@ -58,6 +58,7 @@ const Register = () => {
 
         if (response.status === 201) {
           console.log("Registration successful");
+          toast("Registration successful");
           navigate("/login"); 
           
         } else {
