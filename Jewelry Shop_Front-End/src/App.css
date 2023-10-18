@@ -32,19 +32,7 @@ body{
      word-break: normal;
  }
  
- body {
-     color: #737373;
-     background: white !important;
- 
-     font-size: 14px;
-     font-family: Helvetica Neue, sans-serif;
-     line-height: 1.3em;
-     overflow-wrap: break-word;
-     word-wrap: break-word;
-     word-break: break-word;
-     -webkit-font-smoothing: subpixel-antialiased;
-     overflow-x: hidden;
- }
+
  
  .fieldset .field .field-input-wrapper .field-input:focus {
      box-shadow: 0 0 0 2px #338dbc;
