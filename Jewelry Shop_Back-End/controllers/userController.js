@@ -144,8 +144,7 @@ const refreshAccessTokenController = async (req, res, next) => {
     return result.data;
   } catch (exception) {
     if (exception.message === Exception.REFRESH_TOKEN_EXPIRED) {
-      console.log('123 lmeo');
-      return userLogoutController(req, res);
+      return userLogoutController();
     }
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
@@ -168,15 +167,16 @@ const userLogoutController = async (req, res) => {
     const logoutUser = await userRepository.userLogoutRepository(
       cookie.refreshToken
     );
-    console.log(logoutUser)
     if (!logoutUser.success) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: logoutUser.message,
       });
     }
-
-    return undefined;
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: "Logout success",
+    });
   } catch (exception) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
