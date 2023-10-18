@@ -131,7 +131,7 @@ const Profile = () => {
 
     if (isValid) {
       try {
-        const response = await axios.post("http://localhost:3001/Account", {
+        const response = await axios.put("http://localhost:9999/api/v1/users/changPassword", {
           password: currentPassword,
           newPassword: newPassword,
         });
@@ -178,6 +178,7 @@ const Profile = () => {
 
     return true;
   };
+
 
   return (
     <Container style={{ marginTop: "100px", marginBottom: "30px" }}>
