@@ -130,7 +130,7 @@ const ScrollingArea = styled.div`
   max-height: calc(100vh - 70px);
   overflow: auto;
 `;
-const BillExportCheckbox = styled.input.attrs({ type: "checkbox"})`
+const BillExportCheckbox = styled.input.attrs({ type: "checkbox" })`
   margin-right: 10px;
   appearance: checkbox;
 `;
@@ -280,6 +280,13 @@ const ShoppingCart = () => {
     }
     return null;
   }
+  function truncateDescription(description, maxLength) {
+    if (description.length > maxLength) {
+      return description.slice(0, maxLength) + " ...";
+    }
+    return description;
+  }
+  
   useEffect(() => {
     const fetchData = async () => {
       const cartToken = getCartTokenFromCookie();
@@ -289,7 +296,7 @@ const ShoppingCart = () => {
         );
         const data = res.data;
         setCartData(data);
-        console.log(data);
+        console.log(data.productList);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -299,8 +306,9 @@ const ShoppingCart = () => {
 
   //Xóa 1 sản phẩm trong giỏ hàng
   const handleRemoveFromCart = async (productId) => {
+    const cartToken = getCartTokenFromCookie();
     try {
-      await axios.delete(`http://localhost:9999/api/v1/cart/${productId}`);
+      await axios.delete(`http://localhost:9999/api/v1/cart/delete/${cartToken}`);
       const updatedCartData = cartData.productList.filter(
         (product) => product.product_id !== productId
       );
@@ -319,15 +327,6 @@ const ShoppingCart = () => {
     }
   };
 
-  const handleQuantityChange = (productId, newQuantity) => {
-    const updatedProducts = cartData.map((product) => {
-      if (product.id === productId) {
-        return { ...product, selectedQuantity: newQuantity };
-      }
-      return product;
-    });
-    setCartData(updatedProducts);
-  };
 
   const handleFormSubmit = (e) => {
     console.log(e);
@@ -409,30 +408,27 @@ const ShoppingCart = () => {
         <ScrollingArea>
           <LeftPanel>
             <Title>Shopping Cart</Title>
-            {cartData?.productList?.map((product) => (
-              <div key={product.product_id}>
+            {cartData?.productList?.map((product, index) => (
+              <div key={index}>
                 <ProductContainer>
                   <ProductImage src={product.productImage} />
                   <ProductInfo>
-                    <h3></h3> {product.productDescription}
+                    <h6>
+                     {truncateDescription(product.productDescription, 100)}
+                     onMouseEnter={() => setHoveredDescription(product.productDescription)}
+                   onMouseLeave={() => setHoveredDescription(null)}
+        >
+          {hoveredDescription === product.productDescription
+            ? product.productDescription
+            : truncateDescription(product.productDescription, 13)}
+                    </h6> 
                     <ProductCategory>Product Category:</ProductCategory>
                     <ProductPrice>Price: ${product.price}</ProductPrice>
                   </ProductInfo>
                   <QuantityContainer>
                     <QuantityLabel>Quantity</QuantityLabel>
-                    <QuantitySelect
-                      type="number"
-                      min="1"
-                      max="100"
-                      value={product.selectedQuantity}
-                      onChange={(e) => {
-                        let newQuantity = parseInt(e.target.value);
-                        if (isNaN(newQuantity)) newQuantity = 1;
-                        if (newQuantity < 1) newQuantity = 1;
-                        if (newQuantity > 10) newQuantity = 10;
-                        handleQuantityChange(product.id, newQuantity);
-                      }}
-                    />
+                    <QuantitySelect value={product.quantity} />
+                   
                   </QuantityContainer>
                   <ProductPrice> ${product.price}</ProductPrice>
                   <DeleteButton
@@ -481,7 +477,7 @@ const ShoppingCart = () => {
             <BillExportCheckbox
               checked={exportBill}
               onChange={() => setExportBill(!exportBill)}
-              style={{WebkitAppearance: 'checkbox'}}
+              style={{ WebkitAppearance: "checkbox" }}
             />
             <Label>Export Bill</Label>
           </CheckboxContainer>
