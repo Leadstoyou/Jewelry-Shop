@@ -417,7 +417,7 @@ const ShoppingCart = () => {
                      {truncateDescription(product.productDescription, 100)}
                      onMouseEnter={() => setHoveredDescription(product.productDescription)}
                    onMouseLeave={() => setHoveredDescription(null)}
-        >
+        
           {hoveredDescription === product.productDescription
             ? product.productDescription
             : truncateDescription(product.productDescription, 13)}
