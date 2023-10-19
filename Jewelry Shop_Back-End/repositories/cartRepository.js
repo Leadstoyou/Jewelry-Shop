@@ -31,18 +31,9 @@ const createEmptyCart = async () => {
   }
 };
 
-const createCartToken = async (cartId, userId, productId) => {
+const createCartToken = async (cartId) => {
   try {
-    const cartData = {};
-
-    if (userId) {
-      cartData.user_id = userId;
-    }
-
-    if (productId) {
-      cartData.product_id = productId;
-    }
-
+    const cartData = {_id: cartId};
     const cartToken = Jwt.sign(cartData, process.env.ACCESS_TOKEN);
 
     const updatedCart = await Cart.findByIdAndUpdate(cartId, { cart_token: cartToken }, { new: true });
