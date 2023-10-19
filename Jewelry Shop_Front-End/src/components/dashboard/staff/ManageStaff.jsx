@@ -4,6 +4,7 @@ import Form from "react-bootstrap/Form";
 import Button from "@mui/material/Button";
 import SearchIcon from "@mui/icons-material/Search";
 import ViewDetail from "./ViewDetail";
+import InputSwitch from './InputSwitch';
 
 import "../style/ManagerStaff.scss";
 const ManageStaff = () => {
@@ -46,6 +47,7 @@ const ManageStaff = () => {
           value={filterRole}
           onChange={handleFilterRole}
         >
+           <option value="all">All</option>
           <option value="staff">Staff</option>
           <option value="customer">Customer</option>
         </select>
@@ -54,6 +56,7 @@ const ManageStaff = () => {
           value={filterAction}
           onChange={handleFilterAction}
         >
+           <option value="all">All</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
@@ -66,6 +69,7 @@ const ManageStaff = () => {
             <th>Age</th>
             <th>Phone Number</th>
             <th>Role</th>
+            <th>Actor</th>
             <th>Actor</th>
           </tr>
         </thead>
@@ -83,6 +87,9 @@ const ManageStaff = () => {
             </td>
             <td>
               <button className="button">View</button>
+            </td>
+             <td>
+              <InputSwitch/>
             </td>
           </tr>
           <tr>
