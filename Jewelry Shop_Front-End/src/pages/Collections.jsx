@@ -7,7 +7,8 @@ import CollectionsHeader from "../components/collections/CollectionsHeader";
 import { useEffect, useState } from "react";
 import CollectionsCategory from "../components/collections/CollectionsCategory";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { CollectionAPI } from "../api/productAPI";
 const Spinner = styled.div`
   height: 100%;
@@ -23,12 +24,12 @@ const Index = styled.div``;
 
 const Collections = () => {
   const { category } = useParams();
-  const [foundProducts, setFoundProducts] = useState();
+  const [foundProducts, setFoundProducts] = useState([]);
   const [colorsArray, setColorsArray] = useState();
   const [materialArray, setMaterialArray] = useState();
 
   const [loading, setLoading] = useState(false);
-
+const navigate = useNavigate();
   useEffect(() => {
     setLoading(true);
     CollectionAPI(
@@ -40,7 +41,7 @@ const Collections = () => {
       setColorsArray,
       setMaterialArray,
       setFoundProducts,
-      setLoading
+      setLoading,toast,navigate
     );
   }, []);
   const handleDataFromChild = (color, material, price, sort) => {
@@ -53,7 +54,7 @@ const Collections = () => {
       setColorsArray,
       setMaterialArray,
       setFoundProducts,
-      setLoading
+      setLoading,toast,navigate
     );
   };
 

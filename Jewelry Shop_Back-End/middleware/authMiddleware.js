@@ -14,12 +14,12 @@ const checkToken = (req, res, next) => {
       } else if (err instanceof jwt.TokenExpiredError) {
           const refreshAccessToken =  await userController.refreshAccessTokenController(req, res, next);
           if(typeof refreshAccessToken === 'string') {
-            console.log("Refresh success!");
             req.headers.authorization = `Bearer ${refreshAccessToken}`;
             checkToken(req,res,next)
           }
-          else
-            next();
+          if(typeof refreshAccessToken === 'function'){
+             refreshAccessToken(req,res,next);
+          }
       } else if (err) {
         return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
           status: "ERROR",
