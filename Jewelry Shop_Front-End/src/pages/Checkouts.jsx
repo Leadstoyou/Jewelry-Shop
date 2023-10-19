@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "../style/OrderDetail.css";
 import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 
 const Checkouts = () => {
@@ -24,13 +24,12 @@ const Checkouts = () => {
       !inputNameValue
     ) {
       e.preventDefault();
-      toast.error('Input all fields');
+      toast.error("Input all fields");
     }
   };
   return (
-    
     <div className="flexbox">
-       <ToastContainer />
+      <ToastContainer />
       <div className="content">
         <div className="wrap">
           <div className="sidebar">
@@ -45,16 +44,16 @@ const Checkouts = () => {
                     <table className="product-table">
                       <thead>
                         <tr>
-                          <th scope="col">
+                          <th scope="col" className="table-element-first-child">
                             <span className="visually-hidden">Hình ảnh</span>
                           </th>
-                          <th scope="col">
+                          <th scope="col" className="table-element">
                             <span className="visually-hidden">Mô tả</span>
                           </th>
-                          <th scope="col">
+                          <th scope="col" className="table-element">
                             <span className="visually-hidden">Số lượng</span>
                           </th>
-                          <th scope="col">
+                          <th scope="col" className="table-element-last-child">
                             <span className="visually-hidden">Giá</span>
                           </th>
                         </tr>
@@ -65,7 +64,7 @@ const Checkouts = () => {
                           data-product-id="1041518282"
                           data-variant-id="1090587759"
                         >
-                          <td className="product-image">
+                          <td className="product-image table-element-first-child">
                             <div className="product-thumbnail">
                               <div className="product-thumbnail-wrapper">
                                 <img
@@ -82,7 +81,7 @@ const Checkouts = () => {
                               </span>
                             </div>
                           </td>
-                          <td className="product-description">
+                          <td className="product-description table-element">
                             <span className="product-description-name order-summary-emphasis">
                               Dây chuyền bạc mạ vàng hồng 14k mặt hình chữ O với
                               họa tiết trái tim trong suốt
@@ -92,10 +91,10 @@ const Checkouts = () => {
                               45 / Hồng / Mạ vàng hồng 14K
                             </span>
                           </td>
-                          <td className="product-quantity visually-hidden">
+                          <td className="product-quantity visually-hidden table-element">
                             1
                           </td>
-                          <td className="product-price">
+                          <td className="product-price table-element-last-child">
                             <span className="order-summary-emphasis">
                               5,390,000₫
                             </span>
@@ -229,13 +228,34 @@ const Checkouts = () => {
                       <h2 className="section-title">Thông tin giao hàng</h2>
                     </div>
                     <div className="section-content section-customer-information no-mb">
-                      <p className="section-content-text">
+                      {/* <p className="section-content-text">
                         Bạn đã có tài khoản?
                         <Link to={'/login'}>
                           Đăng nhập
                         </Link>
-                      </p>
-
+                      </p> */}
+                      {/* Login*/}
+                      <div className="logged-in-customer-information">
+                        &nbsp;
+                        <div className="logged-in-customer-information-avatar-wrapper">
+                          <div
+                            className="logged-in-customer-information-avatar gravatar"
+                            style={{
+                              backgroundImage: `url(${'https://ftw.usatoday.com/wp-content/uploads/sites/90/2022/09/genshin-impact-ganyu-1.jpg?w=1000&h=600&crop=1'})`,
+                              filter:
+                                "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
+                                'https://ftw.usatoday.com/wp-content/uploads/sites/90/2022/09/genshin-impact-ganyu-1.jpg?w=1000&h=600&crop=1' +
+                                "', sizingMethod='scale')",
+                            }}
+                          ></div>
+                        </div>
+                        <p className="logged-in-customer-information-paragraph">
+                          Đạt Trịnh (trinhtiendat2510@gmail.com)
+                          <br />
+                          <Link to={"/login"}>Đăng xuất</Link>
+                        </p>
+                      </div>
+                      {/* Login*/}
                       <div className="fieldset">
                         <div className="field field-required  ">
                           <div className="field-input-wrapper">
@@ -248,7 +268,7 @@ const Checkouts = () => {
                             <input
                               placeholder="Họ và tên"
                               spellCheck="false"
-                              className="field-input"
+                              className="field-input inputOrderDetail"
                               size="30"
                               type="text"
                               id="billing_address_full_name"
@@ -275,7 +295,7 @@ const Checkouts = () => {
                               placeholder="Email"
                               autoCapitalize="off"
                               spellCheck="false"
-                              className="field-input"
+                              className="field-input inputOrderDetail"
                               size="30"
                               type="email"
                               id="checkout_user_email"
@@ -301,7 +321,7 @@ const Checkouts = () => {
                               placeholder="Số điện thoại"
                               autoCapitalize="off"
                               spellCheck="false"
-                              className="field-input"
+                              className="field-input inputOrderDetail"
                               size="30"
                               maxLength="15"
                               type="tel"
@@ -349,7 +369,7 @@ const Checkouts = () => {
                                     placeholder="Địa chỉ"
                                     autoCapitalize="off"
                                     spellCheck="false"
-                                    className="field-input"
+                                    className="field-input inputOrderDetail"
                                     size="30"
                                     type="text"
                                     id="billing_address_address1"
@@ -434,7 +454,7 @@ const Checkouts = () => {
                           <input name="utf8" type="hidden" value="✓" />
                           <form
                             id="createOrder"
-                            action="http://localhost:9999/api/v1/payment/create_payment_url"
+                            action={`${import.meta.env.VITE_API_PAYMENT}/create_payment_url`}
                             method="POST"
                             target="_blank"
                           >
@@ -446,12 +466,12 @@ const Checkouts = () => {
                             />
                             <button
                               type="submit"
-                              className="step-footer-continue-btn"
+                              className="step-footer-continue-btn inputOrderDetail"
                               style={{
                                 display: "inline-block",
                                 borderRadius: "4px",
                                 fontWeight: "500",
-                                padding: "1.4em 1.7em",
+                                padding: "0",
                                 boxSizing: "border-box",
                                 textAlign: "center",
                                 cursor: "pointer",

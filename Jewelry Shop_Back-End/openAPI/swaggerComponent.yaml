@@ -1,6 +1,82 @@
 
 components:
   schemas: 
+    GetAllSuccess:
+          type: object
+          properties:
+            status:
+              type: string
+              example: OK
+            message:
+              type: string
+              example: Get All successfully! 
+    SearchSuccess:
+          type: object
+          properties:
+            status:
+              type: string
+              example: OK
+            message:
+              type: string
+              example: Lấy kết quả tìm kiếm thành công
+            data:
+            type: object
+            properties:
+              size:
+                type: integer
+                example: 6
+              page:
+                type: integer
+                example: 1
+              searchString:
+                type: string
+                example: John
+              searchRole:
+                type: integer
+                example: 2
+              data:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: 651bebf30a2f7e7e6918ab2e
+                  userName:
+                    type: string
+                    example: Mai Tran Huy
+                  userEmail:
+                    type: string
+                    format: email
+                    example: huymthe163523@fpt.edu.vn
+                  userPhoneNumber:
+                    type: string
+                    example: 09845143638
+                  userGender:
+                    type: string
+                    example: Male
+                  userAddress:
+                    type: string
+                    example: H12312a123 No22323i
+                  userAge:
+                    type: integer
+                    example: 21
+                  userAvatar:
+                    type: string
+                    format: uri
+                    example: https://vnn-imgs-a1.vgcloud.vn/image1.ictnews.vn/_Files/2020/03/17/trend-avatar-1.jpg
+                  isActive:
+                    type: boolean
+                    example: true
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: "2023-10-03T10:24:51.057Z"
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    example: "2023-10-03T10:34:57.782Z"
+                  __v:
+                    type: integer
+                    example: 0         
     LoginSuccess:
           type: object
           properties:
@@ -151,6 +227,18 @@ components:
         message:
           type: string
           example: Đổi mật khẩu tài khoản thành công   
+    UpdateProfileSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Update tài khoản thành công 
+    ViewProfileSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: View profile tài khoản thành công   
     UpdateRoleSuccess:
       type: object
       properties:

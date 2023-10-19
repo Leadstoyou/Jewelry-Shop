@@ -18,7 +18,90 @@ servers:
 tags:
   - name: users
     description: Các API LIÊN QUAN ĐẾN USER
+
 paths:
+  /users/:
+    get:
+      tags:
+        - users
+      summary: Get all các user
+      description: Get all user trong JEWELRY shop
+      operationId: getAllUser  
+      responses:
+        "200":
+          description: Get All successfully!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetAllSuccess"
+
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"
+  /users/search:
+    get:
+      tags:
+        - users
+      summary: Tìm kiếm người dùng
+      description: Tìm kiếm người dùng theo chuỗi tìm kiếm và vai trò
+      operationId: userSearch
+      parameters:
+        - name: page
+          in: query
+          description: Trang kết quả (mặc định là 1)
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: size
+          in: query
+          description: Số lượng kết quả trên mỗi trang (tối đa 6)
+          required: false
+          schema:
+            type: integer
+            example: 6
+        - name: searchString
+          in: query
+          description: Chuỗi tìm kiếm người dùng
+          required: false
+          schema:
+            type: string
+            example: John
+        - name: searchRole
+          in: query
+          description: Vai trò người dùng cần tìm kiếm (mặc định là 2)
+          required: false
+          schema:
+            type: integer
+            example: 2
+      responses:
+        "200":
+          description: Lấy kết quả tìm kiếm thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchSuccess"
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"
   /users/login:
     post:
       tags:
@@ -286,10 +369,6 @@ paths:
             schema:
               type: object
               properties:
-                userEmail:
-                  type: string
-                  format: email
-                  example: abcd@example.com
                 oldPassword:
                   type: string
                   example: example
@@ -320,6 +399,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorServer"
+  /users/viewProfile:
+    get:
+      tags:
+        - users
+      summary: Lấy thông tin người dùng
+      description: Lấy thông tin người dùng trong JEWELRY shop
+      operationId: viewProfile  
+      responses:
+        "200":
+          description: View profile successfully!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ViewProfileSuccess"
+
+        "400":
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorRequest"
+        "500":
+          description: Lỗi máy chủ nội bộ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorServer"
   /users/updateProfile:
     put:
       tags:
@@ -330,15 +436,12 @@ paths:
       security:  
        - BearerAuth: []  
       requestBody:
-        description: Change password
+        description: Change profile
         content:
           application/json:
             schema:
               type: object
               properties:
-                userEmail: 
-                  type: string
-                  example: abc@gmail.com
                 userName:
                   type: string
                   example: John Doe
@@ -368,7 +471,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ChangePasswordSuccess"
+                $ref: "#/components/schemas/UpdateProfileSuccess"
 
         "400":
           description: Yêu cầu không hợp lệ
@@ -388,19 +491,16 @@ paths:
         - users
       summary: Đổi role tài khoản
       description: Đổi role tài khoản trong JEWELRY shop
-      operationId: updateProfile
+      operationId: updateRole
       security:  
        - BearerAuth: []  
       requestBody:
-        description: Change password
+        description: Change Role
         content:
           application/json:
             schema:
               type: object
               properties:
-                userEmail: 
-                  type: string
-                  example: abc@gmail.com
                 newRole:
                   type: number
                   example: 1
@@ -435,22 +535,19 @@ paths:
       security:  
        - BearerAuth: []  
       requestBody:
-        description: Change password
+        description: Change Status
         content:
           application/json:
             schema:
               type: object
               properties:
-                userEmail: 
-                  type: string
-                  example: abc@gmail.com
                 newStatus:
                   type: boolean
                   example: false
         required: true
       responses:
         "200":
-          description: Update role successfully!
+          description: Update status successfully!
           content:
             application/json:
               schema:
@@ -472,22 +569,19 @@ paths:
     put:
       tags:
         - users
-      summary: Đổi status tài khoản
-      description: Đổi status tài khoản trong JEWELRY shop
-      operationId: updateStatus
+      summary: Đổi Block tài khoản
+      description: Đổi Block tài khoản trong JEWELRY shop
+      operationId: updateBlock
       security:  
        - BearerAuth: []  
       requestBody:
-        description: Change password
+        description: Change Block
         content:
           application/json:
             schema:
               type: object
               properties:
-                userEmail: 
-                  type: string
-                  example: abc@gmail.com
-                newStatus:
+                newBlock:
                   type: boolean
                   example: false
         required: true

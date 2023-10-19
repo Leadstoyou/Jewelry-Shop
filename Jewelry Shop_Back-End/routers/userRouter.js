@@ -1,16 +1,15 @@
 import express from "express";
-import { body } from "express-validator";
 import { userController } from "../controllers/indexController.js";
-import {checkToken,checkUser} from "../middleware/authMiddleware.js";
+import {checkUser, checkToken} from "../middleware/authMiddleware.js";
 import constants from "../constant/constants.js";
 
 const router = express.Router();
 
 router.get("/",checkUser([constants.ADMIN_ROLE_ID]), userController.userGetAllUsersController);
 
-router.post("/", userController.userSearchController);
+router.get("/search", userController.userSearchController);
 
-router.post("/login", body("userEmail").isEmail(), userController.userLoginController);
+router.post("/login", userController.userLoginController);
 
 router.post("/refreshToken",checkUser([constants.ADMIN_ROLE_ID,constants.STAFF_ROLE_ID,constants.USER_ROLE_ID]), userController.refreshAccessTokenController);
 

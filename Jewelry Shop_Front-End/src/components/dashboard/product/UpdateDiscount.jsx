@@ -9,7 +9,7 @@ import * as yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useContext } from "react";
-import { UpdateControl } from "./UpdateController.jsx";
+import { UpdateControl } from "./ManageProduct.jsx";
 const ButtonClose = styled.button`
   padding: 10px;
   background-color: rgb(247, 103, 103);
@@ -42,7 +42,6 @@ const Input = styled.input`
   border: none;
   outline: none;
 `;
-
 
 function MyVerticallyCenteredModal(props) {
   const { updateData, setUpdateData } = useContext(UpdateControl);
@@ -77,19 +76,20 @@ function MyVerticallyCenteredModal(props) {
   const [show, setShow] = useState(true);
 
   const schema = yup.object().shape({
-    dname: yup.string().required(),
-    ddesc: yup.string().required(),
+    dname: yup.string().required("Discount name is required !!!"),
+    ddesc: yup.string().required("Discount description is required !!!"),
     dstart: yup
       .mixed()
       .transform((value, originalValue) => {
         if (originalValue === "null") {
           return null;
         }
-    
+
         return originalValue ? new Date(originalValue) : null;
       })
       .nullable()
-      .typeError("Please enter a valid date"),
+      .typeError("Please enter a valid date")
+      .required("Start date is required !!!"),
 
     dexpired: yup
       .mixed()
@@ -108,7 +108,8 @@ function MyVerticallyCenteredModal(props) {
           const { dstart } = this.parent;
           return !dstart || !value || value >= dstart;
         }
-      ),
+      )
+      .required("Expired date is required !!!"),
     dpercent: yup
       .number()
       .positive("You must input a positive number for dpercent")
@@ -147,6 +148,7 @@ function MyVerticallyCenteredModal(props) {
         },
       ],
     });
+    console.log("discount");
     console.log(updateData);
   };
 
@@ -199,6 +201,9 @@ function MyVerticallyCenteredModal(props) {
                   type="text"
                   id="dname"
                   style={{ width: "100%" }}
+                  defaultValue={
+                    props.productUpdate && props.productUpdate[0]?.discountName
+                  }
                   {...register("dname")}
                 />
               </div>
@@ -212,6 +217,10 @@ function MyVerticallyCenteredModal(props) {
                   type="text"
                   id="ddesc"
                   style={{ width: "100%" }}
+                  defaultValue={
+                    props.productUpdate &&
+                    props.productUpdate[0]?.discountDescription
+                  }
                   {...register("ddesc")}
                 />
               </div>
@@ -225,6 +234,13 @@ function MyVerticallyCenteredModal(props) {
                   type="date"
                   id="startdate"
                   style={{ width: "100%" }}
+                  defaultValue={
+                    props.productUpdate[0] &&
+                    format(
+                      new Date(props.productUpdate[0]?.discountStartDate),
+                      "yyyy-MM-dd"
+                    )
+                  }
                   {...register("dstart")}
                 />
               </div>
@@ -238,10 +254,18 @@ function MyVerticallyCenteredModal(props) {
                   type="date"
                   id="expired"
                   style={{ width: "100%" }}
+                  defaultValue={
+                    props.productUpdate[0] &&
+                    format(
+                      new Date(props.productUpdate[0]?.discountExpiredDate),
+                      "yyyy-MM-dd"
+                    )
+                  }
                   {...register("dexpired")}
                 />
               </div>
             </Control>
+
             <Control>
               <Label htmlFor="dpercent" style={{ marginLeft: "10px" }}>
                 Discount Percentage
@@ -251,6 +275,10 @@ function MyVerticallyCenteredModal(props) {
                   type="text"
                   id="dpercent"
                   style={{ width: "100%" }}
+                  defaultValue={
+                    props.productUpdate &&
+                    props.productUpdate[0]?.discountPercentage
+                  }
                   {...register("dpercent")}
                 />
               </div>
@@ -264,6 +292,9 @@ function MyVerticallyCenteredModal(props) {
                   type="text"
                   id="limit"
                   style={{ width: "100%" }}
+                  defaultValue={
+                    props.productUpdate && props.productUpdate[0]?.usageLimit
+                  }
                   {...register("dlimit")}
                 />
               </div>

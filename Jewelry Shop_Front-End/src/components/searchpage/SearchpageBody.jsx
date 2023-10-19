@@ -107,7 +107,7 @@ const SearchpageBody = (props) => {
         </Title>
         <Text>
           <TextItem>
-            Có <Inline>{products.length} sản phẩm</Inline> cho tìm kiếm
+            {products?.length ? <> Có <Inline>{products?.length} sản phẩm</Inline>cho tìm kiếm </>: ''} 
           </TextItem>
         </Text>
       </Header>
@@ -117,7 +117,7 @@ const SearchpageBody = (props) => {
         </Result>
       </TitleProduct>
 
-      {products.length > 0 ? (
+      {products?.length > 0 ? (
         <>
           <SearchController data-aos="fade-up">
             <ItemOne>
