@@ -32,27 +32,36 @@ const userGetAllUsersRepository = async () => {
 const userSearchRepository = async ({
   page,
   size,
-  searchString,
-  searchRole,
+  search,
+  role,
+  status,
+  block
 }) => {
   try {
     page = parseInt(page);
     size = parseInt(size);
-    const searchRoleNumber = parseInt(searchRole);
     const matchQuery = {
       $or: [
         {
-          userName: { $regex: `.*${searchString}.*`, $options: "i" },
+          userName: { $regex: `.*${search}.*`, $options: "i" },
         },
         {
-          userEmail: { $regex: `.*${searchString}.*`, $options: "i" },
+          userEmail: { $regex: `.*${search}.*`, $options: "i" },
         },
       ],
     };
 
-    if (searchRole) {
-      matchQuery.userRole = searchRoleNumber;
+    if (role) {
+      matchQuery.userRole = parseInt(role);
     }
+
+    if (status) {
+      matchQuery.isActive = JSON.parse(status);;
+    } 
+
+    if (block) {
+      matchQuery.isDelete = JSON.parse(block);;
+    } 
 
     let filteredUsers = await User.aggregate([
       {
@@ -154,7 +163,7 @@ const refreshAccessTokenRepository = async (refreshToken) => {
         } else if (err) {
           reject({
             success: false,
-            message: "Lỗi xác thực token: " + err.message,
+            message: Exception.REFRESH_TOKEN_INVALID,
           });
         } else {
           resolve(decode);
@@ -414,12 +423,10 @@ const userViewProfileRepository = async (userId) => {
         message: Exception.CANNOT_FIND_USER,
       };
     }
-
-    const {userPassword,  ...userData} = userInfo.toObject();                                                    
     return {
       success: true,
       message: "Get user successfully!",
-      data: userData,
+      data: userInfo,
     };
   } catch (exception) {
     throw new Exception(exception.message);

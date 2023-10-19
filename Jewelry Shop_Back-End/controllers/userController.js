@@ -26,16 +26,15 @@ const userGetAllUsersController = async (req, res) => {
 };
 
 const userSearchController = async (req, res) => {
-  let { page = 1, size = 6, searchString = "", searchRole } = req.query;
-  searchRole = searchRole == undefined ? 2 : searchRole;
-  size = size >= 6 ? 6 : size;
+  let { page = 1, size = 100, search = "", role, status,block } = req.query;
   try {
-    const searchRoleNumber = parseInt(searchRole);
     let filteredUsers = await userRepository.userSearchRepository({
       size,
       page,
-      searchString,
-      searchRole,
+      search,
+      role,
+      status,
+      block
     });
     return res.status(HttpStatusCode.OK).json({
       status: "OK",
@@ -43,8 +42,10 @@ const userSearchController = async (req, res) => {
       data: {
         size,
         page,
-        searchString,
-        searchRole: searchRoleNumber,
+        search,
+        role,
+        status,
+        block,
         data: filteredUsers,
       },
     });
@@ -114,24 +115,26 @@ const userLoginController = async (req, res) => {
   }
 };
 
-const refreshAccessTokenController = async (req, res, next) => {
+const refreshAccessTokenController = async (req, res) => {
+
   const { refreshToken } = req.cookies;
+
   if (!refreshToken) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
       message: "No refresh token in cookies",
     });
   }
+
   try {
     const result = await userRepository.refreshAccessTokenRepository(
       refreshToken
     );
     if (!result.success) {
-      res.status(HttpStatusCode.BAD_REQUEST).json({
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: result.message,
-      });
-      return;
+      }); 
     }
 
     res.cookie("accessToken", result.data, {
@@ -143,13 +146,11 @@ const refreshAccessTokenController = async (req, res, next) => {
 
     return result.data;
   } catch (exception) {
-    if (exception.message === Exception.REFRESH_TOKEN_EXPIRED) {
-      return userLogoutController(req, res);
-    }
-    return res.status(HttpStatusCode.UNAUTHORIZED).json({
-      status: "ERROR",
-      message: exception.message,
-    });
+      return (req,res,next) => {
+        res.clearCookie("accessToken", { httpOnly: false, secure: true });
+        res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+        return res.status(HttpStatusCode.UNAUTHORIZED).json({message:exception.message});
+      }
   }
 };
 
@@ -173,8 +174,10 @@ const userLogoutController = async (req, res) => {
         message: logoutUser.message,
       });
     }
-
-    return res.redirect(`${process.env.FRONT_END_URL}/login`); // thang dat lam gi the nay
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: "Logout success",
+    });
   } catch (exception) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
