@@ -22,6 +22,7 @@ export default class Exception extends Error{
     static ID_NOT_FOUND = "ID is not found"
     static NAME_NOT_FOUND = "Name is required for the search."
     static REFRESH_TOKEN_EXPIRED = "Refresh token was expired"
+    static REFRESH_TOKEN_INVALID = "Refresh token is invalid"
     static CATEGORY_NOT_FOUND = "Category is not found"
     constructor(message,validationErrors ={}) {
         super(message)
