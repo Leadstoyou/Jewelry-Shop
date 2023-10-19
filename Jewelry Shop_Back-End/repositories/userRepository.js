@@ -163,7 +163,7 @@ const refreshAccessTokenRepository = async (refreshToken) => {
         } else if (err) {
           reject({
             success: false,
-            message: "Lỗi xác thực token: " + err.message,
+            message: Exception.REFRESH_TOKEN_INVALID,
           });
         } else {
           resolve(decode);

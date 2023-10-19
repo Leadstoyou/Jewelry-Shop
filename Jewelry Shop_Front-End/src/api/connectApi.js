@@ -87,7 +87,7 @@ const addToCartAPI = async (notify, success, newCart) => {
   try {
     const data = newCart;
     const response = await axios.post(
-      "http://localhost:9999/api/v1/cart/add",
+      `${import.meta.env.VITE_API_CART}/add`,
       data
     );
     console.log(response);

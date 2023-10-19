@@ -116,13 +116,16 @@ const userLoginController = async (req, res) => {
 };
 
 const refreshAccessTokenController = async (req, res) => {
+
   const { refreshToken } = req.cookies;
+
   if (!refreshToken) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
       message: "No refresh token in cookies",
     });
   }
+
   try {
     const result = await userRepository.refreshAccessTokenRepository(
       refreshToken
@@ -143,13 +146,11 @@ const refreshAccessTokenController = async (req, res) => {
 
     return result.data;
   } catch (exception) {
-    if (exception.message === Exception.REFRESH_TOKEN_EXPIRED) {
-      return userLogoutController();
-    }
-    return res.status(HttpStatusCode.UNAUTHORIZED).json({
-      status: "ERROR",
-      message: exception.message,
-    });
+      return (req,res,next) => {
+        res.clearCookie("accessToken", { httpOnly: false, secure: true });
+        res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+        return res.status(HttpStatusCode.UNAUTHORIZED).json({message:exception.message});
+      }
   }
 };
 
