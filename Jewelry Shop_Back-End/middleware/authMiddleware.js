@@ -3,56 +3,51 @@ import jwt from "jsonwebtoken";
 import { userController } from "../controllers/indexController.js";
 
 const checkToken = (req, res, next) => {
-  const authHeader = req.headers.authorization;
   if (req?.headers?.authorization?.startsWith("Bearer")) {
     const token = req.headers?.authorization.split(" ")[1];
-    jwt.verify(token, process.env.ACCESS_TOKEN, async (err, decode) => {
+    jwt.verify(token, process.env.ACCESS_TOKEN, async (err, tokenDataDecode) => {
       if (err?.name === "JsonWebTokenError") {
         return res.status(HttpStatusCode.UNAUTHORIZED).json({
           status: "ERROR",
-          message: "Invalid token format",
+          message: "Invalid Token Format",
         });
       } else if (err instanceof jwt.TokenExpiredError) {
-       const refreshAccessToken =  await userController.refreshAccessTokenController(req, res, next);
-       if(typeof refreshAccessToken === 'string') {
-        console.log("refresh success!");
-        req.headers.authorization = `Bearer ${refreshAccessToken}`;
-        checkToken(req,res,next)
-       }
-      //  else {
-      //   return res.status(HttpStatusCode.BAD_REQUEST).json({
-      //     status: "ERROR",
-      //     message: "refresh token invalid - access token time out"
-      //   })
-      //  }
-     if(typeof refreshAccessToken === "undefined"){
-        next()
-      }
+          const refreshAccessToken =  await userController.refreshAccessTokenController(req, res, next);
+          if(typeof refreshAccessToken === 'string') {
+            console.log("Refresh success!");
+            req.headers.authorization = `Bearer ${refreshAccessToken}`;
+            checkToken(req,res,next)
+          }
+          else
+            next();
       } else if (err) {
         return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
           status: "ERROR",
           message: "Invalid Token",
         });
       } else {
-        req.user = decode;
+        req.user = tokenDataDecode;
         next();
       }
     });
   } else {
-    next();
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
+      message: "You not user",
+    });
+      next();
   }
 };
 
 const checkUser =
   (allowedRoles = [2]) =>
   (req, res, next) => {
-    checkToken(req, res, (err) => {
+    checkToken(req, res, err => {
       if (err) {
         console.log('error:', err)
         return res.status(err.status).json(err.body);
       }
       const userRole = req.user?.userRole;
-
       if (allowedRoles.includes(userRole)) {
         next();
       } else {

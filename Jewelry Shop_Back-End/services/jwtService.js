@@ -8,7 +8,7 @@ const generalAccessToken = async (userId, userRole) => {
     },
     process.env.ACCESS_TOKEN,
     {
-      expiresIn: "20000",
+      expiresIn: "1 day",
     }
   );
   return accessToken;
@@ -21,18 +21,13 @@ const generalRefreshToken = async (userId) => {
     },
     process.env.REFRESH_TOKEN,
     {
-      expiresIn: "5000",
+      expiresIn: "3 days",
     }
   );
   return refreshToken;
 };
 
-const refreshToken = async () => {
-
-}
-
 export default {
   generalAccessToken,
   generalRefreshToken,
-  refreshToken
 };

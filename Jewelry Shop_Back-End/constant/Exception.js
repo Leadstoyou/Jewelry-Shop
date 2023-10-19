@@ -25,7 +25,7 @@ export default class Exception extends Error{
     static CATEGORY_NOT_FOUND = "Category is not found"
     constructor(message,validationErrors ={}) {
         super(message)
-        console.log("File Exception.js: ",message)
+        console.log("File Exception.js:",message)
         this.validationErrors = validationErrors
     }
 }
