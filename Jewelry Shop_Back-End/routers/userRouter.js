@@ -1,13 +1,13 @@
 import express from "express";
 import { userController } from "../controllers/indexController.js";
-import {checkToken,checkUser} from "../middleware/authMiddleware.js";
+import {checkUser, checkToken} from "../middleware/authMiddleware.js";
 import constants from "../constant/constants.js";
 
 const router = express.Router();
 
 router.get("/",checkUser([constants.ADMIN_ROLE_ID]), userController.userGetAllUsersController);
 
-router.post("/", userController.userSearchController);
+router.get("/search", userController.userSearchController);
 
 router.post("/login", userController.userLoginController);
 

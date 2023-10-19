@@ -7,9 +7,23 @@ const viewCart = async (req, res) => {
       const cartToken = req.params.cart_token;
       const cart = await cartRepository.getCartByToken(cartToken);
       if (!cart) {
-        return res.status(HttpStatusCode.NOT_FOUND).json({ message: 'Cart not found' });
+        const newCart = await cartRepository.createEmptyCart();
+        await cartRepository.createCartToken(newCart._id);
+        res.cookie("cart_token", newCart._id.toString(), {
+          httpOnly: true,
+          secure: true,
+          sameSite: "None",
+        });
+        return res.status(HttpStatusCode.OK).json(newCart);
+      }else{
+        res.cookie("cart_token", cart._id.toString(), {
+          httpOnly: true,
+          secure: true,
+          sameSite: "None",
+        });
+        return res.status(HttpStatusCode.OK).json(cart);
       }
-      return res.status(HttpStatusCode.OK).json(cart);
+    
     } catch (err) {
       console.error(err);
       return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
@@ -40,7 +54,12 @@ const viewCart = async (req, res) => {
         // Nếu giỏ hàng không tồn tại, tạo mới giỏ hàng và thêm sản phẩm vào
         const newCart = await cartRepository.createEmptyCart();
         await cartRepository.addProductToCart(newCart._id, productId, quantity, size, color, material, price, productImage, productDes);
-        await cartRepository.createCartToken(newCart._id, userId, productId);
+        await cartRepository.createCartToken(newCart._id);
+        res.cookie("cart_token", newCart._id.toString(), {
+          httpOnly: true,
+          secure: true,
+          sameSite: "None",
+        });
       } else {
 
         await cartRepository.addProductToCart(cart._id, productId, quantity, size, color, material, price, productImage, productDes);

@@ -21,18 +21,13 @@ const generalRefreshToken = async (userId) => {
     },
     process.env.REFRESH_TOKEN,
     {
-      expiresIn: "30 days",
+      expiresIn: "3 days",
     }
   );
   return refreshToken;
 };
 
-const refreshToken = async () => {
-
-}
-
 export default {
   generalAccessToken,
   generalRefreshToken,
-  refreshToken
 };

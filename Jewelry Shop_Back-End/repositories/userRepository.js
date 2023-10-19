@@ -32,27 +32,36 @@ const userGetAllUsersRepository = async () => {
 const userSearchRepository = async ({
   page,
   size,
-  searchString,
-  searchRole,
+  search,
+  role,
+  status,
+  block
 }) => {
   try {
     page = parseInt(page);
     size = parseInt(size);
-    const searchRoleNumber = parseInt(searchRole);
     const matchQuery = {
       $or: [
         {
-          userName: { $regex: `.*${searchString}.*`, $options: "i" },
+          userName: { $regex: `.*${search}.*`, $options: "i" },
         },
         {
-          userEmail: { $regex: `.*${searchString}.*`, $options: "i" },
+          userEmail: { $regex: `.*${search}.*`, $options: "i" },
         },
       ],
     };
 
-    if (searchRole) {
-      matchQuery.userRole = searchRoleNumber;
+    if (role) {
+      matchQuery.userRole = parseInt(role);
     }
+
+    if (status) {
+      matchQuery.isActive = JSON.parse(status);;
+    } 
+
+    if (block) {
+      matchQuery.isDelete = JSON.parse(block);;
+    } 
 
     let filteredUsers = await User.aggregate([
       {
@@ -386,8 +395,8 @@ const userChangePasswordRepository = async ({
       parseInt(process.env.SALT_ROUNDS)
     );
 
-    const updatedUser = await User.findOneAndUpdate(
-      { userEmail },
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
       { userPassword: hashedPassword },
       { new: true }
     ).exec();
@@ -453,10 +462,9 @@ const userUpdateProfileRepository = async ({
     };
 
     const updatedUser = await User.findByIdAndUpdate(
-      { userId },
-      updateFields,
-      { new: true }
-    ).exec();
+      userId, 
+      updateFields, 
+      {new: true}).exec();
     if (!updatedUser) {
       return {
         success: false,
@@ -489,7 +497,7 @@ const userUpdateRoleRepository = async ({ userId, newRole, userRole }) => {
     }
 
     const updatedUser = await User.findByIdAndUpdate(
-      { userId },
+      userId,
       { userRole: newRole },
       { new: true }
     ).exec();
@@ -513,11 +521,7 @@ const userUpdateRoleRepository = async ({ userId, newRole, userRole }) => {
   }
 };
 
-const userUpdateStatusRepository = async ({
-  userId,
-  newStatus,
-  userRole,
-}) => {
+const userUpdateStatusRepository = async ({ userId, newStatus, userRole }) => {
   try {
     if (userRole !== 0) {
       return {
@@ -527,7 +531,7 @@ const userUpdateStatusRepository = async ({
     }
 
     const updatedUser = await User.findByIdAndUpdate(
-      { userId },
+      userId,
       { isActive: newStatus },
       { new: true }
     ).exec();
@@ -558,7 +562,7 @@ const userUpdateBlockRepository = async ({ userId, newBlock, userRole }) => {
     }
 
     const updatedUser = await User.findByIdAndUpdate(
-      { userId },
+      userId,
       { isDelete: newBlock },
       { new: true }
     ).exec();
@@ -594,5 +598,5 @@ export default {
   userUpdateRoleRepository,
   userUpdateStatusRepository,
   userUpdateBlockRepository,
-  userViewProfileRepository
+  userViewProfileRepository,
 };

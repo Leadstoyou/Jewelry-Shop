@@ -44,16 +44,16 @@ const Checkouts = () => {
                     <table className="product-table">
                       <thead>
                         <tr>
-                          <th scope="col">
+                          <th scope="col" className="table-element-first-child">
                             <span className="visually-hidden">Hình ảnh</span>
                           </th>
-                          <th scope="col">
+                          <th scope="col" className="table-element">
                             <span className="visually-hidden">Mô tả</span>
                           </th>
-                          <th scope="col">
+                          <th scope="col" className="table-element">
                             <span className="visually-hidden">Số lượng</span>
                           </th>
-                          <th scope="col">
+                          <th scope="col" className="table-element-last-child">
                             <span className="visually-hidden">Giá</span>
                           </th>
                         </tr>
@@ -64,7 +64,7 @@ const Checkouts = () => {
                           data-product-id="1041518282"
                           data-variant-id="1090587759"
                         >
-                          <td className="product-image">
+                          <td className="product-image table-element-first-child">
                             <div className="product-thumbnail">
                               <div className="product-thumbnail-wrapper">
                                 <img
@@ -81,7 +81,7 @@ const Checkouts = () => {
                               </span>
                             </div>
                           </td>
-                          <td className="product-description">
+                          <td className="product-description table-element">
                             <span className="product-description-name order-summary-emphasis">
                               Dây chuyền bạc mạ vàng hồng 14k mặt hình chữ O với
                               họa tiết trái tim trong suốt
@@ -91,10 +91,10 @@ const Checkouts = () => {
                               45 / Hồng / Mạ vàng hồng 14K
                             </span>
                           </td>
-                          <td className="product-quantity visually-hidden">
+                          <td className="product-quantity visually-hidden table-element">
                             1
                           </td>
-                          <td className="product-price">
+                          <td className="product-price table-element-last-child">
                             <span className="order-summary-emphasis">
                               5,390,000₫
                             </span>
@@ -268,7 +268,7 @@ const Checkouts = () => {
                             <input
                               placeholder="Họ và tên"
                               spellCheck="false"
-                              className="field-input"
+                              className="field-input inputOrderDetail"
                               size="30"
                               type="text"
                               id="billing_address_full_name"
@@ -295,7 +295,7 @@ const Checkouts = () => {
                               placeholder="Email"
                               autoCapitalize="off"
                               spellCheck="false"
-                              className="field-input"
+                              className="field-input inputOrderDetail"
                               size="30"
                               type="email"
                               id="checkout_user_email"
@@ -321,7 +321,7 @@ const Checkouts = () => {
                               placeholder="Số điện thoại"
                               autoCapitalize="off"
                               spellCheck="false"
-                              className="field-input"
+                              className="field-input inputOrderDetail"
                               size="30"
                               maxLength="15"
                               type="tel"
@@ -369,7 +369,7 @@ const Checkouts = () => {
                                     placeholder="Địa chỉ"
                                     autoCapitalize="off"
                                     spellCheck="false"
-                                    className="field-input"
+                                    className="field-input inputOrderDetail"
                                     size="30"
                                     type="text"
                                     id="billing_address_address1"
@@ -466,7 +466,7 @@ const Checkouts = () => {
                             />
                             <button
                               type="submit"
-                              className="step-footer-continue-btn"
+                              className="step-footer-continue-btn inputOrderDetail"
                               style={{
                                 display: "inline-block",
                                 borderRadius: "4px",

@@ -115,6 +115,8 @@ const Profile = () => {
 
       if (response.status === 200) {
         console.log("Save successful");
+        toast(response.data.message);
+
       } else {
         console.log("Registration failed");
       }
@@ -131,13 +133,17 @@ const Profile = () => {
 
     if (isValid) {
       try {
-        const response = await axios.post("http://localhost:3001/Account", {
-          password: currentPassword,
+        const response = await axios.put("http://localhost:9999/api/v1/users/changePassword", {
+          oldPassword: currentPassword,
           newPassword: newPassword,
-        });
+          confirmPassword: checkPassword,
+
+        },
+        axiosConfig);
 
         if (response.status === 200) {
           console.log("Save successful");
+          toast("Change Password Success");
         } else {
           console.log("Save failed");
         }
@@ -171,13 +177,14 @@ const Profile = () => {
       return false;
     }
 
-    if (currentPassword !== checkPassword) {
+    if (newPassword !== checkPassword) {
       toast("New password should be different from the current password");
       return false;
     }
 
     return true;
   };
+
 
   return (
     <Container style={{ marginTop: "100px", marginBottom: "30px" }}>
@@ -216,7 +223,7 @@ const Profile = () => {
                 <input
                   type="radio"
                   id="radio1"
-                  value="nam"
+                  value="Male"
                   checked={gender === "Male"} // Check if 'gender' matches the value
                   onChange={(e) => setGender(e.target.value)}
                 />
@@ -226,7 +233,7 @@ const Profile = () => {
                 <input
                   type="radio"
                   id="radio2"
-                  value="nu"
+                  value="Female"
                   checked={gender === "Female"} // Check if 'gender' matches the value
                   onChange={(e) => setGender(e.target.value)}
                 />
