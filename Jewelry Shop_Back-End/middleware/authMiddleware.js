@@ -21,7 +21,10 @@ const checkToken = (req, res, next) => {
             console.log("Refresh success!");
             req.headers.authorization = `Bearer ${refreshAccessToken}`;
             checkToken(req, res, next);
-          } else next();
+          }
+          if(typeof refreshAccessToken === 'function'){
+            refreshAccessToken(req,res,next);
+         }
         } else if (err) {
           return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
             status: "ERROR",
@@ -34,10 +37,7 @@ const checkToken = (req, res, next) => {
       }
     );
   } else {
-    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-      status: "ERROR",
-      message: "You must be logged in to access this!",
-    });
+next()
   }
 };
 

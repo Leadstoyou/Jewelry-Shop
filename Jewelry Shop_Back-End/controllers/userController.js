@@ -144,7 +144,7 @@ const refreshAccessTokenController = async (req, res) => {
 
     return result.data;
   } catch (exception) {
-    return (res) => {
+    return (req,res,next) => {
       res.clearCookie("accessToken", { httpOnly: false, secure: true });
       res.clearCookie("refreshToken", { httpOnly: true, secure: true });
       return res
