@@ -22,9 +22,9 @@ const checkToken = (req, res, next) => {
             req.headers.authorization = `Bearer ${refreshAccessToken}`;
             checkToken(req, res, next);
           }
-          if(typeof refreshAccessToken === 'function'){
-            refreshAccessToken(req,res,next);
-         }
+          if (typeof refreshAccessToken === "function") {
+            refreshAccessToken(req, res, next);
+          }
         } else if (err) {
           return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
             status: "ERROR",
@@ -37,11 +37,14 @@ const checkToken = (req, res, next) => {
       }
     );
   } else {
-next()
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
+      message: "You must be logged in to access this!",
+    });
   }
 };
 
-const checkUser =
+const checkPermission =
   (allowedRoles = [2]) =>
   (req, res, next) => {
     checkToken(req, res, (err) => {
@@ -50,6 +53,7 @@ const checkUser =
         return res.status(err.status).json(err.body);
       }
       const userRole = req.user?.userRole;
+
       if (allowedRoles.includes(userRole)) {
         next();
       } else {
@@ -61,4 +65,23 @@ const checkUser =
     });
   };
 
-export { checkToken, checkUser };
+const checkUser = (req, res, next) => {
+  if (req?.headers?.authorization?.startsWith("Bearer")) {
+    const token = req.headers?.authorization.split(" ")[1];
+    jwt.verify(
+      token,
+      process.env.ACCESS_TOKEN,
+      async (err, tokenDataDecode) => {
+        if (err) {
+          next();
+        }
+        req.user = tokenDataDecode;
+        next();
+      }
+    );
+  } else {
+    next();
+  }
+};
+
+export { checkToken, checkUser ,checkPermission};

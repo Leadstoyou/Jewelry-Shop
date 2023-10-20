@@ -1,7 +1,6 @@
 import { validationResult, check } from "express-validator";
 import { userRepository } from "../repositories/indexRepository.js";
 import HttpStatusCode from "../constant/HttpStatusCode.js";
-import Exception from "../constant/Exception.js";
 
 const userGetAllUsersController = async (req, res) => {
   try {
