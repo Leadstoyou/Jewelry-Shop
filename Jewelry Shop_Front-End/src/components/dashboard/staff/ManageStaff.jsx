@@ -1,16 +1,45 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "@mui/material/Button";
 import SearchIcon from "@mui/icons-material/Search";
 import ViewDetail from "./ViewDetail";
 
+
+import axios from "axios";
+
 import "../style/ManagerStaff.scss";
 const ManageStaff = () => {
+  const [userData, setUserData] = useState([]);
+  const [search, setSearch] = useState("");
   const [modalShow, setModalShow] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
   const [filterRole, setFilterRole] = useState("");
   const [filterAction, setFilterAction] = useState("");
+
+
+    useEffect(() => {
+      axios
+        .get(
+          `http://localhost:9999/api/v1/users/search?search=${search}`,
+          
+        )
+        .then((response) => {
+          if (response.status === 200) {
+            console.log("Request was successful");
+            const userDataArray = response.data.data.data;
+            setUserData(userDataArray); // Store the data in the state
+            
+          } else {
+            console.log("Request was not successful");
+          }
+        })
+        .catch((error) => {
+          console.error("An error occurred:", error);
+        });
+    }, [search]);
+  
+   console.log(userData);
 
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
@@ -35,7 +64,11 @@ const ManageStaff = () => {
           justifyContent: "center",
         }}
       >
-        <Form.Control type="text" style={{ width: "30%", height: "40px" }} />
+        <Form.Control
+          type="text"
+          style={{ width: "30%", height: "40px" }}
+          onChange={() => setSearch(e.target.value)}
+        />
         <Button variant="contained" color="primary" startIcon={<SearchIcon />}>
           Search
         </Button>
@@ -46,6 +79,7 @@ const ManageStaff = () => {
           value={filterRole}
           onChange={handleFilterRole}
         >
+          <option value="all">All</option>
           <option value="staff">Staff</option>
           <option value="customer">Customer</option>
         </select>
@@ -54,6 +88,7 @@ const ManageStaff = () => {
           value={filterAction}
           onChange={handleFilterAction}
         >
+          <option value="all">All</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
@@ -67,14 +102,15 @@ const ManageStaff = () => {
             <th>Phone Number</th>
             <th>Role</th>
             <th>Actor</th>
+            <th>Actor</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>index</td>
             <td>name</td>
-            <td>21 </td>
-            <td>0987654321 </td>
+            <td>age </td>
+            <td>phone </td>
             <td>
               <select value={selectedOption} onChange={handleOptionChange}>
                 <option value="staff">Staff</option>
@@ -84,6 +120,9 @@ const ManageStaff = () => {
             <td>
               <button className="button">View</button>
             </td>
+            <td>
+              ok
+            </td>
           </tr>
           <tr>
             <td>index</td>
@@ -97,7 +136,7 @@ const ManageStaff = () => {
               </select>
             </td>
             <td>
-              <button className="button"  onClick={() => setModalShow(true)}>
+              <button className="button" onClick={() => setModalShow(true)}>
                 View
               </button>
             </td>

@@ -22,8 +22,10 @@ const getCartByTokenCookie = async (cartTokenCookie) => {
 };
 const createEmptyCart = async () => {
   try {
-    const newCart = new Cart({total: 0, cart_token: "carttoken"});
+    const cartToken = (Math.random() + 1).toString(36).substring(2);
+    const newCart = new Cart({total: 0, cart_token: cartToken});
     await newCart.save();
+    
     return newCart;
   } catch (error) {
     console.error(error);
@@ -33,9 +35,8 @@ const createEmptyCart = async () => {
 
 const createCartToken = async (cartId) => {
   try {
-    const cartData = {_id: cartId};
-    const cartToken = Jwt.sign(cartData, process.env.ACCESS_TOKEN);
-
+    
+    const cartToken = (Math.random() + 1).toString(36).substring(7);
     const updatedCart = await Cart.findByIdAndUpdate(cartId, { cart_token: cartToken }, { new: true });
 
     return updatedCart;
