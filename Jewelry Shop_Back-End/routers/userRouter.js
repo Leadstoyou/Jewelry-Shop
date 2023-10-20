@@ -5,9 +5,9 @@ import constants from "../constant/constants.js";
 
 const router = express.Router();
 
-router.get("/",checkUser([constants.ADMIN_ROLE_ID]), userController.userGetAllUsersController);
+router.get("/",checkToken, userController.userGetAllUsersController);
 
-router.get("/search", userController.userSearchController);
+router.get("/search",checkUser([constants.ADMIN_ROLE_ID]), userController.userSearchController);
 
 router.post("/login", userController.userLoginController);
 
