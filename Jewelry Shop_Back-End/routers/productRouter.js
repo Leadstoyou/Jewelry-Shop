@@ -1,7 +1,7 @@
 import express from "express";
 import { productController } from "../controllers/indexController.js";
-import { checkUser } from "../middleware/authMiddleware.js";
-import constants from "../constant/constants.js";
+import { checkPermission } from "../middleware/authMiddleware.js";
+import ConfigConstants from "../constant/ConfigConstants.js";
 
 const router = express.Router();
 

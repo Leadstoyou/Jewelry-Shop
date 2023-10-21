@@ -83,12 +83,48 @@ const deleteProduct = async (_id) => {
 };
 
 //addToCart
-const addToCart = async (notify,success)=>{
+const addToCartAPI = async (notify, success, newCart) => {
   try {
-    
+    const data = newCart;
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_CART}/add`,
+      data,
+      { withCredentials: true }
+    );
+    console.log(response);
+    if (response.status === 200) {
+      success("add to cart successfully !!!");
+    } else {
+      notify("Add to cart failed !!!");
+    }
   } catch (error) {
-    notify('Add to cart failed !!!')
+    notify("Add to cart failed !!!");
   }
-}
+};
 
-export { getAllProducts, addProduct, updateProduct, deleteProduct };
+//viewCart
+const viewCartAPI = async (cartToken, setViewCart) => {
+  try {
+    const token = cartToken;
+    const response = await axios.get(`http://localhost:9999/api/v1/cart/view`, {
+      withCredentials: true,
+    });
+
+    if (response.status === 200) {
+      setViewCart(response.data);
+    } else {
+      console.log("Failed to fetch cart data");
+    }
+  } catch (error) {
+    console.error("Error while fetching cart data:", error);
+  }
+};
+
+export {
+  getAllProducts,
+  addProduct,
+  updateProduct,
+  deleteProduct,
+  addToCartAPI,
+  viewCartAPI,
+};

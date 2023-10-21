@@ -1,6 +1,4 @@
 import axios from "axios";
-import { toast } from "react-toastify";
-
 function getAccessTokenFromCookie() {
   const name = "accessToken=";
   const decodedCookie = decodeURIComponent(document.cookie);
@@ -23,7 +21,7 @@ const CollectionAPI = async (
   setColorsArray,
   setMaterialArray,
   setFoundProducts,
-  setLoading
+  setLoading,toast,navigate
 ) => {
   try {
     const categories = ["Dây Chuyền", "Vòng tay", "Hoa Tai", "Charm", "Nhẫn"];
@@ -31,7 +29,7 @@ const CollectionAPI = async (
       throw new Error("Invalid category");
     }
     const response = await axios.post(
-        `${import.meta.env.VITE_API_PRODUCTS}/view`,
+      `${import.meta.env.VITE_API_PRODUCTS}/view`,
       {
         category: category,
         color: color,
@@ -39,9 +37,15 @@ const CollectionAPI = async (
         minPrice: price?.minPrice,
         maxPrice: price?.maxPrice,
         sort: sort,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true,
       }
     );
-console.log(response.data);
+
     const data = response.data?.data?.products;
     if (!color && !material && !price && !sort) {
       const extractUnique = (property) => [
@@ -54,7 +58,9 @@ console.log(response.data);
     setLoading(false);
   } catch (error) {
     setLoading(false);
-    setFoundProducts([]);
+    if(error.response.status === 401){
+      navigate('/login');
+    }
     toast.error(error.response.data.message);
     console.error("Error fetching data:", error.response.data.message);
   }

@@ -4,7 +4,4 @@ export default {
   USER_ROLE_ID: 2,
   STAFF_ROLE_ID: 1,
   ADMIN_ROLE_ID: 0,
-  LOGIN_SUCCESSFUL: "Login successfully!",
-  REFRESH_ACCESS_TOKEN_SUCCESS:"Refresh access token successfully!",
-  PRODUCT_RETRIVED:"Products retrieved"
 };

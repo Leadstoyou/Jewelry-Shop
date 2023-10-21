@@ -3,8 +3,7 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Modal from "react-bootstrap/Modal"
-import TextField from "@mui/material/TextField";;
-import Row from "react-bootstrap/Row";
+
 const ViewDetail = (props) => {
   return (
     <Modal {...props} aria-labelledby="contained-modal-title-vcenter" style={{width:'max-width'}}>
@@ -26,7 +25,7 @@ const ViewDetail = (props) => {
           />
           <div className="information">
           <div className="information_detail1">
-  <div className="column">
+  <div className="column" style={{marginRight:"20px"}}>
     <h5>Tên</h5>
     <input className="Name" type="text" value={"Name"} disabled />
   </div>
@@ -37,7 +36,7 @@ const ViewDetail = (props) => {
 </div>
 
 <div className="information_detail1">
-  <div className="column">
+  <div className="column" style={{marginRight:"20px"}}>
     <h5>Tuổi</h5>
     <input className="age" type="text" value={"Age"} disabled />
   </div>
@@ -47,7 +46,7 @@ const ViewDetail = (props) => {
   </div>
 </div>
 <div className="information_detail1">
-  <div className="column">
+  <div className="column" style={{marginRight:"20px"}}>
     <h5>Giới tính</h5>
     <input className="Name" type="text" value={"Gender"} disabled />
   </div>
@@ -62,7 +61,7 @@ const ViewDetail = (props) => {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button style={{ width: "90px" }} onClick={props.onHide}>
+        <Button style={{ width: "80px",  display: "flex", alignItems: "center", justifyContent: "center" , height:"40px" }} onClick={props.onHide}>
           Close
         </Button>
       </Modal.Footer>

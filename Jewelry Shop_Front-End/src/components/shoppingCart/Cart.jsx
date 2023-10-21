@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
+import { viewCartAPI } from "../../api/connectApi.js";
 const Container = styled.div`
   display: flex;
   align-items: stretch;
@@ -262,15 +263,17 @@ const ShoppingCart = () => {
   const [isAgreedToTerms, setIsAgreedToTerms] = useState(false);
   const [exportBill, setExportBill] = useState(false);
   const [giftNotes, setGiftNotes] = useState("");
+  const [hoveredDescription, setHoveredDescription] = useState("");
 
   //call API view cart
-  const [cartData, setCartData] = useState({ productList: []});
+  const [cartData, setCartData] = useState([]);
   //Lấy product data
 
   function getCartTokenFromCookie() {
-    const name = "cartToken";
+    const name = "cartToken=";
     const decodedCookie = decodeURIComponent(document.cookie);
     const cookieArray = decodedCookie.split(";");
+
     for (let i = 0; i < cookieArray.length; i++) {
       let cookie = cookieArray[i].trim();
       if (cookie.indexOf(name) === 0) {
@@ -279,17 +282,19 @@ const ShoppingCart = () => {
     }
     return null;
   }
+  function truncateDescription(description, maxLength) {
+    if (description.length > maxLength) {
+      return description.slice(0, maxLength) + " ...";
+    }
+    return description;
+  }
 
   useEffect(() => {
+    const cartTokenValue = null;
     const fetchData = async () => {
-      const cartToken = getCartTokenFromCookie();
       try {
-        const res = await axios.get(
-          `http://localhost:9999/api/v1/cart/${cartToken}`
-        );
-        const data = res.data;
-        setCartData(data);
-        console.log(data.productList);
+        await viewCartAPI(cartTokenValue, setCartData);
+        console.log(cartData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -377,13 +382,13 @@ const ShoppingCart = () => {
         "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
     },
   ];
-  if (cartData === null) {
-    return (
-      <Container>
-        <div>Loading...</div>
-      </Container>
-    );
-  }
+  // if (cartData === null) {
+  //   return (
+  //     <Container>
+  //       <div>Loading...</div>
+  //     </Container>
+  //   );
+  // }
 
   // if (cartData.length === 0) {
   //   return (
@@ -407,11 +412,17 @@ const ShoppingCart = () => {
                 <ProductContainer>
                   <ProductImage src={product.productImage} />
                   <ProductInfo>
-                    <h6>
-                      {product.productDescription }
-                        
-                  
-                  </h6>
+                    <h6
+                      onMouseEnter={() =>
+                        setHoveredDescription(product.productDescription)
+                      }
+                      onMouseLeave={() => setHoveredDescription(null)}
+                    >
+                      {hoveredDescription
+                        ? product.productDescription
+                        : truncateDescription(product.productDescription, 100)}
+                    </h6>
+
                     <ProductCategory>Product Category:</ProductCategory>
                     <ProductPrice>Price: ${product.price}</ProductPrice>
                   </ProductInfo>

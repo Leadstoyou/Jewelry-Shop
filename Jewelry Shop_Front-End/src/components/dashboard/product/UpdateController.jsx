@@ -160,9 +160,7 @@ const UpdateController = (props) => {
         console.log("hello");
         console.log(newData);
         await updateProduct(productUpdate._id, notify, success, newData);
-         setUpdateData(newData);
-
-        
+        setUpdateData(newData);
       };
       reader.readAsDataURL(lmeo);
     } else {
@@ -181,8 +179,6 @@ const UpdateController = (props) => {
       console.log(newData);
       await updateProduct(productUpdate._id, notify, success, newData);
       setUpdateData(newData);
-
-      
     }
   };
 
@@ -212,7 +208,7 @@ const UpdateController = (props) => {
     }
   }, [props.show]);
 
-  const categories = ["Dây Chuyền", "Vòng", "Hoa Tai", "Charm", "Nhẫn"];
+  const categories = ["Dây Chuyền", "Vòng tay", "Hoa Tai", "Charm", "Nhẫn"];
 
   return (
     <Modal

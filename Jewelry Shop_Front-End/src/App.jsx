@@ -17,29 +17,79 @@ import NotFound from "./components/error/NotFound";
 import HistoryPage from "./pages/History";
 import ListDeleteProduct from "./components/dashboard/product/ListDeleteProduct";
 import Checkouts from "./pages/Checkouts";
+import { viewCartAPI } from "./api/connectApi.js";
+import { createContext, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getNumber } from "./redux/GetNumber.jsx";
 const Container = styled.div``;
+export const cartValue = createContext();
 function App() {
+  var number = 1;
+  const dispatch = useDispatch();
+  const [cartView, setViewCart] = useState();
+  const [cartData, setCartData] = useState();
+  const [showCartPopup, setShowCartPopup] = useState(false);
+  console.log(cartData);
+
+  useEffect(() => {
+    console.log(document.cookie);
+    const cookies = document.cookie.split("; ");
+    const cartTokenCookie = cookies.find((cookie) =>
+      cookie.startsWith("cart_token=")
+    );
+    console.log(cartTokenCookie);
+
+    const fetchData = async () => {
+      if (cartTokenCookie) {
+        const cartTokenValue = cartTokenCookie.split("=")[1];
+        console.log(cartTokenValue);
+        await viewCartAPI(cartTokenValue, setViewCart);
+        console.log(cartView);
+        number = 1;
+      }
+    };
+
+    fetchData(); // Call the async function here
+  }, [cartData]);
+
+  useEffect(() => {
+    console.log(cartView?.productList.length);
+    dispatch(getNumber(cartView?.productList.length));
+  }, [cartView]);
+
   return (
     <Container>
-      <BrowserRouter basename="/Jewelry-Shop">
-        <Routes>
-          <Route path="/" element={<Homepage />} />
-          
-          <Route path="/search/:searchtext" element={<SearchPage />} />
-          <Route path="/collections/:category" element={<Collections />} />
-          <Route path="/product/:id" element={<Products />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/checkouts" element={<Checkouts />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/listdelete" element={<ListDeleteProduct />} />
-          <Route path="/history" element={<HistoryPage />} />
-          <Route path="/forgot" element={<Forgot />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <cartValue.Provider
+        value={{
+          cartView,
+          setViewCart,
+          cartData,
+          setCartData,
+          setShowCartPopup,
+          number,
+          showCartPopup,
+        }}
+      >
+        <BrowserRouter basename="/Jewelry-Shop">
+          <Routes>
+            <Route path="/" element={<Homepage cartView={cartView} />} />
+
+            <Route path="/search/:searchtext" element={<SearchPage />} />
+            <Route path="/collections/:category" element={<Collections />} />
+            <Route path="/product/:id" element={<Products />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/checkouts" element={<Checkouts />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/listdelete" element={<ListDeleteProduct />} />
+            <Route path="/history" element={<HistoryPage />} />
+            <Route path="/forgot" element={<Forgot />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </cartValue.Provider>
     </Container>
   );
 }
