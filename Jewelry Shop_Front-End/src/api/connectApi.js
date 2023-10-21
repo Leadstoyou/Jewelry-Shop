@@ -87,8 +87,9 @@ const addToCartAPI = async (notify, success, newCart) => {
   try {
     const data = newCart;
     const response = await axios.post(
-      "http://localhost:9999/api/v1/cart/add",
-      data
+      `${import.meta.env.VITE_API_CART}/add`,
+      data,
+      {withCredentials : true}
     );
     console.log(response);
     if (response.status === 200) {
@@ -105,7 +106,8 @@ const addToCartAPI = async (notify, success, newCart) => {
 const viewCartAPI = async (cartToken, setViewCart) => {
   try {
     const token = cartToken;
-    const response = await axios.get(`http://localhost:9999/api/v1/cart/${token}`);
+    const response = await axios.get(`http://localhost:9999/api/v1/cart/view`,
+    {withCredentials : true});
 
     if (response.status === 200) {
       setViewCart( response.data);

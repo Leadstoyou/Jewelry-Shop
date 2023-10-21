@@ -1,7 +1,6 @@
 import { validationResult, check } from "express-validator";
 import { userRepository } from "../repositories/indexRepository.js";
 import HttpStatusCode from "../constant/HttpStatusCode.js";
-import Exception from "../constant/Exception.js";
 
 const userGetAllUsersController = async (req, res) => {
   try {
@@ -26,7 +25,7 @@ const userGetAllUsersController = async (req, res) => {
 };
 
 const userSearchController = async (req, res) => {
-  let { page = 1, size = 100, search = "", role, status,block } = req.query;
+  let { page = 1, size = 100, search = "", role, status, block } = req.query;
   try {
     let filteredUsers = await userRepository.userSearchRepository({
       size,
@@ -34,7 +33,7 @@ const userSearchController = async (req, res) => {
       search,
       role,
       status,
-      block
+      block,
     });
     return res.status(HttpStatusCode.OK).json({
       status: "OK",
@@ -59,20 +58,19 @@ const userSearchController = async (req, res) => {
 
 const userLoginController = async (req, res) => {
   const errors = validationResult(req);
-  check('userEmail')
-    .isEmail()
-    .withMessage('Invalid email format')
-    .run(req);
-  check('userPassword')
+  check("userEmail").isEmail().withMessage("Invalid email format").run(req);
+  check("userPassword")
     .isLength({ min: 8 })
-    .withMessage('Password must be at least 8 characters long')
+    .withMessage("Password must be at least 8 characters long")
     .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/)
-    .withMessage('Password must contain at least one number, one lowercase letter, and one uppercase letter')
+    .withMessage(
+      "Password must contain at least one number, one lowercase letter, and one uppercase letter"
+    )
     .run(req);
   if (!errors.isEmpty()) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
-      errors: errors.array()
+      errors: errors.array(),
     });
   }
   try {
@@ -117,12 +115,14 @@ const userLoginController = async (req, res) => {
 
 const refreshAccessTokenController = async (req, res) => {
   const { refreshToken } = req.cookies;
+
   if (!refreshToken) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
       message: "No refresh token in cookies",
     });
   }
+
   try {
     const result = await userRepository.refreshAccessTokenRepository(
       refreshToken
@@ -131,7 +131,7 @@ const refreshAccessTokenController = async (req, res) => {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: result.message,
-      }); 
+      });
     }
 
     res.cookie("accessToken", result.data, {
@@ -143,13 +143,13 @@ const refreshAccessTokenController = async (req, res) => {
 
     return result.data;
   } catch (exception) {
-    if (exception.message === Exception.REFRESH_TOKEN_EXPIRED) {
-      return userLogoutController();
-    }
-    return res.status(HttpStatusCode.UNAUTHORIZED).json({
-      status: "ERROR",
-      message: exception.message,
-    });
+    return (req,res,next) => {
+      res.clearCookie("accessToken", { httpOnly: false, secure: true });
+      res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+      return res
+        .status(HttpStatusCode.UNAUTHORIZED)
+        .json({ message: exception.message });
+    };
   }
 };
 
@@ -197,21 +197,20 @@ const userRegisterController = async (req, res) => {
     userAge,
   } = req.body;
   const errors = validationResult(req);
-  check('userEmail')
-    .isEmail()
-    .withMessage('Invalid email format')
-    .run(req);
-  check('userPassword')
+  check("userEmail").isEmail().withMessage("Invalid email format").run(req);
+  check("userPassword")
     .isLength({ min: 8 })
-    .withMessage('Password must be at least 8 characters long')
+    .withMessage("Password must be at least 8 characters long")
     .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/)
-    .withMessage('Password must contain at least one number, one lowercase letter, and one uppercase letter')
+    .withMessage(
+      "Password must contain at least one number, one lowercase letter, and one uppercase letter"
+    )
     .run(req);
 
   if (!errors.isEmpty()) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
-      errors: errors.array()
+      errors: errors.array(),
     });
   }
 
@@ -286,14 +285,11 @@ const userForgotPasswordController = async (req, res) => {
   }
 
   const errors = validationResult(req);
-  check('userEmail')
-    .isEmail()
-    .withMessage('Invalid email format')
-    .run(req);
+  check("userEmail").isEmail().withMessage("Invalid email format").run(req);
   if (!errors.isEmpty()) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
-      errors: errors.array()
+      errors: errors.array(),
     });
   }
 
@@ -333,16 +329,18 @@ const userResetPasswordController = async (req, res) => {
     });
   }
   const errors = validationResult(req);
-  check('newPassword')
+  check("newPassword")
     .isLength({ min: 8 })
-    .withMessage('Password must be at least 8 characters long')
+    .withMessage("Password must be at least 8 characters long")
     .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/)
-    .withMessage('Password must contain at least one number, one lowercase letter, and one uppercase letter')
+    .withMessage(
+      "Password must contain at least one number, one lowercase letter, and one uppercase letter"
+    )
     .run(req);
   if (!errors.isEmpty()) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
-      errors: errors.array()
+      errors: errors.array(),
     });
   }
 
@@ -372,16 +370,18 @@ const userResetPasswordController = async (req, res) => {
 const userChangePasswordController = async (req, res) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
   const errors = validationResult(req);
-  check('newPassword')
+  check("newPassword")
     .isLength({ min: 8 })
-    .withMessage('Password must be at least 8 characters long')
+    .withMessage("Password must be at least 8 characters long")
     .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/)
-    .withMessage('Password must contain at least one number, one lowercase letter, and one uppercase letter')
+    .withMessage(
+      "Password must contain at least one number, one lowercase letter, and one uppercase letter"
+    )
     .run(req);
   if (!errors.isEmpty()) {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
-      errors: errors.array()
+      errors: errors.array(),
     });
   }
   if (newPassword !== confirmPassword) {
@@ -585,5 +585,5 @@ export default {
   userUpdateRoleController,
   userUpdateStatusController,
   userUpdateBlockController,
-  userViewProfileController
+  userViewProfileController,
 };

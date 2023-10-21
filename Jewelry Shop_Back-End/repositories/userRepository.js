@@ -1,13 +1,13 @@
 import { User } from "../models/indexModel.js";
 import Exception from "../constant/Exception.js";
-import constants from "../constant/constants.js";
+import ConfigConstants from "../constant/ConfigConstants.js";
+import SuccessConstants from "../constant/SuccessConstants.js";
 import bcrypt from "bcrypt";
 import {
   jwtService,
   cloudinaryService,
   sendEmailService,
 } from "../services/indexService.js";
-
 import jwt from "jsonwebtoken";
 
 const userGetAllUsersRepository = async () => {
@@ -21,7 +21,7 @@ const userGetAllUsersRepository = async () => {
     }
     return {
       success: true,
-      message: "Get all users successfully!",
+      message: SuccessConstants.GET_ALL_USERS_SUCCESS,
       data: allUsers,
     };
   } catch (exception) {
@@ -57,11 +57,11 @@ const userSearchRepository = async ({
 
     if (status) {
       matchQuery.isActive = JSON.parse(status);;
-    } 
+    }
 
     if (block) {
       matchQuery.isDelete = JSON.parse(block);;
-    } 
+    }
 
     let filteredUsers = await User.aggregate([
       {
@@ -80,7 +80,7 @@ const userSearchRepository = async ({
 
     return {
       success: true,
-      message: "Get users successfully!",
+      message: SuccessConstants.GET_USER_SUCCESS,
       data: filteredUsers,
     };
   } catch (exception) {
@@ -139,7 +139,7 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
       updatedUser.toObject();
     return {
       success: true,
-      message: constants.LOGIN_SUCCESSFUL,
+      message: SuccessConstants.LOGIN_SUCCESS,
       data: {
         ...userData,
         userPassword: "Not show",
@@ -163,7 +163,7 @@ const refreshAccessTokenRepository = async (refreshToken) => {
         } else if (err) {
           reject({
             success: false,
-            message: "Lỗi xác thực token: " + err.message,
+            message: Exception.REFRESH_TOKEN_INVALID,
           });
         } else {
           resolve(decode);
@@ -189,7 +189,7 @@ const refreshAccessTokenRepository = async (refreshToken) => {
 
     return {
       success: true,
-      message: constants.REFRESH_ACCESS_TOKEN_SUCCESS,
+      message: SuccessConstants.REFRESH_ACCESS_TOKEN_SUCCESS,
       data: newAccessToken,
     };
   } catch (exception) {
@@ -214,7 +214,7 @@ const userLogoutRepository = async (refreshToken) => {
 
     return {
       success: true,
-      message: "Logout successfully!",
+      message: SuccessConstants.LOGOUT_SUCCESS,
     };
   } catch (exception) {
     throw new Exception(exception.message);
@@ -267,7 +267,7 @@ const userRegisterRepository = async ({
 
     return {
       success: true,
-      message: "Register successfully",
+      message: SuccessConstants.REGISTER_SUCCESS,
       data: {
         ...newUser._doc,
         userPassword: "Not show",
@@ -296,7 +296,7 @@ const verifyEmailRepository = async (userVerifyResetToken) => {
 
     return {
       success: true,
-      message: "Email verified successfully",
+      message: SuccessConstants.VERIFY_EMAIL_SUCCESS,
     };
   } catch (exception) {
     throw new Exception(exception.message);
@@ -322,7 +322,7 @@ const userForgotPasswordRepository = async (userEmail) => {
 
     return {
       success: true,
-      message: "Password reset instructions sent to your email.",
+      message: SuccessConstants.FORGOT_PASSWORD_SUCCESS,
     };
   } catch (exception) {
     throw new Exception(exception.message);
@@ -358,7 +358,7 @@ const userResetPasswordRepository = async (
 
     return {
       success: true,
-      message: "Password updated successfully",
+      message: SuccessConstants.RESET_PASSWORD_SUCCESS,
     };
   } catch (exception) {
     throw new Exception(exception.message);
@@ -403,7 +403,7 @@ const userChangePasswordRepository = async ({
 
     return {
       success: true,
-      message: "Change password successfully!",
+      message: SuccessConstants.CHANGE_PASSWORD_SUCCESS,
       data: {
         ...updatedUser.toObject(),
         userPassword: "Not show",
@@ -425,7 +425,7 @@ const userViewProfileRepository = async (userId) => {
     }
     return {
       success: true,
-      message: "Get user successfully!",
+      message: SuccessConstants.VIEW_PROFILE_SUCCESS,
       data: userInfo,
     };
   } catch (exception) {
@@ -447,7 +447,7 @@ const userUpdateProfileRepository = async ({
     if (userAvatar) {
       userAvtUrl = await cloudinaryService.uploadProductImageToCloudinary(
         userAvatar,
-        constants.CLOUDINARY_USER_AVATAR_IMG
+        ConfigConstants.CLOUDINARY_USER_AVATAR_IMG
       );
     }
 
@@ -462,9 +462,9 @@ const userUpdateProfileRepository = async ({
     };
 
     const updatedUser = await User.findByIdAndUpdate(
-      userId, 
-      updateFields, 
-      {new: true}).exec();
+      userId,
+      updateFields,
+      { new: true }).exec();
     if (!updatedUser) {
       return {
         success: false,
@@ -474,7 +474,7 @@ const userUpdateProfileRepository = async ({
 
     return {
       success: true,
-      message: "Update user successfully!",
+      message: SuccessConstants.UPDATE_PROFILE_SUCCESS,
       data: {
         ...updatedUser._doc,
       },
@@ -510,7 +510,7 @@ const userUpdateRoleRepository = async ({ userId, newRole, userRole }) => {
 
     return {
       success: true,
-      message: "Update role successfully!",
+      message: SuccessConstants.UPDATE_ROLE_SUCCESS,
       data: {
         ...updatedUser.toObject(),
         userPassword: "Not shown",
@@ -544,7 +544,7 @@ const userUpdateStatusRepository = async ({ userId, newStatus, userRole }) => {
 
     return {
       success: true,
-      message: "Update status successfully!",
+      message: SuccessConstants.UPDATE_STATUS_SUCCESS,
       data: { ...updatedUser.toObject(), userPassword: "Not shown" },
     };
   } catch (exception) {
@@ -575,7 +575,7 @@ const userUpdateBlockRepository = async ({ userId, newBlock, userRole }) => {
 
     return {
       success: true,
-      message: "Delete status successfully!",
+      message: SuccessConstants.UPDATE_BLOCK_SUCCESS,
       data: { ...updatedUser.toObject(), userPassword: "Not shown" },
     };
   } catch (exception) {
