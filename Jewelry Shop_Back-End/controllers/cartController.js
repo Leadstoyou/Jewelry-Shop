@@ -4,7 +4,6 @@ import {productRepository} from "../repositories/indexRepository.js"
 
 const viewCart = async (req, res) => {
     try {
-      
       const cartToken = req.cookies.cart_token;
       const cart = await cartRepository.getCartByToken(cartToken);
       if (!cart) {
