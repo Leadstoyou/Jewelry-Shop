@@ -86,11 +86,16 @@ const searchProductsByName = async (searchTerm) => {
   }
 };
 
-const getAllProducts = async (category,color,material,minPrice,maxPrice,sort,page = 1,limit = Number.MAX_SAFE_INTEGER,isDeleted = false) => {
+const getAllProducts = async (category,color,material,minPrice,maxPrice,sort,page = 1,limit = Number.MAX_SAFE_INTEGER,isDeleted = false,searchName) => {
   try {
     const query = {};
     if(isDeleted) {
       query.isDeleted = isDeleted;
+    }
+    if(searchName){
+      query.$or = [
+        { productName: new RegExp(searchName, "i") },
+      ];
     }
     if (color && color.length > 0) {
       query.productColors = { $in: color };
