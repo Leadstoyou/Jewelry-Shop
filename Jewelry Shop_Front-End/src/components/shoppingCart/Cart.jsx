@@ -264,14 +264,13 @@ const ShoppingCart = () => {
   const [giftNotes, setGiftNotes] = useState("");
 
   //call API view cart
-  const [cartData, setCartData] = useState(null);
+  const [cartData, setCartData] = useState({ productList: []});
   //Lấy product data
 
   function getCartTokenFromCookie() {
-    const name = "cartToken=";
+    const name = "cartToken";
     const decodedCookie = decodeURIComponent(document.cookie);
     const cookieArray = decodedCookie.split(";");
-
     for (let i = 0; i < cookieArray.length; i++) {
       let cookie = cookieArray[i].trim();
       if (cookie.indexOf(name) === 0) {
@@ -280,13 +279,7 @@ const ShoppingCart = () => {
     }
     return null;
   }
-  function truncateDescription(description, maxLength) {
-    if (description.length > maxLength) {
-      return description.slice(0, maxLength) + " ...";
-    }
-    return description;
-  }
-  
+
   useEffect(() => {
     const fetchData = async () => {
       const cartToken = getCartTokenFromCookie();
@@ -308,7 +301,9 @@ const ShoppingCart = () => {
   const handleRemoveFromCart = async (productId) => {
     const cartToken = getCartTokenFromCookie();
     try {
-      await axios.delete(`http://localhost:9999/api/v1/cart/delete/${cartToken}`);
+      await axios.delete(
+        `http://localhost:9999/api/v1/cart/delete/${cartToken}`
+      );
       const updatedCartData = cartData.productList.filter(
         (product) => product.product_id !== productId
       );
@@ -326,7 +321,6 @@ const ShoppingCart = () => {
       alert("Please agree to the Terms of Service.");
     }
   };
-
 
   const handleFormSubmit = (e) => {
     console.log(e);
@@ -414,21 +408,16 @@ const ShoppingCart = () => {
                   <ProductImage src={product.productImage} />
                   <ProductInfo>
                     <h6>
-                     {truncateDescription(product.productDescription, 100)}
-                     onMouseEnter={() => setHoveredDescription(product.productDescription)}
-                   onMouseLeave={() => setHoveredDescription(null)}
-        >
-          {hoveredDescription === product.productDescription
-            ? product.productDescription
-            : truncateDescription(product.productDescription, 13)}
-                    </h6> 
+                      {product.productDescription }
+                        
+                  
+                  </h6>
                     <ProductCategory>Product Category:</ProductCategory>
                     <ProductPrice>Price: ${product.price}</ProductPrice>
                   </ProductInfo>
                   <QuantityContainer>
                     <QuantityLabel>Quantity</QuantityLabel>
                     <QuantitySelect value={product.quantity} />
-                   
                   </QuantityContainer>
                   <ProductPrice> ${product.price}</ProductPrice>
                   <DeleteButton
