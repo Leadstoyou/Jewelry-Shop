@@ -200,6 +200,7 @@ const ProductBody = (props) => {
   };
 
   const dispatch = useDispatch();
+ 
   const handleAddTocart = async () => {
     if (
       selectedColor === null ||
@@ -211,23 +212,50 @@ const ProductBody = (props) => {
     ) {
       notify("One of color , material and size is not selected !!!");
     } else {
-      const newCart = {
-        cart_token: "615a8f7f4e7c3a1d3a9b6e60",
-        product_id: productDetail._id,
-        quantity: 1,
-        size: selectedSize,
-        color: selectedColor,
-        material: selectedMaterial,
-        price: 4490000,
-        productImage: productDetail.productImage,
-        productDescription: productDetail.productDescription,
-      };
+      let newCart = null;
+      console.log(document.cookie);
+      const cookies = document.cookie.split("; ");
+      const cartTokenCookie = cookies.find((cookie) =>
+        cookie.startsWith("cart_token=")
+      );
+
+      if (cartTokenCookie) {
+        const cartTokenValue = cartTokenCookie.split("=")[1];
+      
+         newCart = {
+          cart_token: cartTokenValue,
+          product_id: productDetail._id,
+          quantity: 1,
+          size: selectedSize,
+          color: selectedColor,
+          material: selectedMaterial,
+          price: 4490000,
+          productImage: productDetail.productImage,
+          productDescription: productDetail.productDescription,
+        };
+      } else {
+         newCart = {
+          // cart_token: "615a8f7f4e7c3a1d3a9b6e60",
+          product_id: productDetail._id,
+          quantity: 1,
+          size: selectedSize,
+          color: selectedColor,
+          material: selectedMaterial,
+          price: 4490000,
+          productImage: productDetail.productImage,
+          productDescription: productDetail.productDescription,
+        };
+      }
+      
 
       await addToCartAPI(notify, success, newCart);
+      
       setCartData(newCart);
       setShowCartPopup(true);
     }
   };
+
+
   console.log(cartView);
   return (
     <Container>

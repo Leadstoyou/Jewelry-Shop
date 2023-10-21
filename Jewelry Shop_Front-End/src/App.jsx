@@ -33,15 +33,34 @@ function App() {
  
 
   useEffect(() => {
-    viewCartAPI("615a8f7f4e7c3a1d3a9b6e60", setViewCart);
-    console.log("hasfas" + cartView);
-    number = 1;
+    console.log(document.cookie);
+    const cookies = document.cookie.split("; ");
+    const cartTokenCookie = cookies.find((cookie) =>
+      cookie.startsWith("cart_token=")
+    );
+    console.log(cartTokenCookie);
+  
+    const fetchData = async () => {
+      if (cartTokenCookie) {
+        const cartTokenValue = cartTokenCookie.split("=")[1];
+        console.log(cartTokenValue);
+        await viewCartAPI(cartTokenValue, setViewCart);
+        console.log(cartView);
+        number = 1;
+      }
+    };
+  
+    fetchData(); // Call the async function here
+  
   }, [cartData]);
 
   useEffect(() => {
     console.log(cartView?.productList.length);
     dispatch(getNumber(cartView?.productList.length));
   }, [cartView]);
+
+
+
   return (
     <Container>
       <cartValue.Provider
