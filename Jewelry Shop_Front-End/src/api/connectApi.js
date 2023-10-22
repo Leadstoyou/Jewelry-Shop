@@ -74,7 +74,7 @@ const deleteProduct = async (_id) => {
     );
     if (response.status === 204) {
     } else {
-      // notify("Failed when deleting product");
+     //
     }
   } catch (error) {
     console.error(error); // Log the error for troubleshooting
@@ -108,9 +108,8 @@ const viewCartAPI = async (cartToken, setViewCart) => {
     const token = cartToken;
     const response = await axios.get(`http://localhost:9999/api/v1/cart/view`,
     {withCredentials : true});
-
     if (response.status === 200) {
-      setViewCart( response.data);
+      setViewCart(response.data);
     } else {
       console.log("Failed to fetch cart data");
     }
@@ -119,4 +118,11 @@ const viewCartAPI = async (cartToken, setViewCart) => {
   }
 };
 
-export { getAllProducts, addProduct, updateProduct, deleteProduct , addToCartAPI , viewCartAPI};
+export {
+  getAllProducts,
+  addProduct,
+  updateProduct,
+  deleteProduct,
+  addToCartAPI,
+  viewCartAPI,
+};
