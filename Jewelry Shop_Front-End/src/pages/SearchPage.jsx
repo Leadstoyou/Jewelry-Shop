@@ -6,8 +6,9 @@ import "aos/dist/aos.css";
 import SearchpageBody from "../components/searchpage/SearchpageBody";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
-
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { CollectionAPISearch } from "../api/productAPI";
 // const Container = styled.div``;
 // const Spinner = styled.div`
 //   height: 100%;
@@ -22,27 +23,57 @@ const Container = styled.div`
 
 function SearchPage() {
   const [loading, setLoading] = useState(false);
-  const { searchtext } = useParams();
+  const { searchName } = useParams();
   const [foundProducts, setFoundProducts] = useState([]);
+  const [colorsArray, setColorsArray] = useState();
+  const [materialArray, setMaterialArray] = useState();
+  const navigate = useNavigate();
+  
+  // useEffect(() => {
+  //   setLoading(true);
+  //   async function fetchData() {
+  //     try {
+  //       const response = await axios.get(
+  //         `http://localhost:9999/api/v1/products/search/${searchtext}`
+  //       );
+  //       const data = response.data.data;
+  //       setFoundProducts(data);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       setLoading(false);
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   }
 
+  //   fetchData();
+  // }, [searchtext]);
   useEffect(() => {
     setLoading(true);
-    async function fetchData() {
-      try {
-        const response = await axios.get(
-          `http://localhost:9999/api/v1/products/search/${searchtext}`
-        );
-        const data = response.data.data;
-        setFoundProducts(data);
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-        console.error("Error fetching data:", error);
-      }
-    }
-
-    fetchData();
-  }, [searchtext]);
+    CollectionAPISearch(
+      searchName,
+      null,
+      null,
+      null,
+      null,
+      setColorsArray,
+      setMaterialArray,
+      setFoundProducts,
+      setLoading,toast,navigate
+    );
+  }, []);
+  const handleDataFromChild = (color, material, price, sort) => {
+    CollectionAPISearch(
+      searchName,
+      color,
+      material,
+      price,
+      sort,
+      setColorsArray,
+      setMaterialArray,
+      setFoundProducts,
+      setLoading,toast,navigate
+    );
+  };
   return (
     <>
       {loading ? (
@@ -61,8 +92,11 @@ function SearchPage() {
         <Container>
           <Navbar />
           <SearchpageBody
-            searchtext={searchtext}
-            foundProducts={foundProducts}
+             products={foundProducts}
+             colorsArray={colorsArray}
+             materialArray={materialArray}
+             fetchData={handleDataFromChild}
+             searchName={searchName}
           />
           <Footer />
         </Container>
