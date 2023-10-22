@@ -30,12 +30,25 @@ function App() {
   const [cartData, setCartData] = useState();
   const [showCartPopup, setShowCartPopup] = useState(false);
   console.log(cartData);
- 
 
   useEffect(() => {
-    viewCartAPI("615a8f7f4e7c3a1d3a9b6e60", setViewCart);
-    console.log("hasfas" + cartView);
-    number = 1;
+    console.log(document.cookie);
+    const cookies = document.cookie.split("; ");
+    const cartTokenCookie = cookies.find((cookie) =>
+      cookie.startsWith("cart_token=")
+    );
+    console.log(cartTokenCookie);
+    const fetchData = async () => {
+      if (cartTokenCookie) {
+        const cartTokenValue = cartTokenCookie.split("=")[1];
+        console.log(cartTokenValue);
+        await viewCartAPI(cartTokenValue, setViewCart);
+        console.log(cartView);
+        number = 1;
+      }
+    };
+  
+    fetchData(); // Call the async function here
   }, [cartData]);
 
   useEffect(() => {
@@ -58,7 +71,6 @@ function App() {
         <BrowserRouter basename="/Jewelry-Shop">
           <Routes>
             <Route path="/" element={<Homepage cartView={cartView} />} />
-
             <Route path="/search/:searchtext" element={<SearchPage />} />
             <Route path="/collections/:category" element={<Collections />} />
             <Route path="/product/:id" element={<Products />} />

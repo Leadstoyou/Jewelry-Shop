@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
+import { viewCartAPI, deleteProduct } from "../../api/connectApi.js";
 const Container = styled.div`
   display: flex;
   align-items: stretch;
@@ -262,41 +263,25 @@ const ShoppingCart = () => {
   const [isAgreedToTerms, setIsAgreedToTerms] = useState(false);
   const [exportBill, setExportBill] = useState(false);
   const [giftNotes, setGiftNotes] = useState("");
+  const [hoveredDescription, setHoveredDescription] = useState("");
 
   //call API view cart
   const [cartData, setCartData] = useState([]);
   //Lấy product data
 
-  function getCartTokenFromCookie() {
-    const name = "cartToken=";
-    const decodedCookie = decodeURIComponent(document.cookie);
-    const cookieArray = decodedCookie.split(";");
-
-    for (let i = 0; i < cookieArray.length; i++) {
-      let cookie = cookieArray[i].trim();
-      if (cookie.indexOf(name) === 0) {
-        return cookie.substring(name.length, cookie.length);
-      }
-    }
-    return null;
-  }
   function truncateDescription(description, maxLength) {
     if (description.length > maxLength) {
       return description.slice(0, maxLength) + " ...";
     }
     return description;
   }
-  
+
   useEffect(() => {
+    const cartTokenValue = null;
     const fetchData = async () => {
-      const cartToken = getCartTokenFromCookie();
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_CART}/${cartToken}`
-        );
-        const data = res.data;
-        setCartData(data);
-        console.log(data.productList);
+        await viewCartAPI(cartTokenValue, setCartData);
+        console.log(cartData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -304,18 +289,19 @@ const ShoppingCart = () => {
     fetchData();
   }, []);
 
-  //Xóa 1 sản phẩm trong giỏ hàng
-  const handleRemoveFromCart = async (productId) => {
-    const cartToken = getCartTokenFromCookie();
-    try {
-      await axios.delete(`http://localhost:9999/api/v1/cart/delete/${cartToken}`);
-      const updatedCartData = cartData.productList.filter(
-        (product) => product.product_id !== productId
-      );
-      setCartData({ ...cartData, productList: updatedCartData });
-    } catch (error) {
-      console.error("Error removing product from cart:", error);
-    }
+  const handleDeleteProduct = (productId) => {
+    const fetchData = async () => {
+    // Make an API call to the server to delete the product from the cart
+    axios.delete(`/api/cart/${productId}`) // Replace with your actual API endpoint
+      .then(() => {
+        // If the deletion is successful, fetch the updated cart data
+        fetchData();
+      })
+      .catch((error) => {
+        console.error("Error deleting product:", error);
+      });
+    };
+    fetchData();
   };
 
   const navigate = useNavigate();
@@ -326,7 +312,6 @@ const ShoppingCart = () => {
       alert("Please agree to the Terms of Service.");
     }
   };
-
 
   const handleFormSubmit = (e) => {
     console.log(e);
@@ -413,25 +398,27 @@ const ShoppingCart = () => {
                 <ProductContainer>
                   <ProductImage src={product.productImage} />
                   <ProductInfo>
-                    <h6>
-                     {truncateDescription(product.productDescription, 100)}
-                     onMouseEnter={() => setHoveredDescription(product.productDescription)}
-                   onMouseLeave={() => setHoveredDescription(null)}
-          {hoveredDescription === product.productDescription
-            ? product.productDescription
-            : truncateDescription(product.productDescription, 13)}
-                    </h6> 
+                    <h6
+                      onMouseEnter={() =>
+                        setHoveredDescription(product.productDescription)
+                      }
+                      onMouseLeave={() => setHoveredDescription(null)}
+                    >
+                      {hoveredDescription
+                        ? product.productDescription
+                        : truncateDescription(product.productDescription, 100)}
+                    </h6>
+
                     <ProductCategory>Product Category:</ProductCategory>
                     <ProductPrice>Price: ${product.price}</ProductPrice>
                   </ProductInfo>
                   <QuantityContainer>
                     <QuantityLabel>Quantity</QuantityLabel>
                     <QuantitySelect value={product.quantity} />
-                   
                   </QuantityContainer>
                   <ProductPrice> ${product.price}</ProductPrice>
                   <DeleteButton
-                    onClick={() => handleRemoveFromCart(product.product_id)}
+                    onClick={() => handleDeleteProduct(product.product_id)}
                   >
                     X
                   </DeleteButton>
