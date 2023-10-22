@@ -74,7 +74,7 @@ const deleteProduct = async (_id) => {
     );
     if (response.status === 204) {
     } else {
-      // notify("Failed when deleting product");
+     //
     }
   } catch (error) {
     console.error(error); // Log the error for troubleshooting

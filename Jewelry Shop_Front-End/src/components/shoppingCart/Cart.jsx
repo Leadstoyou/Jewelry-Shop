@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
-import { viewCartAPI } from "../../api/connectApi.js";
+import { viewCartAPI, deleteProduct } from "../../api/connectApi.js";
 const Container = styled.div`
   display: flex;
   align-items: stretch;
@@ -269,19 +269,6 @@ const ShoppingCart = () => {
   const [cartData, setCartData] = useState([]);
   //Lấy product data
 
-  function getCartTokenFromCookie() {
-    const name = "cartToken=";
-    const decodedCookie = decodeURIComponent(document.cookie);
-    const cookieArray = decodedCookie.split(";");
-
-    for (let i = 0; i < cookieArray.length; i++) {
-      let cookie = cookieArray[i].trim();
-      if (cookie.indexOf(name) === 0) {
-        return cookie.substring(name.length, cookie.length);
-      }
-    }
-    return null;
-  }
   function truncateDescription(description, maxLength) {
     if (description.length > maxLength) {
       return description.slice(0, maxLength) + " ...";
@@ -302,20 +289,19 @@ const ShoppingCart = () => {
     fetchData();
   }, []);
 
-  //Xóa 1 sản phẩm trong giỏ hàng
-  const handleRemoveFromCart = async (productId) => {
-    const cartToken = getCartTokenFromCookie();
-    try {
-      await axios.delete(
-        `http://localhost:9999/api/v1/cart/delete/${cartToken}`
-      );
-      const updatedCartData = cartData.productList.filter(
-        (product) => product.product_id !== productId
-      );
-      setCartData({ ...cartData, productList: updatedCartData });
-    } catch (error) {
-      console.error("Error removing product from cart:", error);
-    }
+  const handleDeleteProduct = (productId) => {
+    const fetchData = async () => {
+    // Make an API call to the server to delete the product from the cart
+    axios.delete(`/api/cart/${productId}`) // Replace with your actual API endpoint
+      .then(() => {
+        // If the deletion is successful, fetch the updated cart data
+        fetchData();
+      })
+      .catch((error) => {
+        console.error("Error deleting product:", error);
+      });
+    };
+    fetchData();
   };
 
   const navigate = useNavigate();
@@ -432,7 +418,7 @@ const ShoppingCart = () => {
                   </QuantityContainer>
                   <ProductPrice> ${product.price}</ProductPrice>
                   <DeleteButton
-                    onClick={() => handleRemoveFromCart(product.product_id)}
+                    onClick={() => handleDeleteProduct(product.product_id)}
                   >
                     X
                   </DeleteButton>
