@@ -41,7 +41,6 @@ const Logins = () => {
         }
       } catch (error) {
         toast.error(error.response.data.message);
-        console.log('dasd', error)
       } 
     }
   };
