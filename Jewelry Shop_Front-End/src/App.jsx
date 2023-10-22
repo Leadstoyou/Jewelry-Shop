@@ -38,7 +38,6 @@ function App() {
       cookie.startsWith("cart_token=")
     );
     console.log(cartTokenCookie);
-
     const fetchData = async () => {
       if (cartTokenCookie) {
         const cartTokenValue = cartTokenCookie.split("=")[1];
@@ -48,7 +47,7 @@ function App() {
         number = 1;
       }
     };
-
+  
     fetchData(); // Call the async function here
   }, [cartData]);
 
@@ -56,7 +55,6 @@ function App() {
     console.log(cartView?.productList.length);
     dispatch(getNumber(cartView?.productList.length));
   }, [cartView]);
-
   return (
     <Container>
       <cartValue.Provider
@@ -73,7 +71,6 @@ function App() {
         <BrowserRouter basename="/Jewelry-Shop">
           <Routes>
             <Route path="/" element={<Homepage cartView={cartView} />} />
-
             <Route path="/search/:searchtext" element={<SearchPage />} />
             <Route path="/collections/:category" element={<Collections />} />
             <Route path="/product/:id" element={<Products />} />

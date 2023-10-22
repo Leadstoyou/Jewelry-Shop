@@ -199,7 +199,6 @@ const ProductBody = (props) => {
   };
 
   const dispatch = useDispatch();
-
   const handleAddTocart = async () => {
     if (
       selectedColor === null ||
@@ -220,8 +219,7 @@ const ProductBody = (props) => {
 
       if (cartTokenCookie) {
         const cartTokenValue = cartTokenCookie.split("=")[1];
-
-        newCart = {
+         newCart = {
           cart_token: cartTokenValue,
           product_id: productDetail._id,
           quantity: 1,
@@ -233,7 +231,7 @@ const ProductBody = (props) => {
           productDescription: productDetail.productDescription,
         };
       } else {
-        newCart = {
+         newCart = {
           // cart_token: "615a8f7f4e7c3a1d3a9b6e60",
           product_id: productDetail._id,
           quantity: 1,
@@ -245,14 +243,12 @@ const ProductBody = (props) => {
           productDescription: productDetail.productDescription,
         };
       }
-
+      
       await addToCartAPI(notify, success, newCart);
-
       setCartData(newCart);
       setShowCartPopup(true);
     }
   };
-
   console.log(cartView);
   return (
     <Container>
