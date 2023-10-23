@@ -136,7 +136,7 @@ const ManageStaff = () => {
             <th>Age</th>
             <th>Phone Number</th>
             <th>Role</th>
-            <th>Actor</th>
+            <th>Status</th>
             <th>Actor</th>
           </tr>
         </thead>
