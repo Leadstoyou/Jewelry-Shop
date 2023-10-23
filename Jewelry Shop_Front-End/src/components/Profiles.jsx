@@ -72,7 +72,7 @@ const Profile = () => {
             }
           })
           .catch((error) => {
-            console.error("Lỗi:", error);
+            toast.error(error.response.data.message);
           });
 
         setCalledApi(true);
@@ -118,11 +118,11 @@ const Profile = () => {
         toast(response.data.message);
 
       } else {
-        console.log("Registration failed");
+        toast.error("Registration failed");
       }
     } catch (error) {
-      console.log();
-      error;
+      toast.error("Registration failed");
+
     }
   };
 
@@ -148,7 +148,7 @@ const Profile = () => {
           console.log("Save failed");
         }
       } catch (error) {
-        console.error("An error occurred:", error);
+        toast.error("Save failed");
       }
     }
   };
