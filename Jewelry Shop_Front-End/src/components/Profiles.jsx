@@ -78,7 +78,7 @@ const Profile = () => {
               console.log("Yêu cầu thất bại");
             }
           } catch (error) {
-            toast.error(error.response.data.message);
+            console.error("Lỗi:", error);
           }
 
           setCalledApi(true);
@@ -125,11 +125,11 @@ const Profile = () => {
         console.log("Save successful");
         toast(response.data.message);
       } else {
-        toast.error("Registration failed");
+        console.log("Registration failed");
       }
     } catch (error) {
-      toast.error("Registration failed");
-
+      console.log();
+      error;
     }
   };
 
@@ -157,7 +157,7 @@ const Profile = () => {
           console.log("Save failed");
         }
       } catch (error) {
-        toast.error("Save failed");
+        console.error("An error occurred:", error);
       }
     }
   };
