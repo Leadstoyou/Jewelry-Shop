@@ -5,10 +5,21 @@ import Button from "@mui/material/Button";
 import SearchIcon from "@mui/icons-material/Search";
 import ViewDetail from "./ViewDetail";
 
+import HomeIcon from '@mui/icons-material/Home';
+
 import axios from "axios";
 
 import "../style/ManagerStaff.scss";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+const ControlHome = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+
+`
 const ManageStaff = () => {
+  const navigate = useNavigate()
   const [userData, setUserData] = useState([]);
   const [search, setSearch] = useState("");
   const [modalShow, setModalShow] = useState(false);
@@ -72,7 +83,8 @@ const ManageStaff = () => {
     }
   }, []);
   return (
-    <div className="all">
+    <div className="all" style={{position:'relative'}}>
+      <ControlHome onClick={()=>navigate('/')}><button style={{backgroundColor:'#c6c2c2',border:'none '}}><HomeIcon/>Back to home</button></ControlHome>
       <div className="titile">
         <h1>Manager User</h1>
       </div>
