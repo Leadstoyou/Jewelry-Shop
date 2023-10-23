@@ -16,6 +16,9 @@ import { addProduct } from "../../../api/connectApi.js";
 import { deleteProduct } from "../../../api/connectApi.js";
 import Pagination from "react-bootstrap/Pagination";
 import axios from "axios";
+import { getAllProductsDelete } from "../../../api/connectApi.js";
+import { useNavigate } from "react-router-dom";
+import { updateInRecycler } from "../../../api/connectApi.js";
 const Container = styled.div``;
 
 const ControlBody = styled.div`
@@ -30,11 +33,12 @@ const Table = styled.table`
 `;
 const TrHead = styled.tr`
   border-collapse: collapse;
+  background-color: #8080f1;
 `;
 const Tr = styled.tr`
   border-collapse: collapse;
   background-color: #f8f6f6;
-  border-bottom: 1px solid pink;
+  border-bottom: 1px solid #aeaef5;
 `;
 const Th = styled.th`
   border-collapse: collapse;
@@ -52,15 +56,22 @@ const PageControl = styled.div`
   margin-top: 20px;
 `;
 
+const Header = styled.div`
+  text-align: center;
+  margin-top: 2%;
+  margin-bottom: 2%;
+  position: relative;
+`;
+const ControlButton = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+`;
 const ListDeleteProduct = () => {
-  const [idDelete, setIdDelete] = useState(null);
+  var idNumber = 1;
+  const navigate = useNavigate();
   const [updateData, setUpdateData] = useState(null);
-  const [updateProduct, setUpdateProduct] = useState(null);
   const [allProduct, setAllproduct] = useState(null);
-  const [showUpdate, setShowUpdate] = useState(false);
-  const [addData, setAddData] = useState({});
-  const [existErr, setExist] = useState(false);
-  const [modalShow, setModalShow] = useState(false);
   const notify = (text) => {
     toast.error(text, {
       position: "top-right",
@@ -87,17 +98,61 @@ const ListDeleteProduct = () => {
     });
   };
   //get data
-  //allProduct, setAllproduct
+  const [activePage, setActivePage] = useState(1);
+  const limitP = 5;
+  const [totalPage, setTotalpage] = useState(0);
   useEffect(() => {
-    getAllProducts(setAllproduct, notify);
-  }, [addData, updateData, updateProduct, idDelete]);
+    const isDeleted = true;
+    getAllProductsDelete(
+      setAllproduct,
+      setTotalpage,
+      notify,
+      limitP,
+      activePage,
+      setActivePage,
+      isDeleted
+    );
+  }, [activePage,updateData]);
+  console.log("all product" + allProduct);
+  console.log(allProduct);
+  const Allpage = [];
+  for (let i = 1; i <= totalPage; i++) {
+    Allpage.push(i);
+  }
+  console.log(Allpage);
+  const handlePrev = () => {
+    if (activePage > 1) {
+      setActivePage(activePage - 1);
+    }
+  };
+  const handleNext = () => {
+    if (activePage < totalPage) {
+      setActivePage(activePage + 1);
+    }
+  };
 
-  useEffect(() => {
-    console.log(allProduct);
-  }, [allProduct]);
+  const handleRestore = (id) => {
+    updateInRecycler(notify,success,setUpdateData,id)
+  };
 
   return (
     <Container>
+      <Header>
+        <h1>List product in recycle</h1>
+        <ControlButton>
+          <button
+            style={{
+              border: "none",
+              padding: "10px",
+              cursor: "pointer",
+              backgroundColor: "#cfcdcd",
+            }}
+            onClick={() => navigate("/dashboard")}
+          >
+            Back to dashboard
+          </button>
+        </ControlButton>
+      </Header>
       <ControlBody>
         <Table>
           <TrHead>
@@ -110,7 +165,7 @@ const ListDeleteProduct = () => {
             <Th></Th>
           </TrHead>
           {allProduct?.map((p) => {
-            if (!p.isDeleted) {
+            if (p.isDeleted) {
               return (
                 <Tr key={p._id}>
                   <Td>{idNumber++}</Td>
@@ -129,38 +184,21 @@ const ListDeleteProduct = () => {
                   <Td>{p.productQuantity}</Td>
                   <Td>{p.productPrice.toLocaleString("vi-VN")}đ</Td>
                   <Td>{p.productCategory}</Td>
-                  <Td style={{ width: "20%" }}>
+                  <Td style={{ width: "10%" }}>
                     <button
-                      onClick={() => {
-                        setUpdateProduct(p);
-                        setShowUpdate(true);
-                      }}
+                      onClick={()=>handleRestore(p._id)}
                       style={{
                         marginRight: "5px",
                         border: "none",
                         outline: "none",
                         padding: "10px",
                         borderRadius: "5px",
-                        backgroundColor: "green",
+                        backgroundColor: "blue",
                         color: "white",
                         cursor: "pointer",
                       }}
                     >
-                      Update
-                    </button>
-                    <button
-                      style={{
-                        border: "none",
-                        outline: "none",
-                        padding: "10px",
-                        borderRadius: "5px",
-                        backgroundColor: "red",
-                        color: "white",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => handleDelete(p._id)}
-                    >
-                      Delete
+                      Restore
                     </button>
                   </Td>
                 </Tr>
@@ -172,11 +210,31 @@ const ListDeleteProduct = () => {
       </ControlBody>
       <PageControl>
         <Pagination>
-          <Pagination.Prev />
-          <Pagination.Item>{1}</Pagination.Item>
-          <Pagination.Next />
+          <Pagination.Prev onClick={handlePrev} />
+          {Allpage.map((page) => (
+            <Pagination.Item
+              active={page === activePage}
+              onClick={() => setActivePage(page)}
+            >
+              {page}
+            </Pagination.Item>
+          ))}
+          <Pagination.Next onClick={handleNext} />
         </Pagination>
       </PageControl>
+      <ToastContainer
+        style={{ height: "500px" }}
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </Container>
   );
 };
