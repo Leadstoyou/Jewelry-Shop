@@ -435,7 +435,7 @@ const ManageProduct = () => {
                     </Label>
                     <div>
                       <select
-                        style={{ width: "100%" }}
+                        style={{ width: "100%", backgroundColor: "white" }}
                         id="category"
                         {...register("category")}
                       >

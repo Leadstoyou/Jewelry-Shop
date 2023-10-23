@@ -10,10 +10,8 @@ import { useNavigate } from "react-router-dom";
 import videoFile from "../assets/video.mp4"; // Import the video file using ES6 module syntax
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-
-import LogoutIcon from '@mui/icons-material/Logout';
-import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import LogoutIcon from "@mui/icons-material/Logout";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import { useSelector } from "react-redux";
 
 const Container = styled.div`
@@ -123,19 +121,18 @@ const Button = styled.button`
 
 const Navbar = (props) => {
   const numberCart = useSelector((state) => state?.getNumber?.value);
-
-
   const user = useSelector((state) => state?.loginController);
   const [showContent, setShowContent] = useState(false);
-  
+
   const toggleContent = () => {
     setShowContent(!showContent);
   };
   const handleLogout = () => {
-    toggleContent()
-    document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    
+    toggleContent();
+    document.cookie =
+      "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie =
+      "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   };
   const notify = () => {
     toast.error("Vui lòng không để trống trường tìm kiếm !!!", {
@@ -170,14 +167,10 @@ const Navbar = (props) => {
       navigate(`/search/${searchQuery}`);
     }
   };
-
-
-
-
-  const handleProfile = () =>{
-    toggleContent()
-    navigate('/profile')
-  }
+  const handleProfile = () => {
+    toggleContent();
+    navigate("/profile");
+  };
   return (
     <Nav>
       <Container>
@@ -207,7 +200,6 @@ const Navbar = (props) => {
           </InputController>
           <ItemController>
             <Item>
-              <LocationOnIcon />
               <a
                 style={{ color: "black" }}
                 href="https://www.google.com/maps/place/Tr%C6%B0%E1%BB%9Dng+%C4%90%E1%BA%A1i+H%E1%BB%8Dc+FPT/@21.0130252,105.5239285,17z/data=!3m1!4b1!4m6!3m5!1s0x3135abc60e7d3f19:0x2be9d7d0b5abcbf4!8m2!3d21.0130202!4d105.5265034!16s%2Fm%2F02rsytm?hl=vi&entry=ttu"
@@ -216,36 +208,12 @@ const Navbar = (props) => {
                 <LocationOnIcon />
               </a>
             </Item>
-            <Item>
-              <PersonIcon />
-            </Item>
 
             <Item onClick={() => navigate("/cart")}>
-              <Badge
-                badgeContent={numberCart}
-                color="primary"
-              />
               <Badge badgeContent={numberCart} color="primary">
                 <ShoppingCartIcon />
               </Badge>
             </Item>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             <div
               style={{
                 width: "100px",
@@ -263,19 +231,21 @@ const Navbar = (props) => {
                 </div>
               ) : (
                 <>
-                  <Item onClick={() => navigate("/dashboard")} style={{marginRight:'0'}}>
+                  <Item
+                    onClick={() => navigate("/dashboard")}
+                    style={{ marginRight: "0" }}
+                  >
                     <DashboardIcon />
                   </Item>
 
-                  <div style={{ position: "relative"}}>
+                  <div style={{ position: "relative" , height : '50%' }}>
                     <img
                       src={user?.value?.userAvatar}
-                      width="75%" // Adjust the width as needed
-                      height="35px" // Adjust the height as needed
-                      
+                      width="100%" // Adjust the width as needed
+                      height="100%" // Adjust the height as needed
                       style={{
-                        borderRadius : '100%',
-                        cursor: "pointer"
+                        borderRadius: "50%",
+                        cursor: "pointer",
                       }}
                       onClick={toggleContent}
                     />
@@ -289,26 +259,24 @@ const Navbar = (props) => {
                           border: "1px solid #ccc",
                           padding: "10px",
                           boxShadow: "0 0 5px rgba(0, 0, 0, 0.2)",
-                          width:'100px'
+                          width: "100px",
                         }}
                       >
-                        <span onClick={handleProfile}><AccountBoxIcon />Profile</span>
-                        <hr/>
-                        <span onClick={handleLogout}><LogoutIcon />Log out</span>
+                        <span onClick={handleProfile}>
+                          <AccountBoxIcon />
+                          Profile
+                        </span>
+                        <hr />
+                        <span onClick={handleLogout}>
+                          <LogoutIcon />
+                          Log out
+                        </span>
                       </div>
                     )}
                   </div>
                 </>
               )}
             </div>
-
-
-
-
-
-
-
-
           </ItemController>
         </Right>
       </Container>
