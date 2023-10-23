@@ -16,6 +16,8 @@ import { addProduct } from "../../../api/connectApi.js";
 import { deleteProduct } from "../../../api/connectApi.js";
 import Pagination from "react-bootstrap/Pagination";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import HomeIcon from '@mui/icons-material/Home';
 const Container = styled.div``;
 const Function = styled.div`
   background-color: #dba1a1;
@@ -25,6 +27,12 @@ const Function = styled.div`
   width: 95.4%;
   padding: 10px;
 `;
+const ControlHome = styled.div`
+  position: absolute;
+  top: 0%;
+  left: 5%;
+
+`
 const Button = styled.button`
   padding: 10px;
   color: white;
@@ -137,6 +145,7 @@ const BtnControl = styled.div`
 //manage form
 export const UpdateControl = createContext();
 const ManageProduct = () => {
+  const navigate = useNavigate();
   const [idDelete, setIdDelete] = useState(null);
   const [updateData, setUpdateData] = useState(null);
   const [updateProduct, setUpdateProduct] = useState(null);
@@ -286,7 +295,7 @@ const ManageProduct = () => {
   const [totalPage, setTotalpage] = useState(0);
   useEffect(() => {
     getAllProducts(setAllproduct, setTotalpage, notify, limitP, activePage);
-  }, [addData, updateData, updateProduct, idDelete , activePage , totalPage]);
+  }, [addData, updateData, updateProduct, idDelete, activePage, totalPage]);
 
   useEffect(() => {
     console.log(allProduct);
@@ -299,25 +308,26 @@ const ManageProduct = () => {
     Allpage.push(i);
   }
   console.log(Allpage);
-  const handlePrev = ()=>{
-    if(activePage > 1){
-      setActivePage(activePage-1);
+  const handlePrev = () => {
+    if (activePage > 1) {
+      setActivePage(activePage - 1);
     }
-  }
-  const handleNext = ()=>{
-    if(activePage < totalPage){
-      setActivePage(activePage+1);
+  };
+  const handleNext = () => {
+    if (activePage < totalPage) {
+      setActivePage(activePage + 1);
     }
-  }
+  };
   return (
     <Container>
+      <ControlHome onClick={()=>navigate('/')}><button style={{backgroundColor:'#c6c2c2',border:'none '}}><HomeIcon/>Back to home</button></ControlHome>
       <h1 style={{ padding: "1%" }}>Manage products</h1>
       <Function>
         <ControlAdd>
           <AddController.Provider value={{ addData, setAddData }}>
             <BtnControl>
               <Button onClick={handleShow}>Add Product</Button>
-              <ButtonListDelete>
+              <ButtonListDelete onClick={() => navigate("/listdelete")}>
                 List product you have just deleted
               </ButtonListDelete>
             </BtnControl>
@@ -425,7 +435,7 @@ const ManageProduct = () => {
                     </Label>
                     <div>
                       <select
-                        style={{ width: "100%" }}
+                        style={{ width: "100%", backgroundColor: "white" }}
                         id="category"
                         {...register("category")}
                       >
@@ -607,13 +617,16 @@ const ManageProduct = () => {
         </UpdateControl.Provider>
         <PageControl>
           <Pagination>
-            <Pagination.Prev onClick={handlePrev}/>
+            <Pagination.Prev onClick={handlePrev} />
             {Allpage.map((page) => (
-              <Pagination.Item active={page === activePage} onClick={()=>setActivePage(page)}>
+              <Pagination.Item
+                active={page === activePage}
+                onClick={() => setActivePage(page)}
+              >
                 {page}
               </Pagination.Item>
             ))}
-            <Pagination.Next onClick={handleNext}/>
+            <Pagination.Next onClick={handleNext} />
           </Pagination>
         </PageControl>
       </Function>
