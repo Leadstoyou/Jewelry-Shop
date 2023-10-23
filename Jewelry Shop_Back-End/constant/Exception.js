@@ -6,6 +6,7 @@ export default class Exception extends Error{
     static CANNOT_FIND_USER = "Cannot find user";
     static CANNOT_REGISTER_USER = "Cannot register user";
     static WRONG_EMAIL_AND_PASSWORD = "Wrong email and password";
+    static UPDATE_USER_ERROR = "Update user failed";
     static INPUT_DATA_ERROR = "Input error";
     static WRONG_OLD_PASSWORD = "Old password wrong"
     static INPUT_ERROR = "Input error format";
@@ -23,6 +24,7 @@ export default class Exception extends Error{
     static NAME_NOT_FOUND = "Name is required for the search."
     static REFRESH_TOKEN_EXPIRED = "Refresh token was expired"
     static REFRESH_TOKEN_INVALID = "Refresh token is invalid"
+    static PERMISSION_DENIED = "Permission denied"
     static CATEGORY_NOT_FOUND = "Category is not found"
     constructor(message,validationErrors ={}) {
         super(message)

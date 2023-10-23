@@ -54,8 +54,11 @@ function App() {
   const [cartData, setCartData] = useState();
   const [showCartPopup, setShowCartPopup] = useState(false);
   console.log(cartData);
+
   const user = useSelector((state) => state?.loginController);
   console.log(user);
+
+
   useEffect(() => {
     console.log(document.cookie);
 
@@ -82,7 +85,6 @@ function App() {
     console.log(cartView?.productList.length);
     dispatch(getNumber(cartView?.productList.length));
   }, [cartView]);
-
   return (
     <Container>
       <cartValue.Provider
@@ -100,7 +102,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Homepage cartView={cartView} />} />
 
+
             <Route path="/search/:searchName" element={<SearchPage />} />
+
             <Route path="/collections/:category" element={<Collections />} />
             <Route path="/product/:id" element={<Products />} />
             <Route path="/cart" element={<CartPage />} />

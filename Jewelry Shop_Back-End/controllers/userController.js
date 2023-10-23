@@ -481,9 +481,9 @@ const userUpdateProfileController = async (req, res) => {
 };
 
 const userUpdateRoleController = async (req, res) => {
-  const { newRole } = req.body;
+  const { newRole,userId } = req.body;
   try {
-    const userId = req.user.userId;
+    // const userId = req.user.userId;
     const userRole = req.user.userRole;
     const updatedUser = await userRepository.userUpdateRoleRepository({
       userId,
@@ -491,7 +491,7 @@ const userUpdateRoleController = async (req, res) => {
       userRole,
     });
 
-    if (!updatedUser) {
+    if (!updatedUser.success) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: updatedUser.message,
@@ -511,9 +511,9 @@ const userUpdateRoleController = async (req, res) => {
 };
 
 const userUpdateStatusController = async (req, res) => {
-  const { newStatus } = req.body;
+  const { newStatus,userId } = req.body;
   try {
-    const userId = req.user.userId;
+    // const userId = req.user.userId;
     const userRole = req.user.userRole;
     const updatedUser = await userRepository.userUpdateStatusRepository({
       userId,
@@ -521,7 +521,7 @@ const userUpdateStatusController = async (req, res) => {
       userRole,
     });
 
-    if (!updatedUser) {
+    if (!updatedUser.success) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: updatedUser.message,
@@ -541,9 +541,9 @@ const userUpdateStatusController = async (req, res) => {
 };
 
 const userUpdateBlockController = async (req, res) => {
-  const { newBlock } = req.body;
+  const { newBlock,userId } = req.body;
   try {
-    const userId = req.user.userId;
+    // const userId = req.user.userId;
     const userRole = req.user.userRole;
     const updatedUser = await userRepository.userUpdateBlockRepository({
       userId,
@@ -551,7 +551,7 @@ const userUpdateBlockController = async (req, res) => {
       userRole,
     });
 
-    if (!updatedUser) {
+    if (!updatedUser.success) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: updatedUser.message,

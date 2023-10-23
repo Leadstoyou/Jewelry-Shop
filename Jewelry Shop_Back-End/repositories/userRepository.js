@@ -259,7 +259,6 @@ const userRegisterRepository = async ({
     newUser.createVerifyToken();
     await newUser.save();
     const resetToken = newUser.userVerifyResetToken;
-
     const verificationCodeLink = `${process.env.URL_SERVER}/verify/${resetToken}`;
     const emailSubject = "Xác minh tài khoản của bạn";
     const emailBody = `Xin chào ${userName},\n\nVui lòng nhấn vào liên kết sau để xác minh tài khoản của bạn:\n\n <a href="${verificationCodeLink}">Click Here!</a>`;
@@ -416,8 +415,8 @@ const userChangePasswordRepository = async ({
 
 const userViewProfileRepository = async (userId) => {
   try {
-    const userInfo = await User.findById(userId);
-    if (!userInfo || userInfo.length === 0) {
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
       return {
         success: false,
         message: Exception.CANNOT_FIND_USER,
@@ -444,6 +443,14 @@ const userUpdateProfileRepository = async ({
 }) => {
   let userAvtUrl = null;
   try {
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      return {
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      };
+    }
+    
     if (userAvatar) {
       userAvtUrl = await cloudinaryService.uploadProductImageToCloudinary(
         userAvatar,
@@ -468,7 +475,7 @@ const userUpdateProfileRepository = async ({
     if (!updatedUser) {
       return {
         success: false,
-        message: Exception.USER_NOT_FOUND,
+        message: Exception.UPDATE_USER_ERROR,
       };
     }
 
@@ -496,6 +503,14 @@ const userUpdateRoleRepository = async ({ userId, newRole, userRole }) => {
       };
     }
 
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      return {
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      };
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { userRole: newRole },
@@ -504,7 +519,7 @@ const userUpdateRoleRepository = async ({ userId, newRole, userRole }) => {
     if (!updatedUser) {
       return {
         success: false,
-        message: Exception.USER_NOT_FOUND,
+        message: Exception.UPDATE_USER_ERROR,
       };
     }
 
@@ -530,6 +545,14 @@ const userUpdateStatusRepository = async ({ userId, newStatus, userRole }) => {
       };
     }
 
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      return {
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      };
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { isActive: newStatus },
@@ -538,7 +561,7 @@ const userUpdateStatusRepository = async ({ userId, newStatus, userRole }) => {
     if (!updatedUser) {
       return {
         success: false,
-        message: Exception.USER_NOT_FOUND,
+        message: Exception.UPDATE_USER_ERROR,
       };
     }
 
@@ -561,6 +584,14 @@ const userUpdateBlockRepository = async ({ userId, newBlock, userRole }) => {
       };
     }
 
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      return {
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      };
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { isDelete: newBlock },
@@ -569,7 +600,7 @@ const userUpdateBlockRepository = async ({ userId, newBlock, userRole }) => {
     if (!updatedUser) {
       return {
         success: false,
-        message: Exception.USER_NOT_FOUND,
+        message: Exception.UPDATE_USER_ERROR,
       };
     }
 

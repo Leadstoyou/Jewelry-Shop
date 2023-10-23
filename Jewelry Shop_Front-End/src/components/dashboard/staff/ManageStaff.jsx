@@ -6,6 +6,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ViewDetail from "./ViewDetail";
 
 import HomeIcon from '@mui/icons-material/Home';
+
 import axios from "axios";
 
 import "../style/ManagerStaff.scss";
@@ -25,41 +26,62 @@ const ManageStaff = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const [filterRole, setFilterRole] = useState("");
   const [filterAction, setFilterAction] = useState("");
+  const [action, setAction] = useState("");
+  const [calledApi, setCalledApi] = useState(false);
 
+  function getCookieValue(cookieName) {
+    const cookies = document.cookie.split("; ");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].split("=");
+      if (cookie[0] === cookieName) {
+        return decodeURIComponent(cookie[1]);
+      }
+    }
+    return null;
+  }
 
-    useEffect(() => {
-      axios
-        .get(
-          `http://localhost:9999/api/v1/users/search?search=${search}`,
-          
-        )
-        .then((response) => {
-          if (response.status === 200) {
-            console.log("Request was successful");
-            const userDataArray = response.data.data.data;
-            setUserData(userDataArray); // Store the data in the state
-            
-          } else {
-            console.log("Request was not successful");
-          }
-        })
-        .catch((error) => {
-          console.error("An error occurred:", error);
-        });
-    }, [search]);
+  const accessToken = getCookieValue("accessToken");
+
+  const axiosConfig = {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  };
+  const connectAPI = (search, filterRole, filterAction) => {
+    axios
+      .get(
+        `http://localhost:9999/api/v1/users/search?search=${search}&role=${filterRole}&status=${filterAction}`,
+        axiosConfig
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          const userDataArray = response.data.data.data.data;
+          setUserData(userDataArray);
+        } else {
+          console.log("Request was not successful");
+        }
+      })
+      .catch((error) => {
+        console.error("An error occurred:", error);
+      });
+  };
+
+  const handleSearch = () => {
+    connectAPI(search, filterRole, filterAction);
+  };
+  const handleOptionChange = () => {
+    // connectAPI();
+  };
+  const handleActionChange = () => {
+    // connectAPI();
+  };
   
-   console.log(userData);
-
-  const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
-  };
-  const handleFilterRole = (event) => {
-    setFilterRole(event.target.value);
-  };
-  const handleFilterAction = (event) => {
-    setFilterAction(event.target.value);
-  };
-  const handleViewDetail = () => {};
+  useEffect(() => {
+    if (!calledApi) {
+      connectAPI(search, filterRole, filterAction);
+      setCalledApi(true);
+    }
+  }, []);
   return (
     <div className="all" style={{position:'relative'}}>
       <ControlHome onClick={()=>navigate('/')}><button style={{backgroundColor:'#c6c2c2',border:'none '}}><HomeIcon/>Back to home</button></ControlHome>
@@ -77,9 +99,17 @@ const ManageStaff = () => {
         <Form.Control
           type="text"
           style={{ width: "30%", height: "40px" }}
-          onChange={() => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            connectAPI(e.target.value, filterRole, filterAction);
+          }}
         />
-        <Button variant="contained" color="primary" startIcon={<SearchIcon />}>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<SearchIcon />}
+          onClick={handleSearch}
+        >
           Search
         </Button>
       </div>
@@ -87,20 +117,27 @@ const ManageStaff = () => {
         <select
           className="select-data"
           value={filterRole}
-          onChange={handleFilterRole}
+          onChange={(e) => {
+            setFilterRole(e.target.value);
+            connectAPI(search, e.target.value, filterAction);
+          }}
         >
-          <option value="all">All</option>
-          <option value="staff">Staff</option>
-          <option value="customer">Customer</option>
+          <option value="">All</option>
+          <option value="1">Staff</option>
+          <option value="2">Customer</option>
         </select>
+
         <select
           className="select-data"
           value={filterAction}
-          onChange={handleFilterAction}
+          onChange={(e) => {
+            setFilterAction(e.target.value);
+            connectAPI(search, filterRole, e.target.value);
+          }}
         >
-          <option value="all">All</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
+          <option value="">All</option>
+          <option value="true">Active</option>
+          <option value="false">Inactive</option>
         </select>
       </div>
       <Table striped bordered hover className="custom-table">
@@ -111,46 +148,56 @@ const ManageStaff = () => {
             <th>Age</th>
             <th>Phone Number</th>
             <th>Role</th>
-            <th>Actor</th>
+            <th>Status</th>
             <th>Actor</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>index</td>
-            <td>name</td>
-            <td>age </td>
-            <td>phone </td>
-            <td>
-              <select value={selectedOption} onChange={handleOptionChange}>
-                <option value="staff">Staff</option>
-                <option value="customer">Customer</option>
-              </select>
-            </td>
-            <td>
-              <button className="button">View</button>
-            </td>
-            <td>
-              ok
-            </td>
-          </tr>
-          <tr>
-            <td>index</td>
-            <td>name</td>
-            <td>21 </td>
-            <td>0987654321 </td>
-            <td>
-              <select value={selectedOption} onChange={handleOptionChange}>
-                <option value="staff">Staff</option>
-                <option value="customer">Customer</option>
-              </select>
-            </td>
-            <td>
-              <button className="button" onClick={() => setModalShow(true)}>
-                View
-              </button>
-            </td>
-          </tr>
+          {userData && userData.length > 0 ? (
+            userData.map((user, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{user.userName}</td>
+                <td>{user.userAge}</td>
+                <td>{user.userPhoneNumber}</td>
+                <td>
+                  <select
+                    value={user.userRole}
+                    onChange={(e) => {
+                      setSelectedOption(e.target.value);
+                      handleOptionChange();
+                    }}
+                  >
+                    <option value="0">Admin</option>
+                    <option value="1">Staff</option>
+                    <option value="2">Customer</option>
+                  </select>
+                </td>
+                <td>
+                  <select
+                    value={user.isActive}
+                    onChange={(e) => {
+                      setAction(e.target.value);
+                      handleActionChange();
+                    }}
+                  >
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
+                  </select>
+                </td>
+                <td>
+                  <button className="button" onClick={() => setModalShow(true)}>
+                    View
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="7">No user data available.</td>
+            </tr>
+          )}
+
           <ViewDetail show={modalShow} onHide={() => setModalShow(false)} />
         </tbody>
       </Table>

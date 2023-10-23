@@ -85,7 +85,6 @@ const DropdownOne = styled.select`
 `;
 const InControl = styled.div`
   margin-bottom: 3%;
-
 `;
 const RightThree = styled.div`
   display: flex;
@@ -132,7 +131,7 @@ const CommentDisplay = styled.div``;
 const CommentController = styled.div``;
 const ProductBody = (props) => {
   const { cartView, setViewCart } = useContext(cartValue);
-  const { cartData, setCartData , setShowCartPopup} = useContext(cartValue);
+  const { cartData, setCartData, setShowCartPopup } = useContext(cartValue);
   const { product } = props;
   const [comdisplay, setCom] = useState(true);
   const [desc, setDesc] = useState(true);
@@ -200,7 +199,6 @@ const ProductBody = (props) => {
   };
 
   const dispatch = useDispatch();
- 
   const handleAddTocart = async () => {
     if (
       selectedColor === null ||
@@ -221,7 +219,6 @@ const ProductBody = (props) => {
 
       if (cartTokenCookie) {
         const cartTokenValue = cartTokenCookie.split("=")[1];
-      
          newCart = {
           cart_token: cartTokenValue,
           product_id: productDetail._id,
@@ -247,15 +244,11 @@ const ProductBody = (props) => {
         };
       }
       
-
       await addToCartAPI(notify, success, newCart);
-      
       setCartData(newCart);
       setShowCartPopup(true);
     }
   };
-
-
   console.log(cartView);
   return (
     <Container>
