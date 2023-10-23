@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import axios from "axios";
-import { viewCartAPI, deleteProduct } from "../../api/connectApi.js";
+import { toast } from "react-toastify";
+
+import {
+  viewCartAPI,
+  removeFromCart,
+  updateCart,
+} from "../../api/connectApi.js";
 const Container = styled.div`
   display: flex;
   align-items: stretch;
@@ -12,7 +17,7 @@ const Container = styled.div`
 
   @media (max-width: 1500px) {
     padding: 25px;
-  }
+  } 
   margin-top: 15vh;
 `;
 
@@ -259,6 +264,15 @@ const ScrollableProducts = styled.div`
   padding: 0 100px; /* Adjust the margin from the left and right sides */
 `;
 
+const EmptyCartContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh; /* You can adjust the height based on your layout */
+`;
+
+
 const ShoppingCart = () => {
   const [isAgreedToTerms, setIsAgreedToTerms] = useState(false);
   const [exportBill, setExportBill] = useState(false);
@@ -266,7 +280,8 @@ const ShoppingCart = () => {
   const [hoveredDescription, setHoveredDescription] = useState("");
 
   //call API view cart
-  const [cartData, setCartData] = useState([]);
+  const [cartData, setCartData] = useState();
+
   //Lấy product data
 
   function truncateDescription(description, maxLength) {
@@ -276,32 +291,51 @@ const ShoppingCart = () => {
     return description;
   }
 
+  const [deleteCart, setDeleteCart] = useState();
   useEffect(() => {
     const cartTokenValue = null;
     const fetchData = async () => {
       try {
         await viewCartAPI(cartTokenValue, setCartData);
-        console.log(cartData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
     fetchData();
-  }, []);
+  }, [deleteCart]);
+  const cartTokenValue = cartData?.cart_token;
 
-  const handleDeleteProduct = (productId) => {
-    const fetchData = async () => {
-    // Make an API call to the server to delete the product from the cart
-    axios.delete(`/api/cart/${productId}`) // Replace with your actual API endpoint
-      .then(() => {
-        // If the deletion is successful, fetch the updated cart data
-        fetchData();
-      })
-      .catch((error) => {
-        console.error("Error deleting product:", error);
+  const handleRemoveProduct = async (productId) => {
+    try {
+      console.log(productId, cartTokenValue);
+      await removeFromCart(productId, cartTokenValue, setDeleteCart);
+      toast.success("Product deleted successfully"); // Show success notification
+    } catch (error) {
+      console.error("Error removing the product:", error);
+      toast.error("Failed to delete the product"); // Show an error notification
+    }
+  };
+
+  const handleUpdateQuantity = async (productId, newQuantity) => {
+    try {
+      await updateCart(productId, newQuantity, cartTokenValue, () => {}, () => {});
+      toast.success("Quantity updated successfully");
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+      toast.error("Failed to update quantity");
+    }
+  };
+
+  const formattedPrice = (price) => {
+    const priceNumber = parseFloat(price);
+    if (!isNaN(priceNumber) && isFinite(priceNumber)) {
+      return priceNumber.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
       });
-    };
-    fetchData();
+    } else {
+      return "0";
+    }
   };
 
   const navigate = useNavigate();
@@ -368,25 +402,15 @@ const ShoppingCart = () => {
         "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
     },
   ];
-  // if (cartData === null) {
-  //   return (
-  //     <Container>
-  //       <div>Loading...</div>
-  //     </Container>
-  //   );
-  // }
 
-  // if (cartData.length === 0) {
-  //   return (
-  //     <Container>
-  //       <div>
-  //         <h2>Cart is empty</h2>
-  //         <a href="/">Continue Shopping</a>
-  //       </div>
-  //     </Container>
-  //   );
-  // }
-
+  if (!cartData || cartData.productList.length === 0) {
+    return (
+      <EmptyCartContainer>
+        <Title>Your Cart is Empty</Title>
+        <ContinueShoppingLink href="/">Click here to continue shopping</ContinueShoppingLink>
+      </EmptyCartContainer>
+    );
+  }
   return (
     <div>
       <Container>
@@ -408,17 +432,21 @@ const ShoppingCart = () => {
                         ? product.productDescription
                         : truncateDescription(product.productDescription, 100)}
                     </h6>
-
                     <ProductCategory>Product Category:</ProductCategory>
-                    <ProductPrice>Price: ${product.price}</ProductPrice>
+                    <ProductPrice>
+                      Price: {formattedPrice(product.price)}
+                    </ProductPrice>
                   </ProductInfo>
                   <QuantityContainer>
-                    <QuantityLabel>Quantity</QuantityLabel>
-                    <QuantitySelect value={product.quantity} />
-                  </QuantityContainer>
-                  <ProductPrice> ${product.price}</ProductPrice>
+          <QuantityLabel>Quantity</QuantityLabel>
+          <QuantitySelect
+            value={product.quantity}
+            onChange={(e) => handleUpdateQuantity(product.product_id, e.target.value)}
+          />
+        </QuantityContainer>
+                  <ProductPrice> {formattedPrice(product.price)}</ProductPrice>
                   <DeleteButton
-                    onClick={() => handleDeleteProduct(product.product_id)}
+                    onClick={() => handleRemoveProduct(product.product_id)}
                   >
                     X
                   </DeleteButton>
@@ -428,8 +456,15 @@ const ShoppingCart = () => {
             ))}
           </LeftPanel>
         </ScrollingArea>
+        {!cartData || cartData.productList.length === 0 && (
+        <EmptyCartContainer>
+          <Title>Your Cart is Empty</Title>
+          <ContinueShoppingLink href="/">Click here to continue shopping</ContinueShoppingLink>
+        </EmptyCartContainer>
+      )}
+      
         <RightPanel>
-          <Title>Total:{cartData?.total}</Title>
+          <Title>Total: {formattedPrice(cartData?.total)}</Title>
           <CheckboxContainer>
             <input
               type="checkbox"
@@ -484,6 +519,7 @@ const ShoppingCart = () => {
             </ArrowIcon>
           </ContinueShoppingLink>
         </RightPanel>
+        
       </Container>
       <PoliciesContainer className="ega-policies">
         <div className="row">

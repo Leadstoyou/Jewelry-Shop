@@ -74,7 +74,7 @@ const deleteProduct = async (_id) => {
     );
     if (response.status === 204) {
     } else {
-     //
+      //
     }
   } catch (error) {
     console.error(error); // Log the error for troubleshooting
@@ -118,6 +118,50 @@ const viewCartAPI = async (cartToken, setViewCart) => {
   }
 };
 
+//removeFromCart
+const removeFromCart = async (productId, cartToken, setDeleteCart) => {
+  try {
+    const id = productId;
+    const token = cartToken;
+    const response = await axios.delete(
+      `${import.meta.env.VITE_API_CART}/delete/${token}`,
+      {
+        data: { product_id: id }, // Use 'params' to send query parameters
+        withCredentials: true,
+      }
+    );
+    if (response.status === 200) {
+      console.log(response);
+      setDeleteCart(response.data);
+      console.log("Product removed from the cart successfully !!!");
+    } else {
+      console.log("Failed to remove the product from the cart");
+    }
+  } catch (error) {
+    console.log("Failed to remove the product from the cart"); // Log the error message here
+  }
+};
+
+const updateCart = async (productId, quantity, cartToken,setCartData) => {
+  try {
+    const data = { productId, quantity, cartToken };
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_CART}/update/${cartToken}`,
+      data,
+      { withCredentials: true }
+    );
+    if (response.status === 200) {
+      // If the update is successful, refetch the cart data to get the updated quantity
+      await viewCartAPI(cartToken, setCartData); // Replace setCartData with your state setter
+      console.log("Update cart successfully !!!");
+    } else {
+      console.log("Failed to update the cart");
+    }
+  } catch (error) {
+    console.log("Failed to update the cart");
+  }
+};
+
 export {
   getAllProducts,
   addProduct,
@@ -125,4 +169,6 @@ export {
   deleteProduct,
   addToCartAPI,
   viewCartAPI,
+  removeFromCart,
+  updateCart
 };
