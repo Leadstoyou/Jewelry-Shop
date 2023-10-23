@@ -11,6 +11,13 @@ const getAllProducts = async (
   try {
     const limit = limitP;
     const page = activePage;
+    var pageCheck = activePage;
+    if (activePage > 1) {
+      pageCheck--;
+    } else if (activePage === 1) {
+      pageCheck = 1;
+    }
+
     const response = await axios.post(
       `${import.meta.env.VITE_API_PRODUCTS}/view`,
       { limit, page }
@@ -19,8 +26,59 @@ const getAllProducts = async (
       const dataNew = response.data.data.products;
       setAllproduct(dataNew);
       setTotalpage(response.data.data.totalPages);
-    } else {
-      notify("Get data failed !!!");
+    } else if (response.request.status === 204) {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_PRODUCTS}/view`,
+        { limit, page: pageCheck }
+      );
+      if (res.request.status === 200) {
+        const dataNew = res.data.data.products;
+        setAllproduct(dataNew);
+        setTotalpage(res.data.data.totalPages);
+      }
+    }
+  } catch (err) {
+    notify("Get data failed !!!");
+  }
+};
+
+//getListProduct deleted
+const getAllProductsDelete = async (
+  setAllproduct,
+  setTotalpage,
+  notify,
+  limitP,
+  activePage,
+  isDelete
+) => {
+  try {
+    const limit = limitP;
+    const page = activePage;
+    const isDeleted = isDelete;
+    var pageCheck = activePage;
+    if (activePage > 1) {
+      pageCheck--;
+    } else if (activePage === 1) {
+      pageCheck = 1;
+    }
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_PRODUCTS}/view`,
+      { limit, page, isDeleted: true }
+    );
+    if (response.request.status === 200) {
+      const dataNew = response.data.data.products;
+      setAllproduct(dataNew);
+      setTotalpage(response.data.data.totalPages);
+    } else if (response.request.status === 204) {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_PRODUCTS}/view`,
+        { limit, page: pageCheck , isDeleted: true}
+      );
+      if (res.request.status === 200) {
+        const dataNew = res.data.data.products;
+        setAllproduct(dataNew);
+        setTotalpage(res.data.data.totalPages);
+      }
     }
   } catch (err) {
     notify("Get data failed !!!");
@@ -89,7 +147,7 @@ const addToCartAPI = async (notify, success, newCart) => {
     const response = await axios.post(
       `${import.meta.env.VITE_API_CART}/add`,
       data,
-      {withCredentials : true}
+      { withCredentials: true }
     );
     console.log(response);
     if (response.status === 200) {
@@ -106,11 +164,12 @@ const addToCartAPI = async (notify, success, newCart) => {
 const viewCartAPI = async (cartToken, setViewCart) => {
   try {
     const token = cartToken;
-    const response = await axios.get(`http://localhost:9999/api/v1/cart/view`,
-    {withCredentials : true});
+    const response = await axios.get(`http://localhost:9999/api/v1/cart/view`, {
+      withCredentials: true,
+    });
 
     if (response.status === 200) {
-      setViewCart( response.data);
+      setViewCart(response.data);
     } else {
       console.log("Failed to fetch cart data");
     }
@@ -119,4 +178,43 @@ const viewCartAPI = async (cartToken, setViewCart) => {
   }
 };
 
-export { getAllProducts, addProduct, updateProduct, deleteProduct , addToCartAPI , viewCartAPI};
+//check login in cookies
+function getCookieValue(cookieName) {
+  const cookies = document.cookie.split("; ");
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i].split("=");
+    if (cookie[0] === cookieName) {
+      return decodeURIComponent(cookie[1]);
+    }
+  }
+  return null;
+}
+
+//update product in recycle
+const updateInRecycler = async (notify,success,setUpdateData,idProduct)=>{
+  try {
+    const id = idProduct
+    const isDeleted = false
+    const res = await axios.patch(`http://localhost:9999/api/v1/products/update/${id}`,{isDeleted})
+    if(res.status === 200){
+      console.log(res);
+      setUpdateData(res.data.data)
+      success('Update successfully')
+    }else {
+      notify("Error updating");
+    }
+  } catch (error){
+    notify("Error updating");
+  }
+}
+
+export {
+  getAllProducts,
+  addProduct,
+  updateProduct,
+  deleteProduct,
+  addToCartAPI,
+  viewCartAPI,
+  getAllProductsDelete,
+  updateInRecycler
+};

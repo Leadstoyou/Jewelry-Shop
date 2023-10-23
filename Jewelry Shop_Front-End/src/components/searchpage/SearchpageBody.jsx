@@ -82,22 +82,43 @@ const DropdownOne = styled.select`
 const TextInDropdown = styled.option``;
 const TextSearch = styled.div``;
 const NotFound = styled.div`
-  
   height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 const SearchpageBody = (props) => {
-  const { searchtext, foundProducts } = props;
-  const [searchText, setSearchText] = useState(searchtext);
-  const [products, setProducts] = useState(foundProducts);
-
+  
+  const { products, materialArray, colorsArray, fetchData , searchName } = props;
+  const [searchText, setSearchText] = useState(searchName);
+  const [foundProducts, setFoundProducts] = useState();
+  const [colorsArrayTemp, setColorsArrayTemp] = useState(colorsArray);
+  const [materialArrayTemp, setMaterialArrayTemp] = useState(materialArray);
+  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedMaterial, setSelectedMaterial] = useState("");
+  const [selectedPrice, setSelectedPrice] = useState(
+    JSON.stringify({
+      minPrice: 0,
+      maxPrice: 100000000,
+    })
+  );
+  const [selectedSort, setSelectedSort] = useState(JSON.stringify({}));
   useEffect(() => {
+    setFoundProducts(products);
+    setColorsArrayTemp(colorsArray);
+    setMaterialArrayTemp(materialArray);
+
     Aos.init({ duration: 2000 });
-    setSearchText(searchtext);
-    setProducts(foundProducts);
-  }, []);
+  }, [products]);
+
+  const handleSelected = (color, material, price, sort) => {
+    setSelectedColor(color);
+    setSelectedMaterial(material);
+    setSelectedPrice(price);
+    setSelectedSort(sort);
+
+    fetchData(color, material, JSON.parse(price), JSON.parse(sort));
+  };
 
   return (
     <Container data-aos="fade-up">
@@ -107,7 +128,14 @@ const SearchpageBody = (props) => {
         </Title>
         <Text>
           <TextItem>
-            {products?.length ? <> Có <Inline>{products?.length} sản phẩm</Inline>cho tìm kiếm </>: ''} 
+            {foundProducts?.length ? (
+              <>
+                {" "}
+                Có <Inline>{foundProducts?.length} sản phẩm</Inline>cho tìm kiếm{" "}
+              </>
+            ) : (
+              ""
+            )}
           </TextItem>
         </Text>
       </Header>
@@ -117,93 +145,178 @@ const SearchpageBody = (props) => {
         </Result>
       </TitleProduct>
 
-      {products?.length > 0 ? (
-        <>
+     
+       
           <SearchController data-aos="fade-up">
             <ItemOne>
               <TextSearch>Lọc sản phẩm</TextSearch>
-              <DropdownOne>
-                <TextInDropdown disabled selected>
-                  Màu sắc
-                </TextInDropdown>
-                <TextInDropdown></TextInDropdown>
-                <TextInDropdown></TextInDropdown>
-                <TextInDropdown></TextInDropdown>
-              </DropdownOne>
-              <DropdownOne>
-                <TextInDropdown disabled selected>
-                  Chất liệu
-                </TextInDropdown>
-                <TextInDropdown></TextInDropdown>
-                <TextInDropdown></TextInDropdown>
-                <TextInDropdown></TextInDropdown>
-              </DropdownOne>
-              <DropdownOne>
-                <TextInDropdown disabled selected>
-                  Giá
-                </TextInDropdown>
-                <TextInDropdown></TextInDropdown>
-                <TextInDropdown></TextInDropdown>
-                <TextInDropdown></TextInDropdown>
-              </DropdownOne>
+              <DropdownOne
+            onChange={(e) =>
+              handleSelected(
+                e.target.value,
+                selectedMaterial,
+                selectedPrice,
+                selectedSort
+              )
+            }
+          >
+            <TextInDropdown value="" selected>
+              Màu sắc
+            </TextInDropdown>
+            {colorsArrayTemp?.map((color, index) => (
+              <TextInDropdown
+                key={index}
+                style={{
+                  backgroundColor: color,
+                  width: "30px",
+                  height: "30px",
+                  cursor: "pointer",
+                  margin: "5px",
+                  border: selectedColor === color ? "2px solid black" : "none",
+                }}
+                value={color}
+              >
+                {color}
+              </TextInDropdown>
+            ))}
+          </DropdownOne>
+          <DropdownOne
+            onChange={(e) =>
+              handleSelected(
+                selectedColor,
+                e.target.value,
+                selectedPrice,
+                selectedSort
+              )
+            }
+          >
+            <TextInDropdown selected value="">
+              Chất Liệu
+            </TextInDropdown>
+            {materialArrayTemp?.map((material, index) => (
+              <TextInDropdown
+                key={index}
+                style={{
+                  width: "30px",
+                  height: "30px",
+                  cursor: "pointer",
+                  margin: "5px",
+                  border:
+                    selectedMaterial === material ? "2px solid black" : "none",
+                }}
+                value={material}
+              >
+                {material}
+              </TextInDropdown>
+            ))}
+          </DropdownOne>
+          <DropdownOne
+            onChange={(e) =>
+              handleSelected(
+                selectedColor,
+                selectedMaterial,
+                e.target.value,
+                selectedSort
+              )
+            }
+          >
+            <TextInDropdown
+              selected
+              value={JSON.stringify({
+                minPrice: 0,
+                maxPrice: 100000000,
+              })}
+            >
+              Giá
+            </TextInDropdown>
+            <TextInDropdown
+              value={JSON.stringify({
+                minPrice: 0,
+                maxPrice: 1000000,
+              })}
+            >
+              0 -- 1.0000.000đ
+            </TextInDropdown>
+            <TextInDropdown
+              value={JSON.stringify({
+                minPrice: 1000001,
+                maxPrice: 2000000,
+              })}
+            >
+              1.000.001 -- 2.0000.000đ
+            </TextInDropdown>
+            <TextInDropdown
+              value={JSON.stringify({
+                minPrice: 2000001,
+                maxPrice: 3000000,
+              })}
+            >
+              2.000.001 -- 3.0000.000đ
+            </TextInDropdown>
+            <TextInDropdown
+              value={JSON.stringify({
+                minPrice: 3000001,
+                maxPrice: 4000000,
+              })}
+            >
+              3.000.001 -- 4.0000.000đ
+            </TextInDropdown>
+            <TextInDropdown
+              value={JSON.stringify({
+                minPrice: 4000001,
+                maxPrice: 100000000000,
+              })}
+            >
+              Trên 4.000.000 đ
+            </TextInDropdown>
+          </DropdownOne>
             </ItemOne>
-            <ItemOne>
-              <TextSearch>Sắp xếp sản phẩm</TextSearch>
-              <DropdownOne>
-                <TextInDropdown disabled selected>
-                  Mặc định
-                </TextInDropdown>
-                <TextInDropdown>Mới nhất</TextInDropdown>
-                <TextInDropdown>Giá tăng dần</TextInDropdown>
-                <TextInDropdown>Giá giảm dần</TextInDropdown>
-              </DropdownOne>
-            </ItemOne>
+             <ItemOne>
+          <TextSearch>Sắp xếp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</TextSearch>
+          <DropdownOne
+            onChange={(e) =>
+              handleSelected(
+                selectedColor,
+                selectedMaterial,
+                selectedPrice,
+                e.target.value
+              )
+            }
+          >
+            <TextInDropdown selected value={JSON.stringify({})}>
+              Mặc định
+            </TextInDropdown>
+            <TextInDropdown value={JSON.stringify({ updatedAt: 1 })}>
+              Cũ nhất
+            </TextInDropdown>
+            <TextInDropdown value={JSON.stringify({ updatedAt: -1 })}>
+              Mới nhất
+            </TextInDropdown>
+            <TextInDropdown value={JSON.stringify({ productPrice: 1 })}>
+              Giá tăng dần
+            </TextInDropdown>
+            <TextInDropdown value={JSON.stringify({ productPrice: -1 })}>
+              Giá giảm dần
+            </TextInDropdown>
+            <TextInDropdown value={JSON.stringify({ productName: 1 })}>
+              Tên A-Z
+            </TextInDropdown>
+            <TextInDropdown value={JSON.stringify({ productName: -1 })}>
+              Tên Z-A
+            </TextInDropdown>
+          </DropdownOne>
+        </ItemOne>
           </SearchController>
           <ProductList data-aos="fade-up">
-            {products.map((product, index) => (
+          { foundProducts ? (foundProducts?.map((product, index) => (
               <Product product={product} key={index} />
-            ))}
+             ))) : ( <div style={{ position:'absolute' ,top : '25%', right:'25%' }}>
+        <h1 >Not found product you have just filtered !!!</h1>
+      </div>)}
           </ProductList>
-          <PagingController data-aos="fade-up">
-            <Pagination>
-              <Pagination.Prev linkStyle={{ color: "black" }} />
-              <Pagination.Item
-                linkStyle={{ color: "white", backgroundColor: "#3b3b3b" }}
-                disabled
-              >
-                {1}
-              </Pagination.Item>
-              <Pagination.Item linkStyle={{ color: "black" }}>
-                {2}
-              </Pagination.Item>
-              <Pagination.Item linkStyle={{ color: "black" }}>
-                {3}
-              </Pagination.Item>
-              <Pagination.Item linkStyle={{ color: "black" }}>
-                {4}
-              </Pagination.Item>
-              <Pagination.Item linkStyle={{ color: "black" }}>
-                {5}
-              </Pagination.Item>
-              <Pagination.Item linkStyle={{ color: "black" }}>
-                {6}
-              </Pagination.Item>
-              <Pagination.Item linkStyle={{ color: "black" }}>
-                {7}
-              </Pagination.Item>
-              <Pagination.Next linkStyle={{ color: "black" }} />
-            </Pagination>
-          </PagingController>
-        </>
-      ) : (
-        <NotFound>
-          <h1>
-            Not found product like <Inline>"{searchText}"</Inline>
-          </h1>
-        </NotFound>
-      )}
+       
     </Container>
-  );
+  )
 };
 
 export default SearchpageBody;
