@@ -264,7 +264,7 @@ export {
   viewCartAPI,
 
   getAllProductsDelete,
-  updateInRecycler
+  updateInRecycler,
 
   removeFromCart,
   updateCart
