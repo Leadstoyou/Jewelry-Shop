@@ -266,7 +266,7 @@ export {
   getAllProductsDelete,
   updateInRecycler,
 
-  
+  removeFromCart,
   updateCart
 
 };
