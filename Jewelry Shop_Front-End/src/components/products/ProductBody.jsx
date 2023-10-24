@@ -85,7 +85,6 @@ const DropdownOne = styled.select`
 `;
 const InControl = styled.div`
   margin-bottom: 3%;
-
 `;
 const RightThree = styled.div`
   display: flex;
@@ -132,7 +131,7 @@ const CommentDisplay = styled.div``;
 const CommentController = styled.div``;
 const ProductBody = (props) => {
   const { cartView, setViewCart } = useContext(cartValue);
-  const { cartData, setCartData , setShowCartPopup} = useContext(cartValue);
+  const { cartData, setCartData, setShowCartPopup } = useContext(cartValue);
   const { product } = props;
   const [comdisplay, setCom] = useState(true);
   const [desc, setDesc] = useState(true);
@@ -211,18 +210,40 @@ const ProductBody = (props) => {
     ) {
       notify("One of color , material and size is not selected !!!");
     } else {
-      const newCart = {
-        cart_token: "615a8f7f4e7c3a1d3a9b6e60",
-        product_id: productDetail._id,
-        quantity: 1,
-        size: selectedSize,
-        color: selectedColor,
-        material: selectedMaterial,
-        price: 4490000,
-        productImage: productDetail.productImage,
-        productDescription: productDetail.productDescription,
-      };
+      let newCart = null;
+      console.log(document.cookie);
+      const cookies = document.cookie.split("; ");
+      const cartTokenCookie = cookies.find((cookie) =>
+        cookie.startsWith("cart_token=")
+      );
 
+      if (cartTokenCookie) {
+        const cartTokenValue = cartTokenCookie.split("=")[1];
+         newCart = {
+          cart_token: cartTokenValue,
+          product_id: productDetail._id,
+          quantity: 1,
+          size: selectedSize,
+          color: selectedColor,
+          material: selectedMaterial,
+          price: 4490000,
+          productImage: productDetail.productImage,
+          productDescription: productDetail.productDescription,
+        };
+      } else {
+         newCart = {
+          // cart_token: "615a8f7f4e7c3a1d3a9b6e60",
+          product_id: productDetail._id,
+          quantity: 1,
+          size: selectedSize,
+          color: selectedColor,
+          material: selectedMaterial,
+          price: 4490000,
+          productImage: productDetail.productImage,
+          productDescription: productDetail.productDescription,
+        };
+      }
+      
       await addToCartAPI(notify, success, newCart);
       setCartData(newCart);
       setShowCartPopup(true);

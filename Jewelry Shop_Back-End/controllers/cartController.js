@@ -1,6 +1,6 @@
 import HttpStatusCode from "../constant/HttpStatusCode.js";
-import {cartRepository} from "../repositories/indexRepository.js";
-import {productRepository} from "../repositories/indexRepository.js"
+import { cartRepository } from "../repositories/indexRepository.js";
+import { productRepository } from "../repositories/indexRepository.js";
 
 const viewCart = async (req, res) => {
     try {
@@ -59,17 +59,17 @@ const viewCart = async (req, res) => {
           sameSite: "None",
         });
       } else {
-
+        
         await cartRepository.addProductToCart(cart._id, productId, quantity, size, color, material, price, productImage, productDes);
         
-      }
-  
-  
-      return res.status(HttpStatusCode.OK).json({ message: 'Product added to cart successfully' });
-    } catch (error) {
-      console.error(error);
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
-    }
+        }
+
+      
+    return res.status(HttpStatusCode.OK).json({ message: "Product added to cart successfully" });
+  }} catch (error) {
+    console.error(error);
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+  }
   };
   const updatedCart = async(req,res)=> {
     try {

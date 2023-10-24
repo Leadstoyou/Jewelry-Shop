@@ -25,7 +25,7 @@ const ViewDetail = (props) => {
           />
           <div className="information">
           <div className="information_detail1">
-  <div className="column">
+  <div className="column" style={{marginRight:"20px"}}>
     <h5>Tên</h5>
     <input className="Name" type="text" value={"Name"} disabled />
   </div>
@@ -36,7 +36,7 @@ const ViewDetail = (props) => {
 </div>
 
 <div className="information_detail1">
-  <div className="column">
+  <div className="column" style={{marginRight:"20px"}}>
     <h5>Tuổi</h5>
     <input className="age" type="text" value={"Age"} disabled />
   </div>
@@ -46,7 +46,7 @@ const ViewDetail = (props) => {
   </div>
 </div>
 <div className="information_detail1">
-  <div className="column">
+  <div className="column" style={{marginRight:"20px"}}>
     <h5>Giới tính</h5>
     <input className="Name" type="text" value={"Gender"} disabled />
   </div>

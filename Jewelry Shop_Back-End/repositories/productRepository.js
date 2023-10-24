@@ -1,5 +1,6 @@
 import cloudinaryService from "../services/cloudinaryService.js";
-import constants from "../constant/constants.js";
+import ConfigConstants from "../constant/ConfigConstants.js";
+import SuccessConstants from "../constant/SuccessConstants.js";
 import { Product } from "../models/indexModel.js";
 import Exception from "../constant/Exception.js";
 import mongoose from "mongoose";
@@ -20,7 +21,7 @@ const createNewProduct = async (
   try {
     productImageUrl = await cloudinaryService.uploadProductImageToCloudinary(
       productImage,
-      constants.CLOUDINARY_PRODUCT_IMG
+      ConfigConstants.CLOUDINARY_PRODUCT_IMG
     );
     const newProduct = await Product.create({
       productName,
@@ -67,7 +68,7 @@ const searchProductsByName = async (searchTerm) => {
         { productName: new RegExp(searchTerm, "i") },
       ],
     };
-    query.isDeleted = false;
+    // query.isDeleted = false;
     const searchResult = await Product.find(query).exec();
     if (!searchResult || searchResult.length === 0) {
       return {
@@ -85,11 +86,14 @@ const searchProductsByName = async (searchTerm) => {
   }
 };
 
-const getAllProducts = async (category,color,material,minPrice,maxPrice,sort,page = 1,limit = Number.MAX_SAFE_INTEGER,isDeleted = false) => {
+const getAllProducts = async (category,color,material,minPrice,maxPrice,sort,page = 1,limit = Number.MAX_SAFE_INTEGER,isDeleted = false,searchName) => {
   try {
     const query = {};
-    if(isDeleted) {
-      query.isDeleted = isDeleted;
+    query.isDeleted = isDeleted;
+    if(searchName){
+      query.$or = [
+        { productName: new RegExp(searchName, "i") },
+      ];
     }
     if (color && color.length > 0) {
       query.productColors = { $in: color };
@@ -178,7 +182,7 @@ const updateProduct = async (
         ...(productImage && {
           productImage: await cloudinaryService.uploadProductImageToCloudinary(
             productImage,
-            constants.CLOUDINARY_PRODUCT_IMG
+            ConfigConstants.CLOUDINARY_PRODUCT_IMG
           ),
         }),
         ...(isDeleted !== undefined && { isDeleted }),
@@ -326,7 +330,7 @@ const getProductHasDiscount = async (startDate,expiredDate,getAllDiscounts = fal
     }
     return {
       success: true,
-      message: constants.PRODUCT_RETRIVED,
+      message: SuccessConstants.PRODUCT_RETRIVED,
       data: products,
     };
   } catch (error) {

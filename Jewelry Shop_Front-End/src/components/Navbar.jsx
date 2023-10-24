@@ -4,12 +4,16 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PersonIcon from "@mui/icons-material/Person";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Badge from "@mui/material/Badge";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import videoFile from "../assets/video.mp4"; // Import the video file using ES6 module syntax
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import LogoutIcon from "@mui/icons-material/Logout";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import { useSelector } from "react-redux";
+
 const Container = styled.div`
   background-color: #d5d3d3;
   position: relative;
@@ -100,9 +104,36 @@ const Nav = styled.div`
   background-color: white;
   z-index: 2;
 `;
+
+const Button = styled.button`
+  background-color: #333232;
+  color: white;
+  border: none;
+  padding: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: black;
+  }
+  z-index: 2;
+`;
+
 const Navbar = (props) => {
   const numberCart = useSelector((state) => state?.getNumber?.value);
+  const user = useSelector((state) => state?.loginController);
+  const [showContent, setShowContent] = useState(false);
 
+  const toggleContent = () => {
+    setShowContent(!showContent);
+  };
+  const handleLogout = () => {
+    toggleContent();
+    document.cookie =
+      "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie =
+      "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  };
   const notify = () => {
     toast.error("Vui lòng không để trống trường tìm kiếm !!!", {
       position: "top-center",
@@ -136,6 +167,10 @@ const Navbar = (props) => {
       navigate(`/search/${searchQuery}`);
     }
   };
+  const handleProfile = () => {
+    toggleContent();
+    navigate("/profile");
+  };
   return (
     <Nav>
       <Container>
@@ -165,19 +200,83 @@ const Navbar = (props) => {
           </InputController>
           <ItemController>
             <Item>
-              <LocationOnIcon />
-            </Item>
-            <Item>
-              <PersonIcon />
-            </Item>
-            <Item onClick={() => navigate("/cart")}>
-              <Badge
-                badgeContent={numberCart}
-                color="primary"
+              <a
+                style={{ color: "black" }}
+                href="https://www.google.com/maps/place/Tr%C6%B0%E1%BB%9Dng+%C4%90%E1%BA%A1i+H%E1%BB%8Dc+FPT/@21.0130252,105.5239285,17z/data=!3m1!4b1!4m6!3m5!1s0x3135abc60e7d3f19:0x2be9d7d0b5abcbf4!8m2!3d21.0130202!4d105.5265034!16s%2Fm%2F02rsytm?hl=vi&entry=ttu"
+                target="_blank"
               >
+                <LocationOnIcon />
+              </a>
+            </Item>
+
+            <Item onClick={() => navigate("/cart")}>
+              <Badge badgeContent={numberCart} color="primary">
                 <ShoppingCartIcon />
               </Badge>
             </Item>
+            <div
+              style={{
+                width: "100px",
+                height: "100px",
+                display: "flex",
+                alignItems: "center",
+                borderRadius: "50%",
+                cursor: "pointer",
+                zIndex: "2",
+              }}
+            >
+              {Object.keys(user).length === 0 || user?.value === undefined ? (
+                <div onClick={() => navigate("/login")}>
+                  <Button>SIGN IN</Button>
+                </div>
+              ) : (
+                <>
+                  <Item
+                    onClick={() => navigate("/dashboard")}
+                    style={{ marginRight: "0" }}
+                  >
+                    <DashboardIcon />
+                  </Item>
+
+                  <div style={{ position: "relative" , height : '50%' }}>
+                    <img
+                      src={user?.value?.userAvatar}
+                      width="100%" // Adjust the width as needed
+                      height="100%" // Adjust the height as needed
+                      style={{
+                        borderRadius: "50%",
+                        cursor: "pointer",
+                      }}
+                      onClick={toggleContent}
+                    />
+                    {showContent && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "100%", // Content will appear directly below the image
+                          left: 0, // Adjust the left position if needed
+                          backgroundColor: "white",
+                          border: "1px solid #ccc",
+                          padding: "10px",
+                          boxShadow: "0 0 5px rgba(0, 0, 0, 0.2)",
+                          width: "100px",
+                        }}
+                      >
+                        <span onClick={handleProfile}>
+                          <AccountBoxIcon />
+                          Profile
+                        </span>
+                        <hr />
+                        <span onClick={handleLogout}>
+                          <LogoutIcon />
+                          Log out
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
           </ItemController>
         </Right>
       </Container>
