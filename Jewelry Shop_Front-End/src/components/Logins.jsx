@@ -4,8 +4,10 @@ import "../style/Login.scss";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { useDispatch } from "react-redux";
+import {login} from '../redux/Login.jsx'
 const Logins = () => {
+  const dispatch = useDispatch()
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -35,13 +37,13 @@ const Logins = () => {
           withCredentials: true,
         });
         if (response.status === 200) {
+          dispatch(login(response?.data?.data))
           console.log(response);
           console.log("Login successful");
           navigate("/"); 
         }
       } catch (error) {
         toast.error(error.response.data.message);
-        console.log('dasd', error)
       } 
     }
   };

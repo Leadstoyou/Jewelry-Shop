@@ -7,9 +7,12 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 import "../style/Profile.scss";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/Login";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 const Profile = () => {
+  const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("Male");
@@ -42,14 +45,18 @@ const Profile = () => {
     },
   };
   if (accessToken) {
-    
     useEffect(() => {
-      if (!calledApi) {
-        axios
-          .get("http://localhost:9999/api/v1/users/viewProfile", axiosConfig)
-          .then((response) => {
+      async function fetchData() {
+        if (!calledApi) {
+          try {
+            const response = await axios.get(
+              "http://localhost:9999/api/v1/users/viewProfile",
+              axiosConfig
+            );
+
             if (response.status === 200) {
               const userData = response.data.data;
+              await dispatch(login(userData));
               console.log("Yêu cầu thành công");
               const {
                 userName,
@@ -70,14 +77,16 @@ const Profile = () => {
             } else {
               console.log("Yêu cầu thất bại");
             }
-          })
-          .catch((error) => {
+          } catch (error) {
             console.error("Lỗi:", error);
-          });
+          }
 
-        setCalledApi(true);
+          setCalledApi(true);
+        }
       }
-    });
+
+      fetchData();
+    }, [calledApi]);
   } else {
     console.log("Không tìm thấy access token trong cookie.");
   }
@@ -96,7 +105,6 @@ const Profile = () => {
   };
 
   const handleSaveInformation = async (e) => {
-   
     e.preventDefault();
     console.log("123");
     try {
@@ -116,7 +124,6 @@ const Profile = () => {
       if (response.status === 200) {
         console.log("Save successful");
         toast(response.data.message);
-
       } else {
         console.log("Registration failed");
       }
@@ -133,13 +140,15 @@ const Profile = () => {
 
     if (isValid) {
       try {
-        const response = await axios.put("http://localhost:9999/api/v1/users/changePassword", {
-          oldPassword: currentPassword,
-          newPassword: newPassword,
-          confirmPassword: checkPassword,
-
-        },
-        axiosConfig);
+        const response = await axios.put(
+          "http://localhost:9999/api/v1/users/changePassword",
+          {
+            oldPassword: currentPassword,
+            newPassword: newPassword,
+            confirmPassword: checkPassword,
+          },
+          axiosConfig
+        );
 
         if (response.status === 200) {
           console.log("Save successful");
@@ -184,7 +193,6 @@ const Profile = () => {
 
     return true;
   };
-
 
   return (
     <Container style={{ marginTop: "100px", marginBottom: "30px" }}>

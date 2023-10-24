@@ -329,7 +329,7 @@ const UpdateController = (props) => {
               </Label>
               <div>
                 <select
-                  style={{ width: "100%" }}
+                  style={{ width: "100%" , backgroundColor:'white' }}
                   id="category"
                   {...register("category")}
                   defaultValue={productUpdate?.productCategory}

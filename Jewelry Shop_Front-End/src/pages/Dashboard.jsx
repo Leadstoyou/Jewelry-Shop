@@ -6,12 +6,20 @@ import styled from "styled-components";
 import Menu from "@mui/icons-material/Menu";
 import ManageProduct from '../components/dashboard/product/ManageProduct.jsx'
 import ManageStaff from '../components/dashboard/staff/ManageStaff.jsx'
-
-
+import DiamondIcon from '@mui/icons-material/Diamond';
+import HomeIcon from '@mui/icons-material/Home';
+import { useNavigate } from "react-router-dom";
   
 const Container = styled.div`
   height: 1000px;
+  position: relative;
 `;
+const ControlHome = styled.div`
+  position: absolute;
+  top: 0%;
+  left: 5%;
+
+`
 const SidebarContainer = styled.div`
   position: fixed;
   height: 100vh;
@@ -50,6 +58,7 @@ const DashboardItem = styled.div`
 `;
 
 function Dashboard() {
+  const navigate = useNavigate()
   const [show, setShow] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState(null);
 
@@ -68,6 +77,7 @@ function Dashboard() {
 
   return (
     <Container>
+      <ControlHome onClick={()=>navigate('/')}><button style={{backgroundColor:'#c6c2c2',border:'none '}}><HomeIcon/>Back to home</button></ControlHome>
       <SidebarContainer>
         <ButtonController variant="primary" onClick={handleShow}>
           <Menu style={{ color: "white" }} />
@@ -79,7 +89,7 @@ function Dashboard() {
           style={{ backgroundColor: "grey", color: "white" }}
           closeButton
         >
-          <Offcanvas.Title>Offcanvas</Offcanvas.Title>
+          <Offcanvas.Title><DiamondIcon />Jewelry<DiamondIcon /></Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
           <DashboardItem>
