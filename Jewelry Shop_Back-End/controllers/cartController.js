@@ -9,14 +9,14 @@ const viewCart = async (req, res) => {
       if (!cart) {
         const newCart = await cartRepository.createEmptyCart();
         res.cookie("cart_token", newCart.cart_token.toString(), {
-          httpOnly: true,
+          httpOnly: false,
           secure: true,
           sameSite: "None",
         });
         return res.status(HttpStatusCode.OK).json(newCart);
       }else{
         res.cookie("cart_token", cart.cart_token.toString(), {
-          httpOnly: true,
+          httpOnly: false,
           secure: true,
           sameSite: "None",
         });
@@ -30,7 +30,7 @@ const viewCart = async (req, res) => {
   };
   const addToCart = async (req, res) => {
     try {
-      const cartToken = req.body.cart_token;
+      const cartToken = req.cookies.cart_token;
       const userId = req.body.user_id;
       const productId = req.body.product_id;
       const quantity = req.body.quantity;
@@ -54,7 +54,7 @@ const viewCart = async (req, res) => {
         const newCart = await cartRepository.createEmptyCart();
         await cartRepository.addProductToCart(newCart._id, productId, quantity, size, color, material, price, productImage, productDes);
         res.cookie("cart_token", newCart.cart_token.toString(), {
-          httpOnly: true,
+          httpOnly: false,
           secure: true,
           sameSite: "None",
         });
@@ -78,7 +78,7 @@ const viewCart = async (req, res) => {
       const color = req.body.color;
       const material = req.body.material;
       const price = req.body.price;
-      const cartToken = req.params.cart_token;
+      const cartToken = req.cookies.cart_token;
       const productId = req.body.product_id;
       const cartUpdate = await cartRepository.updateProductInCart(cartToken, productId, quantity, size, color, material, price);
       return res.status(HttpStatusCode.OK).json(cartUpdate);
@@ -89,9 +89,12 @@ const viewCart = async (req, res) => {
   }
   const removeFromCart = async (req, res) => {
     try {
-      const cartToken = req.params.cart_token;
+      const cartToken = req.cookies.cart_token;
       const productId = req.body.product_id;
-      const cart = await cartRepository.removeFromCart(cartToken, productId);
+      const size = req.body.size;
+      const color = req.body.color;
+      const material = req.body.material;
+      const cart = await cartRepository.removeFromCart(cartToken, productId, size, color, material);
       return res.status(HttpStatusCode.OK).json(cart);
     } catch (err) {
       console.error(err);

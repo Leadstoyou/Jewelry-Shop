@@ -16,18 +16,18 @@ export default mongoose.model(
                   ref: 'Product',
                   required: true
                 },
-                size: [{
+                size: {
                   type: String,
                   required: true
-                }],
-                color: [{
+                },
+                color: {
                   type: String,
                   required: true
-                }],
-                material: [{
+                },
+                material: {
                   type: String,
                   required: true
-                }],
+                },
                 quantity: {
                   type: Number,
                   required: true,
