@@ -425,7 +425,7 @@ const userViewProfileRepository = async (userId) => {
     return {
       success: true,
       message: SuccessConstants.VIEW_PROFILE_SUCCESS,
-      data: userInfo,
+      data: existingUser,
     };
   } catch (exception) {
     throw new Exception(exception.message);
