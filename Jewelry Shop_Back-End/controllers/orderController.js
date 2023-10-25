@@ -4,14 +4,14 @@ import {orderRepository} from "../repositories/indexRepository.js"
 const createOrder = async (req, res) => {
     try {
       const cartToken = req.cookies.cart_token;
-      const userId = req.body.user_id;
+      const userId = req.user?.userId;
       const orderStatus = req.body.orderStatus;
-  
-      const cart = await cartRepository.getCartByToken(cartToken);
      
       if (!userId) {
         return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'You have to login to buy' });
       }
+      const cart = await cartRepository.getCartByToken(cartToken);
+
       if (!cart) {
         return res.status(HttpStatusCode.NOT_FOUND).json({ message: 'Cart not found' });
       }
@@ -27,7 +27,7 @@ const createOrder = async (req, res) => {
   };
 const getOrder = async (req, res) =>{
   try {
-    const userId = req.body.user_id;
+    const userId = req.user?.userId;
     const orders = await orderRepository.getAllOrderByUserID(userId);
     return res.status(HttpStatusCode.OK).json(orders);
   } catch (error) {
