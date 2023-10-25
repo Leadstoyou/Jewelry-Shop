@@ -38,8 +38,7 @@ const userSearchRepository = async ({
   block
 }) => {
   try {
-    page = parseInt(page);
-    size = parseInt(size);
+   
     const matchQuery = {
       $or: [
         {
@@ -63,6 +62,13 @@ const userSearchRepository = async ({
       matchQuery.isDelete = JSON.parse(block);;
     }
 
+    const totalUsers = await User.countDocuments(matchQuery);
+    if (size === undefined) {
+      size = totalUsers;
+    }
+
+    page = parseInt(page);
+    size = parseInt(size);
     let filteredUsers = await User.aggregate([
       {
         $match: matchQuery,
@@ -81,7 +87,10 @@ const userSearchRepository = async ({
     return {
       success: true,
       message: SuccessConstants.GET_USER_SUCCESS,
-      data: filteredUsers,
+      data: {
+        total: totalUsers, 
+        users: filteredUsers
+      },
     };
   } catch (exception) {
     throw new Exception(exception.message);

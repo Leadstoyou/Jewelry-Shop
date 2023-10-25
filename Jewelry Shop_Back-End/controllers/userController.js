@@ -25,7 +25,7 @@ const userGetAllUsersController = async (req, res) => {
 };
 
 const userSearchController = async (req, res) => {
-  let { page = 1, size = 100, search = "", role, status, block } = req.query;
+  let { page = 1, size, search = "", role, status, block } = req.query;
   try {
     let filteredUsers = await userRepository.userSearchRepository({
       size,
@@ -35,6 +35,11 @@ const userSearchController = async (req, res) => {
       status,
       block,
     });
+
+    const { total, users } = filteredUsers.data;
+
+    
+
     return res.status(HttpStatusCode.OK).json({
       status: "OK",
       message: "Get search successfully",
@@ -45,7 +50,8 @@ const userSearchController = async (req, res) => {
         role,
         status,
         block,
-        data: filteredUsers,
+        total, 
+        data: users,
       },
     });
   } catch (exception) {
