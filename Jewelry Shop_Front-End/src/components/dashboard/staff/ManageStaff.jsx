@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useCallback } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "@mui/material/Button";
@@ -7,7 +7,7 @@ import ViewDetail from "./ViewDetail";
 import HomeIcon from "@mui/icons-material/Home";
 import Pagination from "react-bootstrap/Pagination"; // Import React-Bootstrap Pagination
 import axios from "axios";
-
+import Switch from "react-switch";
 import "../style/ManagerStaff.scss";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -25,12 +25,12 @@ const ManageStaff = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const [filterRole, setFilterRole] = useState("");
   const [filterAction, setFilterAction] = useState("");
-  const [action, setAction] = useState("");
+  const [action, setAction] = useState(false);
   const [activePage, setActivePage] = useState(1);
   const [calledApi, setCalledApi] = useState(false);
-  const [totalPage, setTotalPage] = useState(0);
-  const [userId, setUserId] = useState("");
-  const [newRole, setNewRole] = useState("");
+  const [totalPage, setTotalPage] = useState(10);
+
+  
   const size = 10;
 
   function getCookieValue(cookieName) {
@@ -60,10 +60,9 @@ const ManageStaff = () => {
       )
       .then((response) => {
         if (response.status === 200) {
-          const userDataArray = response.data.data.data.data;
+          const userDataArray = response.data.data.data;
           setUserData(userDataArray);
-          console.log(Math.ceil(userDataArray.length / 20));
-          setTotalPage(Math.ceil(userDataArray.length / 10));
+          setTotalPage(Math.ceil((response.data.data.total)/size));
         } else {
           console.log("Request was not successful");
         }
@@ -73,40 +72,57 @@ const ManageStaff = () => {
       });
   };
 
+
+
   const changeRole = async (userId, newRole) => {
-    const response = await axios.put(
-      "http://localhost:9999/api/v1/users/updateRole",
-      {
-        userId: userId,
-        newRole: newRole,
-      },
-      axiosConfig
-    );
-  };
+    try {
+      const response = await axios.put(
+        "http://localhost:9999/api/v1/users/updateRole",
+        {
+          userId: userId,
+          newRole: newRole,
+        },
+        axiosConfig
+      );
+    }
+    catch (error) {
+      console.log(error);
+    }};
+  
+    const changeStatus = async (userId, newStatus) => {
+      try {
+        const response = await axios.put(
+          "http://localhost:9999/api/v1/users/updateStatus",
+          {
+            userId: userId,
+            newStatus: newStatus,
+          },
+          axiosConfig
+        );
+      }
+      catch (error) {
+        console.log(error);
+      }};
+    
+
   const handleSearch = () => {
-    setActivePage(1); // Reset to the first page when performing a new search
     connectAPI(search, filterRole, filterAction, 1);
   };
-
-  const handleNewRole = (e) => {
-    const userId = document.getElementById("idrole").value;
-    const userRole = e.target.value;
+ 
+  const handleNewRole = (userId, newRole) => {
+   
     if (window.confirm("Do you want to change your role")) {
-      changeRole(userId, userRole).then(() => {
-        // Update the role value in the table
-        const selectedRow = e.target.closest("tr");
-        selectedRow.querySelector("select").value = userRole;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-      alert(`change role successfully`);
-    }
+          changeRole(userId, newRole).then(() => {
+            connectAPI(search, filterRole, filterAction, activePage);
+    
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+          alert(`change role successfully`);
+        }
   };
 
-  const handleActionChange = () => {
-    // connectAPI();
-  };
 
   // Paging
   const Allpage = [];
@@ -114,17 +130,36 @@ const ManageStaff = () => {
     Allpage.push(i);
   }
 
+ 
   const handlePrev = () => {
     if (activePage > 1) {
       setActivePage(activePage - 1);
+    connectAPI(search, filterRole, filterAction, activePage-1);
     }
   };
 
   const handleNext = () => {
     if (activePage < totalPage) {
       setActivePage(activePage + 1);
+      connectAPI(search, filterRole, filterAction, activePage+1);
+
+    
     }
   };
+//switch change r
+
+const handleChange = (action, userId) => {
+  console.log(userId); // User ID
+  console.log(action); // New status
+
+  setAction(action);
+
+  if (changeStatus(userId, action)) {
+    connectAPI(search, filterRole, filterAction, activePage);
+    alert("Status updated");
+  }
+};
+
 
   useEffect(() => {
     if (!calledApi) {
@@ -215,34 +250,25 @@ const ManageStaff = () => {
           </tr>
         </thead>
         <tbody>
-          {userData && userData.length > 0 ? (
-            userData
-              .slice((activePage - 1) * size, activePage * size)
+          {userData || userData.length > 0 ? (
+            userData        
               .map((user, index) => (
                 <tr key={index}>
-                  <td>{index + 1}</td>
+                  <td>{(activePage - 1) * size + index + 1}</td>
                   <td>{user.userName}</td>
                   <td>{user.userEmail}</td>
                   <td>{user.userPhoneNumber}</td>
                   <td>
                     <input type="hidden" value={user._id} id="idrole" />
-                    <select value={user.userRole} onChange={handleNewRole}>
+                    <select value={user.userRole} onChange={(e) => handleNewRole(user._id, e.target.value)}>
                       <option value="0">Admin</option>
                       <option value="1">Staff</option>
                       <option value="2">Customer</option>
                     </select>
                   </td>
                   <td>
-                    <select
-                      value={user.isActive}
-                      onChange={(e) => {
-                        setAction(e.target.value);
-                        handleActionChange();
-                      }}
-                    >
-                      <option value="true">Active</option>
-                      <option value="false">Inactive</option>
-                    </select>
+                  <input type="hidden" value={user._id} id="idaction" />
+                  <Switch onChange={(action) => handleChange(action, user._id)} checked={user.isActive} />
                   </td>
                   <td>
                     <button
@@ -263,14 +289,15 @@ const ManageStaff = () => {
           <ViewDetail show={modalShow} onHide={() => setModalShow(false)} />
         </tbody>
       </Table>
-      <div>
+      <div className="paging">
         <Pagination>
-          <Pagination.Prev onClick={handlePrev} />
+          <Pagination.Prev onClick={handlePrev}  />
           {Allpage.map((page) => (
             <Pagination.Item
               key={page}
               active={page === activePage}
-              onClick={() => setActivePage(page)}
+              onClick={() => {setActivePage(page),  connectAPI(search, filterRole, filterAction, page);
+              }}
             >
               {page}
             </Pagination.Item>
@@ -280,6 +307,8 @@ const ManageStaff = () => {
         </Pagination>
         <br />
       </div>
+ 
+   
     </div>
   );
 };
