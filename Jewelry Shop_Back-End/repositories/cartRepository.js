@@ -4,6 +4,14 @@ import {productRepository} from "./indexRepository.js";
 import mongoose from "mongoose";
 import Jwt from "jsonwebtoken";
 
+const getCartByUser = async (userId) =>{
+  try {
+    const cart = await Cart.findOne({ user_id: userId }).exec();
+    return cart;
+  } catch (error) {
+    throw error;
+  }
+};
 const getCartByToken = async (cartToken) => {
   try {
     const cart = await Cart.findOne({ cart_token: cartToken }).exec();
@@ -20,13 +28,23 @@ const getCartByTokenCookie = async (cartTokenCookie) => {
     throw error;
   }
 };
-const createEmptyCart = async () => {
+const createEmptyCart = async (userId) => {
   try {
     const cartToken = (Math.random() + 1).toString(36).substring(2);
+
+    if(userId){
+    const newCart = new Cart({total: 0, cart_token: cartToken, user_id: userId});
+    await newCart.save();
+    return newCart;
+
+    }else{
     const newCart = new Cart({total: 0, cart_token: cartToken});
     await newCart.save();
     
     return newCart;
+
+    }
+    
   } catch (error) {
     console.error(error);
     throw error;
@@ -178,11 +196,11 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
 
   const removeCart = async (cartId) => {
     try {
-      await Cart.findByIdAndRemove(cartId);
+      await Cart.findByIdAndUpdate(cartId, { isCheckOut: true });
     } catch (error) {
       throw error;
     }
   };
 
-export default {getCartByTokenCookie, updateTotalPrice, updateProductInCart,createCartToken, createEmptyCart, removeCart, getCartByToken, addProductToCart, removeFromCart};
+export default {getCartByTokenCookie, getCartByUser, updateTotalPrice, updateProductInCart,createCartToken, createEmptyCart, removeCart, getCartByToken, addProductToCart, removeFromCart};
 

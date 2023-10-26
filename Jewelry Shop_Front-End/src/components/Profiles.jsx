@@ -24,6 +24,7 @@ const Profile = () => {
   const [newPassword, setNewPassword] = useState("");
   const [checkPassword, setCheckPassword] = useState("");
   const [calledApi, setCalledApi] = useState(false);
+  const [userUpdated, setUserUpdated] = useState();
 
   // Hàm để lấy giá trị từ một cookie theo tên
   function getCookieValue(cookieName) {
@@ -56,7 +57,8 @@ const Profile = () => {
 
             if (response.status === 200) {
               const userData = response.data.data;
-              await dispatch(login(userData));
+            
+              
               console.log("Yêu cầu thành công");
               const {
                 userName,
@@ -123,6 +125,7 @@ const Profile = () => {
 
       if (response.status === 200) {
         console.log("Save successful");
+        dispatch(login(response.data.data));
         toast(response.data.message);
       } else {
         toast.error("Registration failed");
@@ -193,6 +196,9 @@ const Profile = () => {
 
     return true;
   };
+
+
+
 
   return (
     <Container style={{ marginTop: "100px", marginBottom: "30px" }}>
