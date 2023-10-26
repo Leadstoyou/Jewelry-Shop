@@ -66,7 +66,7 @@ const viewCart = async (req, res) => {
 
       
     return res.status(HttpStatusCode.OK).json({ message: "Product added to cart successfully" });
-  }} catch (error) {
+  } catch (error) {
     console.error(error);
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
   }

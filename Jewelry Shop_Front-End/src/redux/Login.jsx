@@ -7,6 +7,7 @@ const loginController = createSlice({
   initialState: {},
   reducers: {
     login: (state, action) => {
+      console.log(action.payload);
       state.value =  action.payload ;
     },
     update: (state, action) => {
