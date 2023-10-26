@@ -148,13 +148,21 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
     }
   };
 
-  const removeFromCart = async (cartToken, productId) => {
+  const removeFromCart = async (cartToken, productId, size, color, material) => {
     try {
       const cart = await Cart.findOne({ cart_token: cartToken });
     if (!cart) {
       throw new Error("Cart not found");
     }
-    const productIndex = cart.productList.findIndex(p => p.product_id.toString() === productId);
+    const productIndex = cart.productList.findIndex((p) => {
+      const isProductMatch =
+        p.product_id.toString() === productId &&
+        p.size[0] === size &&
+        p.color[0] === color &&
+        p.material[0] === material;
+
+      return isProductMatch;
+    });
     if (productIndex === -1) {
       throw new Error("Product not found in cart");
     }
@@ -168,13 +176,13 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
     }
   };
 
-  const removePurchasedProducts = async (cartId) => {
+  const removeCart = async (cartId) => {
     try {
-      await Cart.findByIdAndUpdate(cartId, { $pull: { productList: {} } });
+      await Cart.findByIdAndRemove(cartId);
     } catch (error) {
       throw error;
     }
   };
 
-export default {getCartByTokenCookie, updateTotalPrice, updateProductInCart,createCartToken, createEmptyCart, removePurchasedProducts, getCartByToken, addProductToCart, removeFromCart};
+export default {getCartByTokenCookie, updateTotalPrice, updateProductInCart,createCartToken, createEmptyCart, removeCart, getCartByToken, addProductToCart, removeFromCart};
 
