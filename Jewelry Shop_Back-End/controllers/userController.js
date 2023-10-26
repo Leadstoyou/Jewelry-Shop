@@ -26,7 +26,39 @@ const userGetAllUsersController = async (req, res) => {
 
 const userSearchController = async (req, res) => {
   let { page = 1, size, search = "", role, status, block } = req.query;
+  if (page !== undefined && isNaN(page)) {
+    return res.status(HttpStatusCode.BAD_REQUEST).json({
+      status: "ERROR",
+      message: "Invalid 'page' value. It should be a number.",
+    });
+  }
+
+  if (size !== undefined && isNaN(size)) {
+    return res.status(HttpStatusCode.BAD_REQUEST).json({
+      status: "ERROR",
+      message: "Invalid 'size' value. It should be a number.",
+    });
+  }
   try {
+    if (page !== undefined) {
+      page = parseInt(page);
+    }
+
+    if (size !== undefined) {
+      size = parseInt(size);
+    }
+
+    if (role !== undefined) {
+      role = parseInt(role);
+    }
+
+    if (status !== undefined) {
+      status = JSON.parse(status);
+    }
+
+    if (block !== undefined) {
+      block = JSON.parse(block);
+    }
     let filteredUsers = await userRepository.userSearchRepository({
       size,
       page,
@@ -37,9 +69,6 @@ const userSearchController = async (req, res) => {
     });
 
     const { total, users } = filteredUsers.data;
-
-    
-
     return res.status(HttpStatusCode.OK).json({
       status: "OK",
       message: "Get search successfully",
@@ -50,7 +79,7 @@ const userSearchController = async (req, res) => {
         role,
         status,
         block,
-        total, 
+        total,
         data: users,
       },
     });
@@ -149,7 +178,7 @@ const refreshAccessTokenController = async (req, res) => {
 
     return result.data;
   } catch (exception) {
-    return (req,res,next) => {
+    return (req, res, next) => {
       res.clearCookie("accessToken", { httpOnly: false, secure: true });
       res.clearCookie("refreshToken", { httpOnly: true, secure: true });
       return res
@@ -487,9 +516,8 @@ const userUpdateProfileController = async (req, res) => {
 };
 
 const userUpdateRoleController = async (req, res) => {
-  const { newRole,userId } = req.body;
+  const { newRole, userId } = req.body;
   try {
-    // const userId = req.user.userId;
     const userRole = req.user.userRole;
     const updatedUser = await userRepository.userUpdateRoleRepository({
       userId,
@@ -517,9 +545,8 @@ const userUpdateRoleController = async (req, res) => {
 };
 
 const userUpdateStatusController = async (req, res) => {
-  const { newStatus,userId } = req.body;
+  const { newStatus, userId } = req.body;
   try {
-    // const userId = req.user.userId;
     const userRole = req.user.userRole;
     const updatedUser = await userRepository.userUpdateStatusRepository({
       userId,
@@ -547,12 +574,42 @@ const userUpdateStatusController = async (req, res) => {
 };
 
 const userUpdateBlockController = async (req, res) => {
-  const { newBlock,userId } = req.body;
+  const { newBlock, userId } = req.body;
   try {
-    // const userId = req.user.userId;
     const userRole = req.user.userRole;
     const updatedUser = await userRepository.userUpdateBlockRepository({
       userId,
+      newBlock,
+      userRole,
+    });
+
+    if (!updatedUser.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: updatedUser.message,
+      });
+    }
+    return res.status(HttpStatusCode.OK).json({
+      status: "OK",
+      message: updatedUser.message,
+      data: updatedUser.data,
+    });
+  } catch (exception) {
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      status: "ERROR",
+      message: exception.message,
+    });
+  }
+};
+
+const userUpdateByAdminController = async (req, res) => {
+  const { newRole, newStatus, newBlock, userId } = req.body;
+  try {
+    const userRole = req.user.userRole;
+    const updatedUser = await userRepository.userUpdateByAdminRepository({
+      userId,
+      newRole,
+      newStatus,
       newBlock,
       userRole,
     });
@@ -592,4 +649,5 @@ export default {
   userUpdateStatusController,
   userUpdateBlockController,
   userViewProfileController,
+  userUpdateByAdminController
 };
