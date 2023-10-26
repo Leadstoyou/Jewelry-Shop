@@ -5,16 +5,26 @@ import { productRepository } from "../repositories/indexRepository.js";
 const viewCart = async (req, res) => {
     try {
       const cartToken = req.cookies.cart_token;
-      const cart = await cartRepository.getCartByToken(cartToken);
+      const userId = req.user?.userId;
+      console.log(req.user);
+      let cart = null;
+
+      if (userId) {
+        cart = await cartRepository.getCartByUser(userId);
+      } else {
+        cart = await cartRepository.getCartByToken(cartToken);
+      }
+      
       if (!cart) {
-        const newCart = await cartRepository.createEmptyCart();
+        const newCart = await cartRepository.createEmptyCart(userId);
         res.cookie("cart_token", newCart.cart_token.toString(), {
           httpOnly: false,
           secure: true,
           sameSite: "None",
         });
+        
         return res.status(HttpStatusCode.OK).json(newCart);
-      }else{
+      } else {
         res.cookie("cart_token", cart.cart_token.toString(), {
           httpOnly: false,
           secure: true,
@@ -22,16 +32,16 @@ const viewCart = async (req, res) => {
         });
         return res.status(HttpStatusCode.OK).json(cart);
       }
-    
     } catch (err) {
       console.error(err);
       return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
   };
+
   const addToCart = async (req, res) => {
     try {
       const cartToken = req.cookies.cart_token;
-      const userId = req.body.user_id;
+      const userId = req.user?.userId;
       const productId = req.body.product_id;
       const quantity = req.body.quantity;
       const size = req.body.size;
@@ -42,31 +52,38 @@ const viewCart = async (req, res) => {
       const price = req.body.price;
 
       // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng hay chưa
-      const cart = await cartRepository.getCartByToken(cartToken);
+      let cart = null;
+
+      if(userId){
+        cart = await cartRepository.getCartByUser(userId)
+      }
+      
       const product = await productRepository.getProductById(productId);
-  
+        
       if (!product) {
         return res.status(HttpStatusCode.NOT_FOUND).json({ message: 'Product not found' });
       }
-  
-      if (!cart) {
-        // Nếu giỏ hàng không tồn tại, tạo mới giỏ hàng và thêm sản phẩm vào
-        const newCart = await cartRepository.createEmptyCart();
-        await cartRepository.addProductToCart(newCart._id, productId, quantity, size, color, material, price, productImage, productDes);
-        res.cookie("cart_token", newCart.cart_token.toString(), {
-          httpOnly: false,
-          secure: true,
-          sameSite: "None",
-        });
-      } else {
-        
+      if(!cart){
+        cart = await cartRepository.getCartByToken(cartToken);
+        if (!cart) {
+          const newCart = await cartRepository.createEmptyCart();
+          await cartRepository.addProductToCart(newCart._id, productId, quantity, size, color, material, price, productImage, productDes);
+          res.cookie("cart_token", newCart.cart_token.toString(), {
+            httpOnly: false,
+            secure: true,
+            sameSite: "None",
+          });
+        } else {
+          
+          await cartRepository.addProductToCart(cart._id, productId, quantity, size, color, material, price, productImage, productDes);
+          
+          }
+      }else{
         await cartRepository.addProductToCart(cart._id, productId, quantity, size, color, material, price, productImage, productDes);
-        
-        }
-
+      }
       
     return res.status(HttpStatusCode.OK).json({ message: "Product added to cart successfully" });
-  }} catch (error) {
+  } catch (error) {
     console.error(error);
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
   }
