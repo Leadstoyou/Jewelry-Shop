@@ -133,11 +133,12 @@ const Navbar = (props) => {
       "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie =
       "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    navigate('/')  
   };
   const notify = () => {
     toast.error("Vui lòng không để trống trường tìm kiếm !!!", {
       position: "top-center",
-      autoClose: 3000,
+      autoClose: 1000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -281,8 +282,8 @@ const Navbar = (props) => {
         </Right>
       </Container>
       <ToastContainer
-        position="top-center"
-        autoClose={5000}
+        position="top-right"
+        autoClose={1000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
