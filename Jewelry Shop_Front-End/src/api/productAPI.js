@@ -12,6 +12,7 @@ function getAccessTokenFromCookie() {
   }
   return null;
 }
+
 const CollectionAPI = async (
   category,
   color,

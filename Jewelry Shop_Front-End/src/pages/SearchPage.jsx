@@ -5,7 +5,6 @@ import RiseLoader from "react-spinners/RiseLoader";
 import "aos/dist/aos.css";
 import SearchpageBody from "../components/searchpage/SearchpageBody";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CollectionAPISearch } from "../api/productAPI";
