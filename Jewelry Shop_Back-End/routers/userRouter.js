@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get("/",checkToken, userController.userGetAllUsersController);
 
-router.get("/search",checkPermission([ConfigConstants.ADMIN_ROLE_ID]), userController.userSearchController);
+router.get("/search", userController.userSearchController);
 
 router.post("/login", userController.userLoginController);
 
@@ -32,6 +32,8 @@ router.put("/updateRole",checkPermission([ConfigConstants.ADMIN_ROLE_ID]), userC
 router.put("/updateStatus",checkPermission([ConfigConstants.ADMIN_ROLE_ID]), userController.userUpdateStatusController);
 
 router.put("/updateBlock",checkPermission([ConfigConstants.ADMIN_ROLE_ID]), userController.userUpdateBlockController);
+
+router.put("/updateByAdmin",checkPermission([ConfigConstants.ADMIN_ROLE_ID]), userController.userUpdateByAdminController);
 
 
 export default router;

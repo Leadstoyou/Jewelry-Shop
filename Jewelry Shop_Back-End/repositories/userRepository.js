@@ -38,7 +38,6 @@ const userSearchRepository = async ({
   block
 }) => {
   try {
-   
     const matchQuery = {
       $or: [
         {
@@ -49,26 +48,20 @@ const userSearchRepository = async ({
         },
       ],
     };
-
     if (role) {
-      matchQuery.userRole = parseInt(role);
+      matchQuery.userRole = role;
     }
-
     if (status) {
-      matchQuery.isActive = JSON.parse(status);;
+      matchQuery.isActive = status;
     }
-
     if (block) {
-      matchQuery.isDelete = JSON.parse(block);;
+      matchQuery.isDelete = block;
     }
-
     const totalUsers = await User.countDocuments(matchQuery);
-    if (size === undefined) {
+    if (!size) {
       size = totalUsers;
     }
 
-    page = parseInt(page);
-    size = parseInt(size);
     let filteredUsers = await User.aggregate([
       {
         $match: matchQuery,
@@ -77,7 +70,7 @@ const userSearchRepository = async ({
       { $limit: size },
     ]);
 
-    if (!filteredUsers || filteredUsers.length === 0) {
+    if (!filteredUsers) {
       return {
         success: false,
         message: Exception.CANNOT_FIND_USER,
@@ -88,12 +81,15 @@ const userSearchRepository = async ({
       success: true,
       message: SuccessConstants.GET_USER_SUCCESS,
       data: {
-        total: totalUsers, 
+        total: totalUsers,
         users: filteredUsers
       },
     };
   } catch (exception) {
-    throw new Exception(exception.message);
+    return {
+      success: false,
+      message: exception.message,
+    };
   }
 };
 
@@ -156,7 +152,10 @@ const userLoginRepository = async ({ userEmail, userPassword }) => {
       },
     };
   } catch (exception) {
-    throw new Exception(exception.message);
+    return {
+      success: false,
+      message: exception.message,
+    };
   }
 };
 
@@ -202,7 +201,10 @@ const refreshAccessTokenRepository = async (refreshToken) => {
       data: newAccessToken,
     };
   } catch (exception) {
-    throw new Exception(exception.message);
+    return {
+      success: false,
+      message: exception.message,
+    };
   }
 };
 
@@ -226,7 +228,10 @@ const userLogoutRepository = async (refreshToken) => {
       message: SuccessConstants.LOGOUT_SUCCESS,
     };
   } catch (exception) {
-    throw new Exception(exception.message);
+    return {
+      success: false,
+      message: exception.message,
+    };
   }
 };
 
@@ -282,7 +287,10 @@ const userRegisterRepository = async ({
       },
     };
   } catch (exception) {
-    throw new Exception(exception.message);
+    return {
+      success: false,
+      message: exception.message,
+    };
   }
 };
 
@@ -307,7 +315,10 @@ const verifyEmailRepository = async (userVerifyResetToken) => {
       message: SuccessConstants.VERIFY_EMAIL_SUCCESS,
     };
   } catch (exception) {
-    throw new Exception(exception.message);
+    return {
+      success: false,
+      message: exception.message,
+    };
   }
 };
 
@@ -333,7 +344,10 @@ const userForgotPasswordRepository = async (userEmail) => {
       message: SuccessConstants.FORGOT_PASSWORD_SUCCESS,
     };
   } catch (exception) {
-    throw new Exception(exception.message);
+    return {
+      success: false,
+      message: exception.message,
+    };
   }
 };
 
@@ -369,7 +383,10 @@ const userResetPasswordRepository = async (
       message: SuccessConstants.RESET_PASSWORD_SUCCESS,
     };
   } catch (exception) {
-    throw new Exception(exception.message);
+    return {
+      success: false,
+      message: exception.message,
+    };
   }
 };
 
@@ -418,7 +435,10 @@ const userChangePasswordRepository = async ({
       },
     };
   } catch (exception) {
-    throw new Exception(exception.message);
+    return {
+      success: false,
+      message: exception.message,
+    };
   }
 };
 
@@ -437,7 +457,10 @@ const userViewProfileRepository = async (userId) => {
       data: existingUser,
     };
   } catch (exception) {
-    throw new Exception(exception.message);
+    return {
+      success: false,
+      message: exception.message,
+    };
   }
 };
 
@@ -459,7 +482,7 @@ const userUpdateProfileRepository = async ({
         message: Exception.CANNOT_FIND_USER,
       };
     }
-    
+
     if (userAvatar) {
       userAvtUrl = await cloudinaryService.uploadProductImageToCloudinary(
         userAvatar,
@@ -499,7 +522,10 @@ const userUpdateProfileRepository = async ({
     if (userAvtUrl) {
       cloudinaryService.deleteImageFromCloudinary(userAvtUrl);
     }
-    throw new Exception(exception.message);
+    return {
+      success: false,
+      message: exception.message,
+    };
   }
 };
 
@@ -541,7 +567,10 @@ const userUpdateRoleRepository = async ({ userId, newRole, userRole }) => {
       },
     };
   } catch (exception) {
-    throw new Exception(exception.message);
+    return {
+      success: false,
+      message: exception.message,
+    };
   }
 };
 
@@ -580,7 +609,10 @@ const userUpdateStatusRepository = async ({ userId, newStatus, userRole }) => {
       data: { ...updatedUser.toObject(), userPassword: "Not shown" },
     };
   } catch (exception) {
-    throw new Exception(exception.message);
+    return {
+      success: false,
+      message: exception.message,
+    };
   }
 };
 
@@ -619,6 +651,53 @@ const userUpdateBlockRepository = async ({ userId, newBlock, userRole }) => {
       data: { ...updatedUser.toObject(), userPassword: "Not shown" },
     };
   } catch (exception) {
+    return {
+      success: false,
+      message: exception.message,
+    };
+  }
+};
+
+const userUpdateByAdminRepository = async ({ userId, newRole, newStatus, newBlock, userRole }) => {
+  try {
+    if (userRole !== 0) {
+      return {
+        success: false,
+        message: Exception.PERMISSION_DENIED,
+      };
+    }
+
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      return {
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      };
+    }
+
+    if (newRole !== undefined) {
+      existingUser.userRole = newRole;
+    }
+
+    if (newStatus !== undefined) {
+      existingUser.isActive = newStatus;
+    }
+
+    if (newBlock !== undefined) {
+      existingUser.isDelete = newBlock;
+    }
+
+    const updatedUser = await existingUser.save();
+
+    return {
+      success: true,
+      message: SuccessConstants.UPDATE_SUCCESS,
+      data: {
+        ...updatedUser.toObject(),
+        userPassword: "Not shown",
+      },
+    };
+  } catch (exception) {
     throw new Exception(exception.message);
   }
 };
@@ -634,9 +713,10 @@ export default {
   userForgotPasswordRepository,
   userResetPasswordRepository,
   userChangePasswordRepository,
+  userViewProfileRepository,
   userUpdateProfileRepository,
   userUpdateRoleRepository,
   userUpdateStatusRepository,
   userUpdateBlockRepository,
-  userViewProfileRepository,
+  userUpdateByAdminRepository
 };
