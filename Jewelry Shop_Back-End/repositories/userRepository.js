@@ -48,13 +48,15 @@ const userSearchRepository = async ({
         },
       ],
     };
-    if (role) {
+    if (role!=undefined) {
       matchQuery.userRole = role;
     }
-    if (status) {
+
+    if (status!=undefined ) {
       matchQuery.isActive = status;
     }
-    if (block) {
+
+    if (block!=undefined) {
       matchQuery.isDelete = block;
     }
     const totalUsers = await User.countDocuments(matchQuery);
