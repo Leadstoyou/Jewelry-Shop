@@ -25,7 +25,7 @@ router.put("/changePassword",checkPermission([ConfigConstants.ADMIN_ROLE_ID,Conf
 
 router.get("/viewProfile",checkToken, userController.userViewProfileController);
 
-router.get("/viewProfileDetail",checkToken, userController.userViewProfileDetailController);
+router.get("/viewProfileDetail", userController.userViewProfileDetailController);
 
 router.put("/updateProfile",checkPermission([ConfigConstants.ADMIN_ROLE_ID,ConfigConstants.STAFF_ROLE_ID,ConfigConstants.USER_ROLE_ID]), userController.userUpdateProfileController);
 

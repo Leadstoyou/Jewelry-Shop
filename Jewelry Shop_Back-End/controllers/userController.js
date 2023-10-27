@@ -476,7 +476,7 @@ const userViewProfileController = async (req, res) => {
 
 const userViewProfileDetailController = async (req, res) => {
   try {
-    const userInfoId = req.body.userId;
+    const userInfoId = req.query.userId;
     const userInfo = await userRepository.userViewProfileDetailRepository(
       userInfoId
     );
