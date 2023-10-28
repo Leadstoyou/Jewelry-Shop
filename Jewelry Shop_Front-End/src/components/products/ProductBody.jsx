@@ -18,6 +18,7 @@ import { addToCartAPI } from "../../api/connectApi.js";
 import { viewCartAPI } from "../../api/connectApi.js";
 import { useContext } from "react";
 import { cartValue } from "../../App.jsx";
+import { useSelector } from "react-redux";
 const FooterProduct = styled.div`
   margin-bottom: 5%;
 `;
@@ -130,6 +131,8 @@ const CommentAction = styled.div`
 const CommentDisplay = styled.div``;
 const CommentController = styled.div``;
 const ProductBody = (props) => {
+  const numberCart = useSelector((state) => state?.getNumber?.value);
+  const user = useSelector((state) => state?.loginController);
   const { cartView, setViewCart } = useContext(cartValue);
   const { cartData, setCartData, setShowCartPopup } = useContext(cartValue);
   const { product } = props;
@@ -199,6 +202,7 @@ const ProductBody = (props) => {
   };
 
   const dispatch = useDispatch();
+  const { initialRender } = useContext(cartValue);
   const handleAddTocart = async () => {
     if (
       selectedColor === null ||
@@ -210,41 +214,27 @@ const ProductBody = (props) => {
     ) {
       notify("One of color , material and size is not selected !!!");
     } else {
+      // console.log("hello");
+      // console.log(user);
       let newCart = null;
-      console.log(document.cookie);
-      const cookies = document.cookie.split("; ");
-      const cartTokenCookie = cookies.find((cookie) =>
-        cookie.startsWith("cart_token=")
-      );
-
-      if (cartTokenCookie) {
-        const cartTokenValue = cartTokenCookie.split("=")[1];
-         newCart = {
-          cart_token: cartTokenValue,
-          product_id: productDetail._id,
-          quantity: 1,
-          size: selectedSize,
-          color: selectedColor,
-          material: selectedMaterial,
-          price: 4490000,
-          productImage: productDetail.productImage,
-          productDescription: productDetail.productDescription,
-        };
-      } else {
-         newCart = {
-          // cart_token: "615a8f7f4e7c3a1d3a9b6e60",
-          product_id: productDetail._id,
-          quantity: 1,
-          size: selectedSize,
-          color: selectedColor,
-          material: selectedMaterial,
-          price: 4490000,
-          productImage: productDetail.productImage,
-          productDescription: productDetail.productDescription,
-        };
-      }
-      
+      // console.log(document.cookie);
+      // const cookies = document.cookie.split("; ");
+      // const cartTokenCookie = cookies.find((cookie) =>
+      //   cookie.startsWith("cart_token=")
+      // );
+      initialRender.current = true;
+      newCart = {
+        product_id: productDetail._id,
+        quantity: 1,
+        size: selectedSize,
+        color: selectedColor,
+        material: selectedMaterial,
+        price: 4490000,
+        productImage: productDetail.productImage,
+        productDescription: productDetail.productDescription,
+      };
       await addToCartAPI(notify, success, newCart);
+
       setCartData(newCart);
       setShowCartPopup(true);
     }

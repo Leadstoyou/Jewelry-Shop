@@ -132,7 +132,8 @@ const getAllProducts = async (category,color,material,minPrice,maxPrice,sort,pag
       skip = (page - 1) * limit;
     }
     const getAllProducts = await Product.find(query).sort(sort).skip(skip).limit(limit).exec();
-    const totalPages =  Math.ceil( await Product.find(query).countDocuments().exec() / limit);
+    const totalProducts = await Product.find(query).countDocuments().exec();
+    const totalPages =  Math.ceil( totalProducts  / limit);
 
     if (!getAllProducts || getAllProducts.length === 0) {
       return {
@@ -146,6 +147,7 @@ const getAllProducts = async (category,color,material,minPrice,maxPrice,sort,pag
       data: {
         products: getAllProducts,
         totalPages: totalPages,
+        totalProducts:totalProducts
       },
     };
   } catch (exception) {

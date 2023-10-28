@@ -53,7 +53,9 @@ const PageControl = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  padding: 20px;
+  height: 100%;
+  background-color: #8080f1;
 `;
 
 const Header = styled.div`
@@ -132,7 +134,9 @@ const ListDeleteProduct = () => {
   };
 
   const handleRestore = (id) => {
+    if(confirm('Are you sure you want to restore ?')){
     updateInRecycler(notify,success,setUpdateData,id)
+    }
   };
 
   return (

@@ -1,5 +1,19 @@
 import axios from "axios";
 
+function getAccessTokenFromCookie() {
+  const name = "accessToken=";
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const cookieArray = decodedCookie.split(";");
+
+  for (let i = 0; i < cookieArray.length; i++) {
+    let cookie = cookieArray[i].trim();
+    if (cookie.indexOf(name) === 0) {
+      return cookie.substring(name.length, cookie.length);
+    }
+  }
+  return null;
+}
+
 //get All products
 const getAllProducts = async (
   setAllproduct,
@@ -72,7 +86,7 @@ const getAllProductsDelete = async (
     } else if (response.request.status === 204) {
       const res = await axios.post(
         `${import.meta.env.VITE_API_PRODUCTS}/view`,
-        { limit, page: pageCheck , isDeleted: true}
+        { limit, page: pageCheck, isDeleted: true }
       );
       if (res.request.status === 200) {
         const dataNew = res.data.data.products;
@@ -91,7 +105,13 @@ const addProduct = async (addData, success, notify) => {
     const data = addData;
     const response = await axios.post(
       `${import.meta.env.VITE_API_PRODUCTS}/create`,
-      data
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true,
+      }
     );
     if (response.status === 200) {
       success("Add product successfully !!!");
@@ -144,10 +164,24 @@ const deleteProduct = async (_id) => {
 const addToCartAPI = async (notify, success, newCart) => {
   try {
     const data = newCart;
+    const headers = {
+      withCredentials: true,
+    };
+
+    if (getAccessTokenFromCookie) {
+      headers.Authorization = `Bearer ${getAccessTokenFromCookie()}`;
+    }
+
     const response = await axios.post(
-      `${import.meta.env.VITE_API_CART}/add`,
+      "http://localhost:9999/api/v1/cart/add",
       data,
-      { withCredentials: true }
+      {
+    
+          headers: {
+            Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+          },
+        withCredentials: true,
+      }
     );
     console.log(response);
     if (response.status === 200) {
@@ -156,20 +190,36 @@ const addToCartAPI = async (notify, success, newCart) => {
       notify("Add to cart failed !!!");
     }
   } catch (error) {
+    console.log(error);
     notify("Add to cart failed !!!");
   }
 };
 
-//viewCart
+
+//getToken
 const viewCartAPI = async (cartToken, setViewCart) => {
   try {
     const token = cartToken;
 
-    const response = await axios.get(`http://localhost:9999/api/v1/cart/view`, {
+    const headers = {
       withCredentials: true,
-    });
+    };
 
+    if (getAccessTokenFromCookie) {
+      const accessToken = getAccessTokenFromCookie(); // Call the function to get the access token
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
 
+    const response = await axios.get(
+      "http://localhost:9999/api/v1/cart/view",
+      {
+          headers: {
+            Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+          },
+        withCredentials: true,// Use the headers object you've constructed
+      }
+    );
+    console.log("API response:", response.data);
     if (response.status === 200) {
       setViewCart(response.data);
     } else {
@@ -194,22 +244,25 @@ function getCookieValue(cookieName) {
 }
 
 //update product in recycle
-const updateInRecycler = async (notify,success,setUpdateData,idProduct)=>{
+const updateInRecycler = async (notify, success, setUpdateData, idProduct) => {
   try {
-    const id = idProduct
-    const isDeleted = false
-    const res = await axios.patch(`http://localhost:9999/api/v1/products/update/${id}`,{isDeleted})
-    if(res.status === 200){
+    const id = idProduct;
+    const isDeleted = false;
+    const res = await axios.patch(
+      `http://localhost:9999/api/v1/products/update/${id}`,
+      { isDeleted }
+    );
+    if (res.status === 200) {
       console.log(res);
-      setUpdateData(res.data.data)
-      success('Update successfully')
-    }else {
+      setUpdateData(res.data.data);
+      success("Update successfully");
+    } else {
       notify("Error updating");
     }
-  } catch (error){
+  } catch (error) {
     notify("Error updating");
   }
-}
+};
 //removeFromCart
 const removeFromCart = async (productId, cartToken, setDeleteCart) => {
   try {
@@ -234,7 +287,7 @@ const removeFromCart = async (productId, cartToken, setDeleteCart) => {
   }
 };
 
-const updateCart = async (productId, quantity, cartToken,setCartData) => {
+const updateCart = async (productId, quantity, cartToken, setCartData) => {
   try {
     const data = { productId, quantity, cartToken };
     const response = await axios.post(
@@ -254,7 +307,6 @@ const updateCart = async (productId, quantity, cartToken,setCartData) => {
   }
 };
 
-
 export {
   getAllProducts,
   addProduct,
@@ -262,11 +314,8 @@ export {
   deleteProduct,
   addToCartAPI,
   viewCartAPI,
-
   getAllProductsDelete,
   updateInRecycler,
-
   removeFromCart,
-  updateCart
-
+  updateCart,
 };

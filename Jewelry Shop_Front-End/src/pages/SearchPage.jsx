@@ -5,74 +5,114 @@ import RiseLoader from "react-spinners/RiseLoader";
 import "aos/dist/aos.css";
 import SearchpageBody from "../components/searchpage/SearchpageBody";
 import { useEffect, useState } from "react";
+import Pagination from "react-bootstrap/Pagination";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CollectionAPISearch } from "../api/productAPI";
-// const Container = styled.div``;
-// const Spinner = styled.div`
-//   height: 100%;
-//   flex-direction: column;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-// `;
+import { CollectionFilterSearch } from "../api/productAPI";
 const Container = styled.div`
   font-family: "Jost", sans-serif;
 `;
-
+const PageControl = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+`;
 function SearchPage() {
   const [loading, setLoading] = useState(false);
   const { searchName } = useParams();
   const [foundProducts, setFoundProducts] = useState([]);
-  const [colorsArray, setColorsArray] = useState();
-  const [materialArray, setMaterialArray] = useState();
+  const [colorsArray, setColorsArray] = useState([]);
+  const [materialArray, setMaterialArray] = useState([]);
   const navigate = useNavigate();
-  
-  // useEffect(() => {
-  //   setLoading(true);
-  //   async function fetchData() {
-  //     try {
-  //       const response = await axios.get(
-  //         `http://localhost:9999/api/v1/products/search/${searchtext}`
-  //       );
-  //       const data = response.data.data;
-  //       setFoundProducts(data);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       setLoading(false);
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   }
 
-  //   fetchData();
-  // }, [searchtext]);
+  const [color, setColor] = useState(null);
+  const [material, setMaterial] = useState(null);
+  const [price, setPrice] = useState(
+    JSON.stringify({
+      minPrice: 0,
+      maxPrice: 100000000,
+    })
+  );
+  const [sort, setSort] = useState(JSON.stringify({}));
+  const [activePage, setActivePage] = useState(1);
+  const limitP = 1;
+  const [totalPage, setTotalpage] = useState(0);
+  const [totalSize, setTotalSize] = useState(0);
+  const [filterPro, setFilterProduct] = useState();
+
   useEffect(() => {
-    setLoading(true);
-    CollectionAPISearch(
+    CollectionFilterSearch(
+      setFilterProduct,
       searchName,
-      null,
-      null,
-      null,
-      null,
-      setColorsArray,
-      setMaterialArray,
-      setFoundProducts,
-      setLoading,toast,navigate
+      color,
+      material,
+      price,
+      sort
     );
-  }, []);
-  const handleDataFromChild = (color, material, price, sort) => {
+  }, [searchName]);
+
+  useEffect(() => {
+    // This effect runs when filterPro changes
+    const fetchData = async () => {
+      console.log("array");
+      console.log(colorsArray);
+      console.log(materialArray);
+      console.log(filterPro);
+      if (filterPro) {
+        const allColors = await filterPro.flatMap(
+          (product) => product.productColors
+        );
+        const allMaterial = await filterPro.flatMap(
+          (product) => product.productMaterials
+        );
+        const uniqueColors = await [...new Set(allColors)];
+        console.log(uniqueColors);
+        console.log(allMaterial);
+        setColorsArray(allColors);
+        setMaterialArray(allMaterial);
+      } else {
+        console.log("filterPro is undefined or empty.");
+      }
+    };
+    fetchData();
+  }, [filterPro]);
+
+  useEffect(() => {
     CollectionAPISearch(
+      limitP,
+      setTotalpage,
+      setTotalSize,
+      activePage,
       searchName,
       color,
       material,
       price,
       sort,
-      setColorsArray,
-      setMaterialArray,
       setFoundProducts,
-      setLoading,toast,navigate
+      setLoading,
+      toast,
+      navigate
     );
+  }, [activePage, filterPro, searchName, sort, material, color, price, sort]);
+
+  const Allpage = [];
+  for (let i = 1; i <= totalPage; i++) {
+    Allpage.push(i);
+  }
+  console.log(Allpage);
+  const handlePrev = () => {
+    if (activePage > 1) {
+      setActivePage(activePage - 1);
+    }
+  };
+  const handleNext = () => {
+    if (activePage < totalPage) {
+      setActivePage(activePage + 1);
+    }
   };
   return (
     <>
@@ -92,12 +132,40 @@ function SearchPage() {
         <Container>
           <Navbar />
           <SearchpageBody
-             products={foundProducts}
-             colorsArray={colorsArray}
-             materialArray={materialArray}
-             fetchData={handleDataFromChild}
-             searchName={searchName}
+            color={color}
+            material={material}
+            price={price}
+            sort={sort}
+            filterPro={filterPro}
+            setColor={setColor}
+            setMaterial={setMaterial}
+            setPrice={setPrice}
+            setSort={setSort}
+            total={totalSize}
+            products={foundProducts}
+            productLength={foundProducts?.length}
+            colorsArray={colorsArray}
+            materialArray={materialArray}
+            searchName={searchName}
           />
+          {foundProducts?.length > 0 && (
+            <PageControl>
+              <Pagination>
+                <Pagination.Prev onClick={handlePrev} />
+                {Allpage.map((page) => (
+                  <Pagination.Item
+                    active={page === activePage}
+                    onClick={() => {
+                      setActivePage(page);
+                    }}
+                  >
+                    {page}
+                  </Pagination.Item>
+                ))}
+                <Pagination.Next onClick={handleNext} />
+              </Pagination>
+            </PageControl>
+          )}
           <Footer />
         </Container>
       )}

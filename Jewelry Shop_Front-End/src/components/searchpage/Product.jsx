@@ -8,7 +8,7 @@ const Container =  styled(Link)`
   overflow: hidden;
   display: block; /* Ensures the anchor tag behaves as a block element */
   text-decoration: none; /* Removes default underline for anchor tags */
-  height:  450px;
+  height:  400px;
   .ImageController {
     
     width: 100%;
@@ -32,7 +32,7 @@ const Image = styled.img`
   object-fit: cover;
 `;
 const DescController = styled.div`
-  height: 200px;
+  height: 150px;
   font-size: smaller;
   text-align: center;
 `;
@@ -55,7 +55,9 @@ const Product = ({product}) => {
         </ImageController>
       </div>
       <DescController>
-        <Title>{product.productName}</Title>
+        <Title>{product?.productName.length > 40
+                ? product?.productName.substring(0, 60) + "..."
+                : product?.productName}</Title>
         <Price>
         {product.productPrice?.toLocaleString("vi-VN")}
           <p style={{ textDecoration: "underline", display: "inline" }}>đ</p>

@@ -5,9 +5,10 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from "react-redux";
-import {login} from '../redux/Login.jsx'
+import { login } from "../redux/Login.jsx";
+import {getNumber} from "../redux/GetNumber.jsx"
 const Logins = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -30,21 +31,30 @@ const Logins = () => {
 
     if (validate()) {
       try {
-        const response = await axios.post("http://localhost:9999/api/v1/users/login", {
-          userEmail: email,
-          userPassword: password,
-        },{
-          withCredentials: true,
-        });
+        const response = await axios.post(
+          "http://localhost:9999/api/v1/users/login",
+          {
+            userEmail: email,
+            userPassword: password,
+          },
+          {
+            withCredentials: true,
+          }
+        );
         if (response.status === 200) {
-          dispatch(login(response?.data?.data))
-          console.log(response);
           console.log("Login successful");
-          navigate("/"); 
+          navigate("/");
+          document.cookie =
+            "cart_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          dispatch(getNumber(0));
+          dispatch(login(response?.data?.data));
+          
+          console.log(response);
+          
         }
       } catch (error) {
         toast.error(error.response.data.message);
-      } 
+      }
     }
   };
 
