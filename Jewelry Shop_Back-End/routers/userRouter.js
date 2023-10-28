@@ -7,11 +7,11 @@ const router = express.Router();
 
 router.get("/",checkToken, userController.userGetAllUsersController);
 
-router.get("/search", userController.userSearchController);
+router.get("/search",checkPermission([ConfigConstants.ADMIN_ROLE_ID]), userController.userSearchController);
 
 router.post("/login", userController.userLoginController);
 
-router.get("/logout",checkPermission([ConfigConstants.ADMIN_ROLE_ID,ConfigConstants.STAFF_ROLE_ID,ConfigConstants.USER_ROLE_ID]), userController.userLogoutController);
+router.get("/logout",checkToken, userController.userLogoutController);
 
 router.post("/register", userController.userRegisterController);
 
@@ -21,11 +21,13 @@ router.get("/forgotPassword", userController.userForgotPasswordController);
 
 router.put("/resetPassword", userController.userResetPasswordController);
 
-router.put("/changePassword",checkPermission([ConfigConstants.ADMIN_ROLE_ID,ConfigConstants.STAFF_ROLE_ID,ConfigConstants.USER_ROLE_ID]), userController.userChangePasswordController);
+router.put("/changePassword",checkToken, userController.userChangePasswordController);
 
 router.get("/viewProfile",checkToken, userController.userViewProfileController);
 
-router.put("/updateProfile",checkPermission([ConfigConstants.ADMIN_ROLE_ID,ConfigConstants.STAFF_ROLE_ID,ConfigConstants.USER_ROLE_ID]), userController.userUpdateProfileController);
+router.get("/viewProfileDetail",checkPermission([ConfigConstants.ADMIN_ROLE_ID]), userController.userViewProfileDetailController);
+
+router.put("/updateProfile",checkToken, userController.userUpdateProfileController);
 
 router.put("/updateRole",checkPermission([ConfigConstants.ADMIN_ROLE_ID]), userController.userUpdateRoleController);
 

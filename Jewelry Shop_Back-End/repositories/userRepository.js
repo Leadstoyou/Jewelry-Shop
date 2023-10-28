@@ -35,7 +35,7 @@ const userSearchRepository = async ({
   search,
   role,
   status,
-  block
+  block,
 }) => {
   try {
     const matchQuery = {
@@ -48,15 +48,15 @@ const userSearchRepository = async ({
         },
       ],
     };
-    if (role!=undefined) {
+    if (role != undefined) {
       matchQuery.userRole = role;
     }
 
-    if (status!=undefined ) {
+    if (status != undefined) {
       matchQuery.isActive = status;
     }
 
-    if (block!=undefined) {
+    if (block != undefined) {
       matchQuery.isDelete = block;
     }
     const totalUsers = await User.countDocuments(matchQuery);
@@ -84,7 +84,7 @@ const userSearchRepository = async ({
       message: SuccessConstants.GET_USER_SUCCESS,
       data: {
         total: totalUsers,
-        users: filteredUsers
+        users: filteredUsers,
       },
     };
   } catch (exception) {
@@ -466,6 +466,28 @@ const userViewProfileRepository = async (userId) => {
   }
 };
 
+const userViewProfileDetailRepository = async (userId) => {
+  try {
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      return {
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      };
+    }
+    return {
+      success: true,
+      message: SuccessConstants.VIEW_PROFILE_SUCCESS,
+      data: existingUser,
+    };
+  } catch (exception) {
+    return {
+      success: false,
+      message: exception.message,
+    };
+  }
+};
+
 const userUpdateProfileRepository = async ({
   userId,
   userName,
@@ -502,10 +524,9 @@ const userUpdateProfileRepository = async ({
       ...(userAvtUrl && { userAvatar: userAvtUrl }),
     };
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      updateFields,
-      { new: true }).exec();
+    const updatedUser = await User.findByIdAndUpdate(userId, updateFields, {
+      new: true,
+    }).exec();
     if (!updatedUser) {
       return {
         success: false,
@@ -660,7 +681,13 @@ const userUpdateBlockRepository = async ({ userId, newBlock, userRole }) => {
   }
 };
 
-const userUpdateByAdminRepository = async ({ userId, newRole, newStatus, newBlock, userRole }) => {
+const userUpdateByAdminRepository = async ({
+  userId,
+  newRole,
+  newStatus,
+  newBlock,
+  userRole,
+}) => {
   try {
     if (userRole !== 0) {
       return {
@@ -720,5 +747,6 @@ export default {
   userUpdateRoleRepository,
   userUpdateStatusRepository,
   userUpdateBlockRepository,
-  userUpdateByAdminRepository
+  userUpdateByAdminRepository,
+  userViewProfileDetailRepository,
 };
