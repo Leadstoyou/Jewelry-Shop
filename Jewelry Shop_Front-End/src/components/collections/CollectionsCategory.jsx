@@ -68,8 +68,9 @@ const ItemOne = styled.div`
   gap: 20px;
 `;
 const DropdownOne = styled.select`
+  outline: none;
   padding: 5px;
-  border: 5px solid grey;
+  border: 5px solid #cecccc;
 `;
 const TextInDropdown = styled.option``;
 const TextSearch = styled.div``;
@@ -79,16 +80,31 @@ const Controller = styled.div`
   display: grid;
   grid-template-columns: 24.125% 24.125% 24.125% 24.125%;
   gap: 1%;
+  margin-top: ${({ length }) => (length > 0 ? "0px" : "10%")};
+  margin-bottom: ${({ length }) => (length > 0 ? "0px" : "10%")};
 `;
 const PagingController = styled.div`
-  margin-top: 10%;
-  margin-bottom: 3%;
+  margin-bottom: 2%;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 const CollectionsCategory = (props) => {
-  const { products, materialArray, colorsArray, fetchData } = props;
+  const {
+    products,
+    materialArray,
+    colorsArray,
+    color,
+    material,
+    price,
+    sort,
+    searchName,
+    setColor,
+    setMaterial,
+    setPrice,
+    setSort,
+    filterPro,
+  } = props;
   const navigate = useNavigate();
   const [foundProducts, setFoundProducts] = useState();
   const [colorsArrayTemp, setColorsArrayTemp] = useState(colorsArray);
@@ -111,12 +127,12 @@ const CollectionsCategory = (props) => {
   }, [products]);
 
   const handleSelected = (color, material, price, sort) => {
-    setSelectedColor(color);
-    setSelectedMaterial(material);
-    setSelectedPrice(price);
-    setSelectedSort(sort);
+    console.log(color, material, price, sort);
 
-    fetchData(color, material, JSON.parse(price), JSON.parse(sort));
+    setColor(color);
+    setMaterial(material);
+    setPrice(price);
+    setSort(sort);
   };
   return (
     <Container>
@@ -152,12 +168,7 @@ const CollectionsCategory = (props) => {
         <ItemOne>
           <DropdownOne
             onChange={(e) =>
-              handleSelected(
-                e.target.value,
-                selectedMaterial,
-                selectedPrice,
-                selectedSort
-              )
+              handleSelected(e.target.value, material, price, sort)
             }
           >
             <TextInDropdown value="" selected>
@@ -182,14 +193,7 @@ const CollectionsCategory = (props) => {
           </DropdownOne>
 
           <DropdownOne
-            onChange={(e) =>
-              handleSelected(
-                selectedColor,
-                e.target.value,
-                selectedPrice,
-                selectedSort
-              )
-            }
+            onChange={(e) => handleSelected(color, e.target.value, price, sort)}
           >
             <TextInDropdown selected value="">
               Chất Liệu
@@ -213,12 +217,7 @@ const CollectionsCategory = (props) => {
           </DropdownOne>
           <DropdownOne
             onChange={(e) =>
-              handleSelected(
-                selectedColor,
-                selectedMaterial,
-                e.target.value,
-                selectedSort
-              )
+              handleSelected(color, material, e.target.value, sort)
             }
           >
             <TextInDropdown
@@ -276,12 +275,7 @@ const CollectionsCategory = (props) => {
           <TextSearch>Sắp xếp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</TextSearch>
           <DropdownOne
             onChange={(e) =>
-              handleSelected(
-                selectedColor,
-                selectedMaterial,
-                selectedPrice,
-                e.target.value
-              )
+              handleSelected(color, material, price, e.target.value)
             }
           >
             <TextInDropdown selected value={JSON.stringify({})}>
@@ -308,31 +302,18 @@ const CollectionsCategory = (props) => {
           </DropdownOne>
         </ItemOne>
       </SearchController>
-      <Controller data-aos="fade-up">
-        { foundProducts ? (foundProducts?.map((product, index) => (
-          <Product product={product} key={index} />
-        ))) : ( <div style={{ position:'absolute' ,right:'25%' }}>
-        <h1>Not found product you have just filtered !!!</h1>
-      </div>)}
+      <Controller data-aos="fade-up" length={foundProducts?.length}>
+        {foundProducts ? (
+          foundProducts?.map((product, index) => (
+            <Product product={product} key={index} />
+          ))
+        ) : (
+          <div style={{ position: "absolute", right: "25%" }}>
+            <h1>Not found product you have just filtered !!!</h1>
+          </div>
+        )}
       </Controller>
-      <PagingController data-aos="fade-up">
-        {/* <Pagination>
-          <Pagination.Prev linkStyle={{ color: "black" }} />
-          <Pagination.Item
-            linkStyle={{ color: "white", backgroundColor: "#3b3b3b" }}
-            disabled
-          >
-            {1}
-          </Pagination.Item>
-          <Pagination.Item linkStyle={{ color: "black" }}>{2}</Pagination.Item>
-          <Pagination.Item linkStyle={{ color: "black" }}>{3}</Pagination.Item>
-          <Pagination.Item linkStyle={{ color: "black" }}>{4}</Pagination.Item>
-          <Pagination.Item linkStyle={{ color: "black" }}>{5}</Pagination.Item>
-          <Pagination.Item linkStyle={{ color: "black" }}>{6}</Pagination.Item>
-          <Pagination.Item linkStyle={{ color: "black" }}>{7}</Pagination.Item>
-          <Pagination.Next linkStyle={{ color: "black" }} />
-        </Pagination> */}
-      </PagingController>
+      <PagingController data-aos="fade-up"></PagingController>
     </Container>
   );
 };

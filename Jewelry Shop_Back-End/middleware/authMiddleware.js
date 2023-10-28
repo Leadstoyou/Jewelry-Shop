@@ -74,7 +74,9 @@ const checkUser = (req, res, next) => {
       async (err, tokenDataDecode) => {
         if (err) {
           next();
+          return;
         }
+
         req.user = tokenDataDecode;
         next();
       }

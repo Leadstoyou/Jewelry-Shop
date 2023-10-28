@@ -18,7 +18,7 @@ import HistoryPage from "./pages/History";
 import ListDeleteProduct from "./components/dashboard/product/ListDeleteProduct";
 import Checkouts from "./pages/Checkouts";
 import { viewCartAPI } from "./api/connectApi.js";
-import { createContext, useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "./redux/Login.jsx";
 import { getNumber } from "./redux/GetNumber.jsx";
@@ -58,29 +58,32 @@ function App() {
   const user = useSelector((state) => state?.loginController);
   console.log(user);
 
+  const initialRender = useRef(true);
+  const changeInitial = () => {
+    initialRender.current = true;
+  };
 
+  console.log(initialRender.current);
   useEffect(() => {
-    console.log(document.cookie);
+    if (initialRender.current) {
+      initialRender.current = false;
 
-    const cookies = document.cookie.split("; ");
-    const cartTokenCookie = cookies.find((cookie) =>
-      cookie.startsWith("cart_token=")
-    );
-    console.log(cartTokenCookie);
+      console.log("cartData:", cartData);
 
-    const fetchData = async () => {
-      if (cartTokenCookie) {
-        const cartTokenValue = cartTokenCookie.split("=")[1];
-        console.log(cartTokenValue);
-        await viewCartAPI(cartTokenValue, setViewCart);
-        console.log(cartView);
+      const fetchData = async () => {
+        await viewCartAPI("hi", setViewCart);
+
         number = 1;
-      }
-    };
+      };
 
-    fetchData(); // Call the async function here
-  }, [cartData]);
-
+      console.log("Before fetchData");
+      fetchData();
+      console.log("After fetchData");
+    }
+  }, [initialRender.current]);
+  // document.cookie = `cart_token=${cartView?.cart_token}`;
+  console.log("cart view");
+  console.log(cartView);
   useEffect(() => {
     console.log(cartView?.productList.length);
     dispatch(getNumber(cartView?.productList.length));
@@ -89,6 +92,8 @@ function App() {
     <Container>
       <cartValue.Provider
         value={{
+          changeInitial,
+          initialRender,
           cartView,
           setViewCart,
           cartData,
@@ -101,7 +106,6 @@ function App() {
         <BrowserRouter basename="/Jewelry-Shop">
           <Routes>
             <Route path="/" element={<Homepage cartView={cartView} />} />
-
 
             <Route path="/search/:searchName" element={<SearchPage />} />
 

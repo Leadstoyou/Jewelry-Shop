@@ -2,11 +2,11 @@ import HttpStatusCode from "../constant/HttpStatusCode.js";
 import { cartRepository } from "../repositories/indexRepository.js";
 import { productRepository } from "../repositories/indexRepository.js";
 
-const viewCart = async (req, res) => {
+const viewCart = async (req, res,next) => {
     try {
       const cartToken = req.cookies.cart_token;
-      const userId = req.user?.userId;
-      console.log(req.user);
+      const userId = req?.user?.userId;
+      console.log("lmro",req.user);
       let cart = null;
 
       if (userId) {
@@ -41,7 +41,7 @@ const viewCart = async (req, res) => {
   const addToCart = async (req, res) => {
     try {
       const cartToken = req.cookies.cart_token;
-      const userId = req.user?.userId;
+      const userId = req?.user?.userId;
       const productId = req.body.product_id;
       const quantity = req.body.quantity;
       const size = req.body.size;
@@ -51,9 +51,10 @@ const viewCart = async (req, res) => {
       const productDes = req.body.productDescription;
       const price = req.body.price;
 
+
       // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng hay chưa
       let cart = null;
-
+      console.log(userId)
       if(userId){
         cart = await cartRepository.getCartByUser(userId)
       }
@@ -68,7 +69,7 @@ const viewCart = async (req, res) => {
         if (!cart) {
           const newCart = await cartRepository.createEmptyCart();
           await cartRepository.addProductToCart(newCart._id, productId, quantity, size, color, material, price, productImage, productDes);
-          res.cookie("cart_token", newCart.cart_token.toString(), {
+          res.cookie("cart_token", newCart?.cart_token.toString(), {
             httpOnly: false,
             secure: true,
             sameSite: "None",
@@ -85,9 +86,8 @@ const viewCart = async (req, res) => {
     return res.status(HttpStatusCode.OK).json({ message: "Product added to cart successfully" });
   }
    catch (error) {
-
     console.error(error);
-    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+    return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Internal server error" });
   }
   };
   const updatedCart = async(req,res)=> {

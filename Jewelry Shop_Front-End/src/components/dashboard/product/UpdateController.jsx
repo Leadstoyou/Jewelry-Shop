@@ -400,6 +400,7 @@ const UpdateController = (props) => {
               }}
             >
               <ButtonClose
+                type="button"
                 onClick={props.onHide}
                 style={{ fontWeight: "bolder" }}
               >
