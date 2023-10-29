@@ -4,22 +4,21 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Modal from "react-bootstrap/Modal";
 import axios from "axios";
+import {axiosConfig}  from "../../../config/acessToken.js"
 
 const ViewDetail = (props) => {
   const [user, setUser] = useState("");
   const [calledApi, setCalledApi] = useState(false);
-  console.log(props.userIds);
   const userID = props.userIds;
   const ViewProfileDetail = () => {
     console.log(userID);
     axios
       .get(
-        `http://localhost:9999/api/v1/users/viewProfileDetail?userId=${userID}`
+        `http://localhost:9999/api/v1/users/viewProfileDetail?userId=${userID}`,axiosConfig
       )
       .then((response) => {
         if (response.status === 200) {
           console.log("Successfully");
-          // alert("hello")
           console.log(response.data.data.userName);
           setUser(response.data.data);
         }
@@ -28,6 +27,8 @@ const ViewDetail = (props) => {
         console.error("Error:", error);
       });
   };
+
+
   const handleModalHide = () => {
     setCalledApi(false);
     props.onHide();

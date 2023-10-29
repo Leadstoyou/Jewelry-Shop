@@ -11,6 +11,8 @@ import Switch from "react-switch";
 import "../style/ManagerStaff.scss";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import {axiosConfig} from "../../../config/acessToken.js"
+
 const ControlHome = styled.div`
   position: absolute;
   top: 0;
@@ -34,28 +36,10 @@ const ManageStaff = () => {
 
   const size = 10;
 
-  function getCookieValue(cookieName) {
-    const cookies = document.cookie.split("; ");
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].split("=");
-      if (cookie[0] === cookieName) {
-        return decodeURIComponent(cookie[1]);
-      }
-    }
-    return null;
-  }
-
-  const accessToken = getCookieValue("accessToken");
-
-  const axiosConfig = {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  };
-
+//Connect api to take all user
   const connectAPI = (search, filterRole, filterAction, activePage) => {
-    let searchString = ""
-    let statusAction, roleAction 
+
+    let searchString, statusAction, roleAction 
     if(search ){
       searchString = `search=${search}`
     }
@@ -85,7 +69,7 @@ const ManageStaff = () => {
   };
   
 
-
+//Change Role
   const changeRole = async (userId, newRole) => {
     try {
       const response = await axios.put(
@@ -100,7 +84,7 @@ const ManageStaff = () => {
     catch (error) {
       console.log(error);
     }};
-  
+  //Change Status
     const changeStatus = async (userId, newStatus) => {
       try {
         const response = await axios.put(
@@ -115,7 +99,7 @@ const ManageStaff = () => {
       catch (error) {
         console.log(error);
       }};
-    
+    //Block account
       const changeAdmin = async (userId,newBlock) => {
         try {
           const response = await axios.put(
@@ -151,11 +135,6 @@ const ManageStaff = () => {
   };
 
 
-    
-  
-
-
-
   // Paging
   const Allpage = [];
   for (let i = 1; i <= totalPage; i++) {
@@ -174,45 +153,37 @@ const ManageStaff = () => {
     if (activePage < totalPage) {
       setActivePage(activePage + 1);
       connectAPI(search, filterRole, filterAction, activePage+1);
-
-    
     }
   };
-//switch change r
 
-const handleChange = (action, userId) => {
+//Change Role
+const handleChange = async (action, userId) => {
   console.log(userId); // User ID
   console.log(action); // New status
-
-  setAction(action);
-
   if (changeStatus(userId, action)) {
     connectAPI(search, filterRole, filterAction, activePage);
     alert("Status updated");
   }
 };
 
-const handleChangeBlock= (block, userId) => {
+const handleChangeBlock = async (block, userId) => {
   console.log(userId); // User ID
   console.log(block); // New status
 
-  setBlock(block);
+  try {
 
-  if (changeAdmin(userId, block)) {
-    console.log(block);
+    if ( changeAdmin(userId, block)) {
+      console.log(block);
     connectAPI(search, filterRole, filterAction, activePage);
-   
+    }
+  } catch (error) {
+    console.error("An error occurred:", error);
   }
 }
-
-
-
 
  const handleView = (userIds) =>{
   setModalShow(true)
   setUserIds(userIds);
-
-
  }
   useEffect(() => {
     if (!calledApi) {
@@ -304,7 +275,7 @@ const handleChangeBlock= (block, userId) => {
           </tr>
         </thead>
         <tbody>
-          {userData || userData.length > 0 ? (
+          {userData && userData.length > 0 ? (
             userData        
               .map((user, index) => (
                 <tr key={index}>
