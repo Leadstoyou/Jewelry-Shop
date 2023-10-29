@@ -38,8 +38,8 @@ const ManageStaff = () => {
 
 //Connect api to take all user
   const connectAPI = (search, filterRole, filterAction, activePage) => {
-    let searchString = ""
-    let statusAction, roleAction 
+
+    let searchString, statusAction, roleAction 
     if(search ){
       searchString = `search=${search}`
     }

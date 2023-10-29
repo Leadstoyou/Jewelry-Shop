@@ -4,6 +4,7 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Modal from "react-bootstrap/Modal";
 import axios from "axios";
+import {axiosConfig}  from "../../../config/acessToken.js"
 
 const ViewDetail = (props) => {
   const [user, setUser] = useState("");
@@ -13,7 +14,7 @@ const ViewDetail = (props) => {
     console.log(userID);
     axios
       .get(
-        `http://localhost:9999/api/v1/users/viewProfileDetail?userId=${userID}`
+        `http://localhost:9999/api/v1/users/viewProfileDetail?userId=${userID}`,axiosConfig
       )
       .then((response) => {
         if (response.status === 200) {
