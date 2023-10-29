@@ -8,7 +8,6 @@ import axios from "axios";
 const ViewDetail = (props) => {
   const [user, setUser] = useState("");
   const [calledApi, setCalledApi] = useState(false);
-  console.log(props.userIds);
   const userID = props.userIds;
   const ViewProfileDetail = () => {
     console.log(userID);
@@ -19,7 +18,6 @@ const ViewDetail = (props) => {
       .then((response) => {
         if (response.status === 200) {
           console.log("Successfully");
-          // alert("hello")
           console.log(response.data.data.userName);
           setUser(response.data.data);
         }
@@ -28,6 +26,8 @@ const ViewDetail = (props) => {
         console.error("Error:", error);
       });
   };
+
+
   const handleModalHide = () => {
     setCalledApi(false);
     props.onHide();

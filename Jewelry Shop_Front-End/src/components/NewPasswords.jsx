@@ -3,19 +3,24 @@ import { ToastContainer,toast} from 'react-toastify';
 import { Link } from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const NewPasswords = () => {
   const [password, setPassword] = useState('');
   const [checkPassword, setCheckPassword] = useState('');
   const [token, setToken] = useState('');
-
+const navigate = useNavigate();
     const handleSubmit = async (e) => {
         e.preventDefault();
     
       
           try {
-            const response = await axios.put(`http://localhost:9999/api/v1/users/resetPassword?newPassword=${password}&userPasswordResetToken=${token}`);
+            const response = await axios.put(`http://localhost:9999/api/v1/users/resetPassword`,{
+              newPassword:password,
+              userPasswordResetToken:token,
+            });
             if (response.status === 200) {
               toast(" Success"); 
+              navigate("/login")
               
             } else {
               toast.error("Login failed");
@@ -51,7 +56,7 @@ const NewPasswords = () => {
         <br />
           <input
         className="email"
-          type="text"
+          type="password"
           placeholder="Token to check password"
           value={token}
           onChange={(e) => setToken(e.target.value)}
@@ -66,6 +71,8 @@ const NewPasswords = () => {
         <input type="submit" value={"Xác nhận"} className="btn" />
       </div>
     </form>
+    <ToastContainer position="top-right" autoClose={1000} />
+
   </div>
   )
 }
