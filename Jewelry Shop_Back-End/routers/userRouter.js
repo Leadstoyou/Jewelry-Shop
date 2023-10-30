@@ -11,7 +11,7 @@ router.get("/search",checkPermission([ConfigConstants.ADMIN_ROLE_ID]), userContr
 
 router.post("/login", userController.userLoginController);
 
-router.get("/logout",checkToken, userController.userLogoutController);
+router.get("/logout", userController.userLogoutController);
 
 router.post("/register", userController.userRegisterController);
 

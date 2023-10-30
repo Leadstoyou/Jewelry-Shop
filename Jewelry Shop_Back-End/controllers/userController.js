@@ -199,6 +199,7 @@ const userLogoutController = async (req, res) => {
   try {
     res.clearCookie("accessToken", { httpOnly: false, secure: true });
     res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+    res.clearCookie("cart_token", { httpOnly: true, secure: true });
     const logoutUser = await userRepository.userLogoutRepository(
       cookie.refreshToken
     );
