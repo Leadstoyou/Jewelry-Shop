@@ -9,18 +9,6 @@ router.get("/",checkToken, userController.userGetAllUsersController);
 
 router.get("/search",checkPermission([ConfigConstants.ADMIN_ROLE_ID]), userController.userSearchController);
 
-router.post("/login", userController.userLoginController);
-
-router.get("/logout", userController.userLogoutController);
-
-router.post("/register", userController.userRegisterController);
-
-router.get("/verify/:userVerifyResetToken", userController.verifyEmailController);
-
-router.get("/forgotPassword", userController.userForgotPasswordController);
-
-router.put("/resetPassword", userController.userResetPasswordController);
-
 router.put("/changePassword",checkToken, userController.userChangePasswordController);
 
 router.get("/viewProfile",checkToken, userController.userViewProfileController);
@@ -36,6 +24,5 @@ router.put("/updateStatus",checkPermission([ConfigConstants.ADMIN_ROLE_ID]), use
 router.put("/updateBlock",checkPermission([ConfigConstants.ADMIN_ROLE_ID]), userController.userUpdateBlockController);
 
 router.put("/updateByAdmin",checkPermission([ConfigConstants.ADMIN_ROLE_ID]), userController.userUpdateByAdminController);
-
 
 export default router;
