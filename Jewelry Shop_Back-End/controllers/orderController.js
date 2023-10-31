@@ -34,4 +34,24 @@ const getOrder = async (req, res) =>{
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
   }
 }
-  export default {createOrder, getOrder}
+const getAllOrder = async (req, res) =>{
+  try {
+    const orders = await orderRepository.getAllOrder();
+    return res.status(HttpStatusCode.OK).json(orders);
+  } catch (error) {
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+  }
+}
+const updateOrderStatus = async (req, res) => {
+  const orderId = req.params.orderId;
+  const orderStatus = req.body.orderStatus;
+
+  try {
+    const updatedOrder = await orderRepository.updateOrderStatus(orderId, orderStatus);
+    res.json(updatedOrder);
+  } catch (error) {
+    console.error(error);
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+  }
+};
+  export default {createOrder, getOrder, updateOrderStatus, getAllOrder}
