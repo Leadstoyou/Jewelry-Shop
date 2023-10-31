@@ -52,24 +52,4 @@ const createOrder = async (userId, orderStatus) => {
       throw error;
     }
   };
-  const getAllOrder = async () => {
-    try {
-      const orders = await Order.find().exec();
-      return orders;
-    } catch (error) {
-      throw error;
-    }
-  };
-  const updateOrderStatus = async (orderId, orderStatus) => {
-    try {
-      const updatedOrder = await Order.findByIdAndUpdate(
-        orderId,
-        { orderStatus },
-        { new: true }
-      );
-      return updatedOrder;
-    } catch (error) {
-      throw error;
-    }
-  };
-  export default {createOrder, createOrderDetail, getAllOrderByUserID, updateOrderStatus, getAllOrder}
+  export default {createOrder, createOrderDetail, getAllOrderByUserID}

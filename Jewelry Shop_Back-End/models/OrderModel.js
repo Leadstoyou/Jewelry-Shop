@@ -95,7 +95,10 @@ export default mongoose.model(
               },
               orderStatus: {
                 type: String,
-               
+                enum: {
+                    values: ['Đã thanh toán', "Chưa thanh toán"],
+                    message: '{VALUE} is not suppoted'
+                },
                 required: true
               }
         },

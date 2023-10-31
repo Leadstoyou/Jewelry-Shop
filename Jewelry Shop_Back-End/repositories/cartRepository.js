@@ -6,7 +6,7 @@ import Jwt from "jsonwebtoken";
 
 const getCartByUser = async (userId) =>{
   try {
-    const cart = await Cart.findOne({ user_id: userId, isCheckOut: false }).exec();
+    const cart = await Cart.findOne({ user_id: userId }).exec();
     return cart;
   } catch (error) {
     throw error;
@@ -64,10 +64,10 @@ const createCartToken = async (cartId) => {
   }
 };
 
-const addProductToCart = async (cartToken, productId, quantity, size, color, material) => {
+const addProductToCart = async (cartToken, productId, quantity, size, color, material, price, productImage, productDes) => {
   try {
     const cart = await Cart.findById(cartToken);
-    const product = await Product.findById(productId);
+
     const existingProductIndex = cart.productList.findIndex((product) => String(product.product_id) === String(productId));
     
     if (existingProductIndex !== -1) {
@@ -78,29 +78,25 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
       } else {
         cart.productList.push({
           product_id: productId,
-          productName: product.productName,
-          productCategory: product.productCategory,
           quantity: quantity,
           size: size,
           color: color,
           material: material,
-          price: product.productPrice,
-          productImage: product.productImage,
-          productDescription: product.productDescription
+          price: price,
+          productImage: productImage,
+          productDescription: productDes
         });
       }
     } else {
       cart.productList.push({
         product_id: productId,
-          productName: product.productName,
-          productCategory: product.productCategory,
-          quantity: quantity,
-          size: size,
-          color: color,
-          material: material,
-          price: product.productPrice,
-          productImage: product.productImage,
-          productDescription: product.productDescription
+        quantity: quantity,
+        size: size,
+        color: color,
+        material: material,
+        price: price,
+        productImage: productImage,
+        productDescription: productDes
       });
     }
 
