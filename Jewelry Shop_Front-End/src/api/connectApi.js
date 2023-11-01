@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useState } from "react";
 
 function getAccessTokenFromCookie() {
   const name = "accessToken=";
@@ -287,17 +288,19 @@ const removeFromCart = async (productId, cartToken, setDeleteCart) => {
   }
 };
 
-const updateCart = async (productId, quantity, cartToken, setCartData) => {
+
+const updateCart = async (productId, quantity, setCartUpdate) => {
   try {
-    const data = { productId, quantity, cartToken };
+    const product_id = productId;
+
+    const data = { product_id, quantity };
     const response = await axios.post(
-      `${import.meta.env.VITE_API_CART}/update/${cartToken}`,
+      `${import.meta.env.VITE_API_CART}/update`,
       data,
       { withCredentials: true }
     );
     if (response.status === 200) {
-      // If the update is successful, refetch the cart data to get the updated quantity
-      await viewCartAPI(cartToken, setCartData); // Replace setCartData with your state setter
+      setCartUpdate(response.data.productList)
       console.log("Update cart successfully !!!");
     } else {
       console.log("Failed to update the cart");
@@ -306,6 +309,22 @@ const updateCart = async (productId, quantity, cartToken, setCartData) => {
     console.log("Failed to update the cart");
   }
 };
+
+const Logout = async ()=>{
+  try {
+    const response = await axios.get("http://localhost:9999/api/v1/users/logout",{withCredentials:true});
+    if(response.status === 200){
+      console.log("Logout successfully");
+    }else{
+      console.log("Failed to log out ");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+
 
 export {
   getAllProducts,
@@ -318,4 +337,5 @@ export {
   updateInRecycler,
   removeFromCart,
   updateCart,
+  Logout
 };

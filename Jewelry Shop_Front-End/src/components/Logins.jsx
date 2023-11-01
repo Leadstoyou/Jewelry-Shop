@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../style/Login.scss";
 import axios from "axios";
@@ -6,7 +6,9 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/Login.jsx";
-import {getNumber} from "../redux/GetNumber.jsx"
+import { getNumber } from "../redux/GetNumber.jsx";
+import { cartValue } from "../App.jsx";
+import { viewCartAPI } from "../api/connectApi";
 const Logins = () => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
@@ -26,6 +28,8 @@ const Logins = () => {
     }
   }, []);
 
+  const [dataCart, setcartData] = useState();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -43,14 +47,11 @@ const Logins = () => {
         );
         if (response.status === 200) {
           console.log("Login successful");
-          navigate("/");
-          document.cookie =
-            "cart_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-          dispatch(getNumber(0));
+          
+          dispatch(getNumber(dataCart?.productList?.length));
           dispatch(login(response?.data?.data));
-          
-          console.log(response);
-          
+          // navigate("/");
+          document.location="/"
         }
       } catch (error) {
         toast.error(error.response.data.message);
