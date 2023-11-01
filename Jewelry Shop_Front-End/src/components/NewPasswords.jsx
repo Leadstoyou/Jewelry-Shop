@@ -14,7 +14,7 @@ const navigate = useNavigate();
     
       
           try {
-            const response = await axios.put(`http://localhost:9999/api/v1/users/resetPassword`,{
+            const response = await axios.put(`http://localhost:9999/api/v1/account/resetPassword`,{
               newPassword:password,
               userPasswordResetToken:token,
             });
@@ -48,7 +48,7 @@ const navigate = useNavigate();
         <br />
           <input
         className="email"
-          type="text"
+          type="password"
           placeholder="Password again"
           value={checkPassword}
           onChange={(e) => setCheckPassword(e.target.value)}
@@ -56,7 +56,7 @@ const navigate = useNavigate();
         <br />
           <input
         className="email"
-          type="password"
+          type="text"
           placeholder="Token to check password"
           value={token}
           onChange={(e) => setToken(e.target.value)}
