@@ -66,10 +66,10 @@ const createCartToken = async (cartId) => {
   }
 };
 
-const addProductToCart = async (cartToken, productId, quantity, size, color, material, price, productImage, productDes) => {
+const addProductToCart = async (cartToken, productId, quantity, size, color, material) => {
   try {
     const cart = await Cart.findById(cartToken);
-
+    const product = await Product.findById(productId);
     const existingProductIndex = cart.productList.findIndex((product) => String(product.product_id) === String(productId));
     
     if (existingProductIndex !== -1) {
@@ -80,25 +80,29 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
       } else {
         cart.productList.push({
           product_id: productId,
+          productName: product.productName,
+          productCategory: product.productCategory,
           quantity: quantity,
           size: size,
           color: color,
           material: material,
-          price: price,
-          productImage: productImage,
-          productDescription: productDes
+          price: product.productPrice,
+          productImage: product.productImage,
+          productDescription: product.productDescription
         });
       }
     } else {
       cart.productList.push({
         product_id: productId,
-        quantity: quantity,
-        size: size,
-        color: color,
-        material: material,
-        price: price,
-        productImage: productImage,
-        productDescription: productDes
+        productName: product.productName,
+          productCategory: product.productCategory,
+          quantity: quantity,
+          size: size,
+          color: color,
+          material: material,
+          price: product.productPrice,
+          productImage: product.productImage,
+          productDescription: product.productDescription
       });
     }
 
