@@ -16,7 +16,7 @@ const ForgotPasswords = () => {
 
     if (validate()) {
       try {
-        const response = await axios.get(`http://localhost:9999/api/v1/users/forgotPassword?userEmail=${email}` );
+        const response = await axios.get(`http://localhost:9999/api/v1/account/forgotPassword?userEmail=${email}` );
         if (response.status === 200) {
           toast(" Success"); 
           navigate('/newpass')
