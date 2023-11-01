@@ -105,11 +105,9 @@ const userSchema = new Schema(
 
 userSchema.methods = {
   createPasswordChangedToken: function () {
-    const randomBytes = crypto.randomBytes(3);
-    const randomValue = parseInt(randomBytes.toString('hex'), 16) % 1000000;
-    this.userPasswordResetToken =  randomValue.toString(),
+    const randomValue = Math.floor(100000 + Math.random() * 900000); 
+    this.userPasswordResetToken = randomValue.toString(); 
     this.userPasswordResetExpires = Date.now() + 15 * 60 * 60 * 1000;
-    console.log(randomValue);
     return randomValue.toString();
   },
   createVerifyToken: function () {
