@@ -6,7 +6,9 @@ import Jwt from "jsonwebtoken";
 
 const getCartByUser = async (userId) =>{
   try {
-    const cart = await Cart.findOne({ user_id: userId }).exec();
+
+    const cart = await Cart.findOne({ user_id: userId}).exec();
+
     return cart;
   } catch (error) {
     throw error;
@@ -117,9 +119,10 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
   }
 };
 
-  const updateProductInCart = async (cartToken, productId, quantity, size, color, material, price) => {
+  const updateProductInCart = async (cartToken, productId, quantity, price) => {
     try {
       const product = await productRepository.getProductById(productId);
+      //const price = Number(product.productPrice);
       if(quantity > product.quantity){
         throw new Error ("Not enough quantity in stock")
       }else {
@@ -128,9 +131,7 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
         {
           $set: {
             'productList.$.quantity': quantity,
-            'productList.$.size': size,
-            'productList.$.color': color,
-            'productList.$.material': material,
+
              total: quantity*price,
           },
         },
@@ -196,11 +197,20 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
 
   const removeCart = async (cartId) => {
     try {
-      await Cart.findByIdAndUpdate(cartId, { isCheckOut: true });
+    await Cart.findByIdAndDelete(cartId);
     } catch (error) {
-      throw error;
+    throw error;
+    }
+    };
+
+  const deleteAllCarts = async () => {
+    try {
+      await Cart.deleteMany({});
+    } catch (error) {
+      throw new Error('Failed to delete all carts.');
     }
   };
+  
 
-export default {getCartByTokenCookie, getCartByUser, updateTotalPrice, updateProductInCart,createCartToken, createEmptyCart, removeCart, getCartByToken, addProductToCart, removeFromCart};
+export default {deleteAllCarts,getCartByTokenCookie, getCartByUser, updateTotalPrice, updateProductInCart,createCartToken, createEmptyCart, removeCart, getCartByToken, addProductToCart, removeFromCart};
 

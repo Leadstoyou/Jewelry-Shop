@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { getNumber } from "../redux/GetNumber.jsx";
 import { cartValue } from "../App";
+import { Logout } from '../api/connectApi.js'
 const Container = styled.div`
   background-color: #d5d3d3;
   position: relative;
@@ -134,13 +135,8 @@ const Navbar = (props) => {
   const handleLogout = () => {
     toggleContent();
     changeInitial();
-
-    document.cookie =
-      "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie =
-      "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    // document.cookie =
-    //   "cart_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    Logout();
+    
     dispatch(getNumber(0));
     navigate("/");
   };
