@@ -68,7 +68,7 @@ const viewCart = async (req, res,next) => {
         cart = await cartRepository.getCartByToken(cartToken);
         if (!cart) {
           const newCart = await cartRepository.createEmptyCart();
-          await cartRepository.addProductToCart(newCart._id, productId, quantity, size, color, material, price, productImage, productDes);
+          await cartRepository.addProductToCart(newCart._id, productId, quantity, size, color, material);
           res.cookie("cart_token", newCart?.cart_token.toString(), {
             httpOnly: false,
             secure: true,
@@ -76,11 +76,11 @@ const viewCart = async (req, res,next) => {
           });
         } else {
           
-          await cartRepository.addProductToCart(cart._id, productId, quantity, size, color, material, price, productImage, productDes);
+          await cartRepository.addProductToCart(cart._id, productId, quantity, size, color, material);
           
           }
       }else{
-        await cartRepository.addProductToCart(cart._id, productId, quantity, size, color, material, price, productImage, productDes);
+        await cartRepository.addProductToCart(cart._id, productId, quantity, size, color, material);
       }
       
     return res.status(HttpStatusCode.OK).json({ message: "Product added to cart successfully" });
