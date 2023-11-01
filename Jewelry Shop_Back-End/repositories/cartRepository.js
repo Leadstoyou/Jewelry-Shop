@@ -121,9 +121,10 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
   }
 };
 
-  const updateProductInCart = async (cartToken, productId, quantity, size, color, material, price) => {
+  const updateProductInCart = async (cartToken, productId, quantity, price) => {
     try {
       const product = await productRepository.getProductById(productId);
+      //const price = Number(product.productPrice);
       if(quantity > product.quantity){
         throw new Error ("Not enough quantity in stock")
       }else {
@@ -132,9 +133,7 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
         {
           $set: {
             'productList.$.quantity': quantity,
-            'productList.$.size': size,
-            'productList.$.color': color,
-            'productList.$.material': material,
+
              total: quantity*price,
           },
         },
@@ -206,5 +205,14 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
     }
   };
 
-export default {getCartByTokenCookie, getCartByUser, updateTotalPrice, updateProductInCart,createCartToken, createEmptyCart, removeCart, getCartByToken, addProductToCart, removeFromCart};
+  const deleteAllCarts = async () => {
+    try {
+      await Cart.deleteMany({});
+    } catch (error) {
+      throw new Error('Failed to delete all carts.');
+    }
+  };
+  
+
+export default {deleteAllCarts,getCartByTokenCookie, getCartByUser, updateTotalPrice, updateProductInCart,createCartToken, createEmptyCart, removeCart, getCartByToken, addProductToCart, removeFromCart};
 

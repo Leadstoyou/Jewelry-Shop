@@ -90,11 +90,12 @@ const viewCart = async (req, res,next) => {
   };
   const updatedCart = async(req,res)=> {
     try {
+      const price = req.body.price;
       const quantity = req.body.quantity;
       const cartToken = req.cookies.cart_token;
       const productId = req.body.product_id;
       
-      const cartUpdate = await cartRepository.updateProductInCart(cartToken, productId, quantity, size, color, material, price);
+      const cartUpdate = await cartRepository.updateProductInCart(cartToken, productId, quantity, price);
       return res.status(HttpStatusCode.OK).json(cartUpdate);
     } catch (error) {
       console.error(error);
@@ -115,4 +116,14 @@ const viewCart = async (req, res,next) => {
       return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
   };
-  export default {removeFromCart, viewCart, addToCart, updatedCart}
+
+  const deleteAllCarts = async (req, res) => {
+    try {
+      await cartRepository.deleteAllCarts();
+      res.status(200).json({ message: 'All carts have been deleted.' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Something went wrong.' });
+    }
+  };
+  export default {removeFromCart, viewCart, addToCart, updatedCart, deleteAllCarts}
