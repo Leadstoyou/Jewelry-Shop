@@ -214,14 +214,9 @@ const ProductBody = (props) => {
     ) {
       notify("One of color , material and size is not selected !!!");
     } else {
-      // console.log("hello");
-      // console.log(user);
+
       let newCart = null;
-      // console.log(document.cookie);
-      // const cookies = document.cookie.split("; ");
-      // const cartTokenCookie = cookies.find((cookie) =>
-      //   cookie.startsWith("cart_token=")
-      // );
+   
       initialRender.current = true;
       newCart = {
         product_id: productDetail._id,
@@ -229,9 +224,6 @@ const ProductBody = (props) => {
         size: selectedSize,
         color: selectedColor,
         material: selectedMaterial,
-        price: 4490000,
-        productImage: productDetail.productImage,
-        productDescription: productDetail.productDescription,
       };
       await addToCartAPI(notify, success, newCart);
 
