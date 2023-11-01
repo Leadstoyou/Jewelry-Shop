@@ -14,7 +14,7 @@ const navigate = useNavigate();
     
       
           try {
-            const response = await axios.put(`http://localhost:9999/api/v1/users/resetPassword`,{
+            const response = await axios.put(`http://localhost:9999/api/v1/account/resetPassword`,{
               newPassword:password,
               userPasswordResetToken:token,
             });

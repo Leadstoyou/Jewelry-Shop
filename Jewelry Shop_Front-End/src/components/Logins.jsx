@@ -36,7 +36,7 @@ const Logins = () => {
     if (validate()) {
       try {
         const response = await axios.post(
-          "http://localhost:9999/api/v1/users/login",
+          "http://localhost:9999/api/v1/account/login",
           {
             userEmail: email,
             userPassword: password,
