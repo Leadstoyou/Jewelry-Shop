@@ -6,21 +6,18 @@ const userGetAllUsersController = async (req, res) => {
   try {
     const allUsers = await userRepository.userGetAllUsersRepository();
     if (!allUsers.success) {
-      return res.status(HttpStatusCode.OK).json({
-        response: HttpStatusCode.BAD_REQUEST,
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: allUsers.message,
       });
     }
     return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.OK,
       status: "OK",
       message: allUsers.message,
       data: allUsers.data,
     });
   } catch (exception) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
       message: exception.message,
     });
@@ -30,16 +27,14 @@ const userGetAllUsersController = async (req, res) => {
 const userSearchController = async (req, res) => {
   let { page = 1, size, search = "", role, status, block } = req.query;
   if (page !== undefined && isNaN(page)) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.UNAUTHORIZED,
+    return res.status(HttpStatusCode.BAD_REQUEST).json({
       status: "ERROR",
       message: "Invalid 'page' value. It should be a number.",
     });
   }
 
   if (size !== undefined && isNaN(size)) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.UNAUTHORIZED,
+    return res.status(HttpStatusCode.BAD_REQUEST).json({
       status: "ERROR",
       message: "Invalid 'size' value. It should be a number.",
     });
@@ -75,7 +70,6 @@ const userSearchController = async (req, res) => {
 
     const { total, users } = filteredUsers.data;
     return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.OK,
       status: "OK",
       message: "Get search successfully",
       data: {
@@ -90,8 +84,7 @@ const userSearchController = async (req, res) => {
       },
     });
   } catch (exception) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
       message: exception.message,
     });
@@ -110,15 +103,13 @@ const userChangePasswordController = async (req, res) => {
     )
     .run(req);
   if (!errors.isEmpty()) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.UNAUTHORIZED,
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
       errors: errors.array(),
     });
   }
   if (newPassword !== confirmPassword) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.UNAUTHORIZED,
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
       message: "Password and confirm password do not match.",
     });
@@ -131,21 +122,18 @@ const userChangePasswordController = async (req, res) => {
       newPassword,
     });
     if (!updatedUser.success) {
-      return res.status(HttpStatusCode.OK).json({
-        response: HttpStatusCode.BAD_REQUEST,
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: updatedUser.message,
       });
     }
     return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.OK,
       status: "OK",
       message: updatedUser.message,
       data: updatedUser.data,
     });
   } catch (exception) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
       message: exception.message,
     });
@@ -157,21 +145,18 @@ const userViewProfileController = async (req, res) => {
     const userInfoId = req.user.userId;
     const userInfo = await userRepository.userViewProfileRepository(userInfoId);
     if (!userInfo.success) {
-      return res.status(HttpStatusCode.OK).json({
-        response: HttpStatusCode.BAD_REQUEST,
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: userInfo.message,
       });
     }
     return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.OK,
       status: "OK",
       message: userInfo.message,
       data: userInfo.data,
     });
   } catch (exception) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
       message: exception.message,
     });
@@ -185,21 +170,18 @@ const userViewProfileDetailController = async (req, res) => {
       userInfoId
     );
     if (!userInfo.success) {
-      return res.status(HttpStatusCode.OK).json({
-        response: HttpStatusCode.BAD_REQUEST,
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: userInfo.message,
       });
     }
     return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.OK,
       status: "OK",
       message: userInfo.message,
       data: userInfo.data,
     });
   } catch (exception) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
       message: exception.message,
     });
@@ -229,21 +211,18 @@ const userUpdateProfileController = async (req, res) => {
     });
 
     if (!updatedUser) {
-      return res.status(HttpStatusCode.OK).json({
-        response: HttpStatusCode.NOT_FOUND,
+      return res.status(HttpStatusCode.NOT_FOUND).json({
         status: "ERROR",
         message: updatedUser.message,
       });
     }
     return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.OK,
       status: "OK",
       message: updatedUser.message,
       data: updatedUser.data,
     });
   } catch (exception) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
       message: exception.message,
     });
@@ -261,21 +240,18 @@ const userUpdateRoleController = async (req, res) => {
     });
 
     if (!updatedUser.success) {
-      return res.status(HttpStatusCode.OK).json({
-        response: HttpStatusCode.BAD_REQUEST,
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: updatedUser.message,
       });
     }
     return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.OK,
       status: "OK",
       message: updatedUser.message,
       data: updatedUser.data,
     });
   } catch (exception) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
       message: exception.message,
     });
@@ -293,21 +269,18 @@ const userUpdateStatusController = async (req, res) => {
     });
 
     if (!updatedUser.success) {
-      return res.status(HttpStatusCode.OK).json({
-        response: HttpStatusCode.BAD_REQUEST,
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: updatedUser.message,
       });
     }
     return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.OK,
       status: "OK",
       message: updatedUser.message,
       data: updatedUser.data,
     });
   } catch (exception) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
       message: exception.message,
     });
@@ -325,21 +298,18 @@ const userUpdateBlockController = async (req, res) => {
     });
 
     if (!updatedUser.success) {
-      return res.status(HttpStatusCode.OK).json({
-        response: HttpStatusCode.BAD_REQUEST,
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: updatedUser.message,
       });
     }
     return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.OK,
       status: "OK",
       message: updatedUser.message,
       data: updatedUser.data,
     });
   } catch (exception) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
       message: exception.message,
     });
@@ -359,21 +329,18 @@ const userUpdateByAdminController = async (req, res) => {
     });
 
     if (!updatedUser.success) {
-      return res.status(HttpStatusCode.OK).json({
-        response: HttpStatusCode.BAD_REQUEST,
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: updatedUser.message,
       });
     }
     return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.OK,
       status: "OK",
       message: updatedUser.message,
       data: updatedUser.data,
     });
   } catch (exception) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
       message: exception.message,
     });

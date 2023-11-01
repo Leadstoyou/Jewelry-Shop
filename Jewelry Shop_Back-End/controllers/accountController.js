@@ -14,8 +14,7 @@ const userLoginController = async (req, res) => {
     )
     .run(req);
   if (!errors.isEmpty()) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.UNAUTHORIZED,
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
       errors: errors.array(),
     });
@@ -28,8 +27,7 @@ const userLoginController = async (req, res) => {
     });
 
     if (!loginUser.success) {
-      return res.status(HttpStatusCode.OK).json({
-        response: HttpStatusCode.BAD_REQUEST,
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: loginUser.message,
       });
@@ -49,14 +47,12 @@ const userLoginController = async (req, res) => {
     });
 
     return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.OK,
       status: "OK",
       message: loginUser.message,
       data: loginUser.data,
     });
   } catch (exception) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
       message: exception.message,
     });
@@ -65,20 +61,20 @@ const userLoginController = async (req, res) => {
 
 const refreshAccessTokenController = async (req, res) => {
   const { refreshToken } = req.cookies;
+
   if (!refreshToken) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.UNAUTHORIZED,
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
       message: "No refresh token in cookies",
     });
   }
+
   try {
     const result = await userRepository.refreshAccessTokenRepository(
       refreshToken
     );
     if (!result.success) {
-      return res.status(HttpStatusCode.OK).json({
-        response: HttpStatusCode.BAD_REQUEST,
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: result.message,
       });
@@ -90,16 +86,15 @@ const refreshAccessTokenController = async (req, res) => {
       secure: true,
       sameSite: "None",
     });
+
     return result.data;
   } catch (exception) {
     return (req, res, next) => {
       res.clearCookie("accessToken", { httpOnly: false, secure: true });
       res.clearCookie("refreshToken", { httpOnly: true, secure: true });
-      return res.status(HttpStatusCode.UNAUTHORIZED).json({
-        response: HttpStatusCode.INTERNAL_SERVER_ERROR,
-        status: "ERROR",
-        message: exception.message,
-      });
+      return res
+        .status(HttpStatusCode.UNAUTHORIZED)
+        .json({ message: exception.message });
     };
   }
 };
@@ -107,8 +102,7 @@ const refreshAccessTokenController = async (req, res) => {
 const userLogoutController = async (req, res) => {
   const cookie = req.cookies;
   if (!cookie || !cookie.refreshToken) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.UNAUTHORIZED,
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
       message: "No refresh token in cookies",
     });
@@ -116,25 +110,21 @@ const userLogoutController = async (req, res) => {
   try {
     res.clearCookie("accessToken", { httpOnly: false, secure: true });
     res.clearCookie("refreshToken", { httpOnly: true, secure: true });
-    res.clearCookie("cart_token", { httpOnly: true, secure: true });
     const logoutUser = await userRepository.userLogoutRepository(
       cookie.refreshToken
     );
     if (!logoutUser.success) {
-      return res.status(HttpStatusCode.OK).json({
-        response: HttpStatusCode.BAD_REQUEST,
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: logoutUser.message,
       });
     }
     return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.OK,
       status: "OK",
       message: "Logout success",
     });
   } catch (exception) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
       message: exception.message,
     });
@@ -164,16 +154,14 @@ const userRegisterController = async (req, res) => {
     .run(req);
 
   if (!errors.isEmpty()) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.UNAUTHORIZED,
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
       errors: errors.array(),
     });
   }
 
   if (userPassword !== confirmPassword) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.UNAUTHORIZED,
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
       message: "Password and confirm password do not match.",
     });
@@ -190,22 +178,19 @@ const userRegisterController = async (req, res) => {
     });
 
     if (registerUser.success == false) {
-      return res.status(HttpStatusCode.OK).json({
-        response: HttpStatusCode.BAD_REQUEST,
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: registerUser.message,
       });
     }
 
     return res.status(HttpStatusCode.CREATED).json({
-      response: HttpStatusCode.OK,
       status: "OK",
       message: registerUser.message,
       data: registerUser.data,
     });
   } catch (exception) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
       message: exception.message,
     });
@@ -220,19 +205,16 @@ const verifyEmailController = async (req, res) => {
     );
     if (!result.success) {
       return res.status(HttpStatusCode.OK).json({
-        response: HttpStatusCode.BAD_REQUEST,
         status: "ERROR",
         message: result.message,
       });
     }
     return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.OK,
       status: "OK",
       message: result.message,
     });
   } catch (exception) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
       message: exception.message,
     });
@@ -247,33 +229,31 @@ const userForgotPasswordController = async (req, res) => {
       message: "Missing email!",
     });
   }
+
   const errors = validationResult(req);
   check("userEmail").isEmail().withMessage("Invalid email format").run(req);
   if (!errors.isEmpty()) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.UNAUTHORIZED,
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
       errors: errors.array(),
     });
   }
+
   try {
     const forgotPasswordUser =
       await userRepository.userForgotPasswordRepository(userEmail);
     if (!forgotPasswordUser.success) {
-      return res.status(HttpStatusCode.OK).json({
-        response: HttpStatusCode.BAD_REQUEST,
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: forgotPasswordUser.message,
       });
     }
     return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.OK,
       status: "OK",
       message: forgotPasswordUser.message,
     });
   } catch (exception) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
       message: exception.message,
     });
@@ -283,15 +263,13 @@ const userForgotPasswordController = async (req, res) => {
 const userResetPasswordController = async (req, res) => {
   const { newPassword, userPasswordResetToken } = req.body;
   if (!newPassword) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.UNAUTHORIZED,
+    return res.status(HttpStatusCode.BAD_REQUEST).json({
       status: "ERROR",
       message: "Missing password",
     });
   }
   if (!userPasswordResetToken) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.UNAUTHORIZED,
+    return res.status(HttpStatusCode.BAD_REQUEST).json({
       status: "ERROR",
       message: "Invalid Token",
     });
@@ -306,8 +284,7 @@ const userResetPasswordController = async (req, res) => {
     )
     .run(req);
   if (!errors.isEmpty()) {
-    return res.status(HttpStatusCode.OPK).json({
-      response: HttpStatusCode.UNAUTHORIZED,
+    return res.status(HttpStatusCode.UNAUTHORIZED).json({
       status: "ERROR",
       errors: errors.array(),
     });
@@ -319,20 +296,17 @@ const userResetPasswordController = async (req, res) => {
       newPassword
     );
     if (!result.success) {
-      return res.status(HttpStatusCode.OK).json({
-        response: HttpStatusCode.BAD_REQUEST,
+      return res.status(HttpStatusCode.UNAUTHORIZED).json({
         status: "ERROR",
         message: result.message,
       });
     }
     return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.OK,
       status: "OK",
       message: result.message,
     });
   } catch (exception) {
-    return res.status(HttpStatusCode.OK).json({
-      response: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
       message: exception.message,
     });

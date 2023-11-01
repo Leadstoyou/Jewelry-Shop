@@ -13,9 +13,9 @@ import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./middleware/swaggerMiddleware.js";
 import cors from "cors";
 import paymentRouter from "./services/vnpayService.js";
-dotenv.config();
 import routeUnknown from "./middleware/routeMiddleware.js";
 
+dotenv.config();
 const port = process.env.PORT || 4200;
 const app = express();
 const v1Router = express.Router();
