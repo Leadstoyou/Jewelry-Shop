@@ -6,7 +6,7 @@ import Jwt from "jsonwebtoken";
 
 const getCartByUser = async (userId) =>{
   try {
-    const cart = await Cart.findOne({ user_id: userId, isCheckOut: false }).exec();
+    const cart = await Cart.findOne({ user_id: userId}).exec();
     return cart;
   } catch (error) {
     throw error;
@@ -199,11 +199,11 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
 
   const removeCart = async (cartId) => {
     try {
-      await Cart.findByIdAndUpdate(cartId, { isCheckOut: true });
+    await Cart.findByIdAndDelete(cartId);
     } catch (error) {
-      throw error;
+    throw error;
     }
-  };
+    };
 
   const deleteAllCarts = async () => {
     try {
