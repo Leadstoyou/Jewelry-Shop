@@ -18,13 +18,6 @@ export default mongoose.model(
                   type: mongoose.Schema.Types.ObjectId,
                   ref: 'Product',
                 },
-                productName: {
-                  type: String,
-                },
-                productCategory: {
-                  type: String,
-                  enum: ["Dây Chuyền", "Vòng tay", "Hoa Tai", "Charm","Nhẫn"],
-                },
                 size: {
                   type: [String],
                 },

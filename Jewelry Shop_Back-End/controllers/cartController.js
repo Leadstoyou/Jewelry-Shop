@@ -47,7 +47,9 @@ const viewCart = async (req, res,next) => {
       const size = req.body.size;
       const color = req.body.color;
       const material = req.body.material;
-      
+      const productImage = req.body.productImage;
+      const productDes = req.body.productDescription;
+      const price = req.body.price;
 
 
       // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng hay chưa
@@ -66,7 +68,7 @@ const viewCart = async (req, res,next) => {
         cart = await cartRepository.getCartByToken(cartToken);
         if (!cart) {
           const newCart = await cartRepository.createEmptyCart();
-          await cartRepository.addProductToCart(newCart._id, productId, quantity, size, color, material);
+          await cartRepository.addProductToCart(newCart._id, productId, quantity, size, color, material, price, productImage, productDes);
           res.cookie("cart_token", newCart?.cart_token.toString(), {
             httpOnly: false,
             secure: true,
@@ -74,11 +76,11 @@ const viewCart = async (req, res,next) => {
           });
         } else {
           
-          await cartRepository.addProductToCart(cart._id, productId, quantity, size, color, material);
+          await cartRepository.addProductToCart(cart._id, productId, quantity, size, color, material, price, productImage, productDes);
           
           }
       }else{
-        await cartRepository.addProductToCart(cart._id, productId, quantity, size, color, material);
+        await cartRepository.addProductToCart(cart._id, productId, quantity, size, color, material, price, productImage, productDes);
       }
       
     return res.status(HttpStatusCode.OK).json({ message: "Product added to cart successfully" });
@@ -97,7 +99,6 @@ const viewCart = async (req, res,next) => {
       const price = req.body.price;
       const cartToken = req.cookies.cart_token;
       const productId = req.body.product_id;
-      
       const cartUpdate = await cartRepository.updateProductInCart(cartToken, productId, quantity, size, color, material, price);
       return res.status(HttpStatusCode.OK).json(cartUpdate);
     } catch (error) {
