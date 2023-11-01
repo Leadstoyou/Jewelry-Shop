@@ -91,10 +91,6 @@ const viewCart = async (req, res,next) => {
   const updatedCart = async(req,res)=> {
     try {
       const quantity = req.body.quantity;
-      const size = req.body.size;
-      const color = req.body.color;
-      const material = req.body.material;
-      const price = req.body.price;
       const cartToken = req.cookies.cart_token;
       const productId = req.body.product_id;
       
