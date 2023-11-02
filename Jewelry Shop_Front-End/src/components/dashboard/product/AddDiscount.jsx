@@ -52,7 +52,7 @@ const Control = styled.div`
 `;
 const Label = styled.label``;
 const Input = styled.input`
-  border: none;
+  
   outline: none;
 `;
 const DiscountControl = styled.div`
@@ -197,19 +197,17 @@ function MyVerticallyCenteredModal(props) {
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
+
+    
     >
       <Modal.Body
         style={{
-          backgroundImage: `url(${background})`,
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          borderRadius: "1%",
-          color: "white",
+          
+          color: "black",
         }}
       >
         <Modal.Title>
-          <h2 style={{ marginBottom: "8%" }}>Add a discount</h2>
+          <h2 style={{ marginBottom: "8%" , textAlign:'center'}}>Add a discount</h2>
         </Modal.Title>
         <form id="formController" onSubmit={handleSubmit(onSubmit)}>
           <div>
