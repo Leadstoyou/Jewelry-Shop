@@ -414,7 +414,7 @@ const ShoppingCart = () => {
                       Product Category: {product?.productCategory}
                     </ProductCategory>
                     <ProductPrice>
-                      Price: {product.price.toLocaleString("vn-VI")}
+                      Price: {product?.price?.toLocaleString("vn-VI")}
                     </ProductPrice>
                   </ProductInfo>
 
@@ -435,7 +435,7 @@ const ShoppingCart = () => {
                   <section></section>
                   <ProductPrice>
                     {" "}
-                    {product.price.toLocaleString("vn-VI")}
+                    {product?.price?.toLocaleString("vn-VI")}
                   </ProductPrice>
                   <DeleteButton
                     onClick={() => handleRemoveProduct(product.product_id)}

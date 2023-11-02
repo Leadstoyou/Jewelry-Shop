@@ -39,7 +39,7 @@ const Control = styled.div`
 `;
 const Label = styled.label``;
 const Input = styled.input`
-  border: none;
+ 
   outline: none;
 `;
 
@@ -112,6 +112,7 @@ function MyVerticallyCenteredModal(props) {
       .required("Expired date is required !!!"),
     dpercent: yup
       .number()
+      .max(100,"Please enter percent less than or equal 100")
       .positive("You must input a positive number for dpercent")
       .typeError("You must input a number for dpercent"),
     dlimit: yup
@@ -179,12 +180,8 @@ function MyVerticallyCenteredModal(props) {
     >
       <Modal.Body
         style={{
-          backgroundImage: `url(${background})`,
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          borderRadius: "1%",
-          color: "white",
+          
+          color: "black",
         }}
       >
         <Modal.Title>

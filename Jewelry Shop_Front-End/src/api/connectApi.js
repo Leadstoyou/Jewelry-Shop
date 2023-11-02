@@ -312,7 +312,7 @@ const updateCart = async (productId, quantity, setCartUpdate) => {
 
 const Logout = async ()=>{
   try {
-    const response = await axios.get("http://localhost:9999/api/v1/users/logout",{withCredentials:true});
+    const response = await axios.get("http://localhost:9999/api/v1/account/logout",{withCredentials:true});
     if(response.status === 200){
       console.log("Logout successfully");
     }else{

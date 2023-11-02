@@ -42,7 +42,7 @@ const Control = styled.div`
 `;
 const Label = styled.label``;
 const Input = styled.input`
-  border: none;
+  
   outline: none;
 `;
 const Button = styled.button`
@@ -219,15 +219,12 @@ const UpdateController = (props) => {
       
         <Modal.Body
           style={{
-            backgroundImage: `url(${background})`,
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
+             color:'black',
             borderRadius: "1%",
           }}
         >
           <Modal.Title>
-            <h2 style={{ marginBottom: "8%" }}>Update product</h2>
+            <h2 style={{ marginBottom: "8%" , textAlign:'center'}}>Update product</h2>
           </Modal.Title>
           <form id="formController" onSubmit={handleSubmit(onSubmit)}>
             <ImgControle>
@@ -329,7 +326,7 @@ const UpdateController = (props) => {
               </Label>
               <div>
                 <select
-                  style={{ width: "100%" , backgroundColor:'white' }}
+                  style={{ width: "100%" , border : '1px solid black' }}
                   id="category"
                   {...register("category")}
                   defaultValue={productUpdate?.productCategory}
