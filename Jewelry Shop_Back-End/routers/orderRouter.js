@@ -9,6 +9,9 @@ router.post('/checkouts', checkUser, orderController.createOrder);
 router.get('/view', checkUser, orderController.getOrder);
 router.get('/getAll',orderController.getAllOrder);
 router.patch('/update/:orderId',orderController.updateOrderStatus);
+router.get("/allAmountInMonth/:month", orderController.getAmountInMonth);
+router.get("/allOrdersInMonth/:month", orderController.getAllOrdersInMonth);
+
 
 router.use(routeUnknown);
 export default router 
