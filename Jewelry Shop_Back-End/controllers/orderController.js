@@ -74,7 +74,7 @@ const updateOrderStatus = async (req, res) => {
 };
 const viewOrder = async (req, res) => {
   try {
-    console.log(123,req.user)
+    console.log(123, req.user);
     const userId = req?.user?.userId;
     const { cart_token } = req?.cookies;
     const cart = await cartRepository.getCartByToken(cart_token);
@@ -88,10 +88,52 @@ const viewOrder = async (req, res) => {
       .json({ message: "Internal server error" });
   }
 };
+
+const getAmountInMonth = async (req, res) => {
+  try {
+    const { month } = req.params;
+
+    if (month < 1 || month > 12) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .json({ message: "Invalid month value" });
+      return;
+    }
+    const orders = await orderRepository.getAmountInMonth(month);
+    res.json(orders);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .json({ message: "Internal server error" });
+  }
+};
+
+const getAllOrdersInMonth = async (req, res) => {
+  try {
+    const { month } = req.params;
+
+    if (month < 1 || month > 12) {
+      res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .json({ message: "Invalid month value" });
+      return;
+    }
+    const orders = await orderRepository.getAllOrdersInMonth(month);
+    res.json(orders);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .json({ message: "Internal server error" });
+  }
+};
 export default {
   createOrder,
   getOrder,
   getAllOrder,
   updateOrderStatus,
+  getAmountInMonth,
+  getAllOrdersInMonth,
   viewOrder,
 };

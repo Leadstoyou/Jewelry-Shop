@@ -22,18 +22,25 @@ const PageControl = styled.div`
   margin-bottom: 20px;
 `;
 function SearchPage() {
-  const {txt,setTxt}=useContext(cartValue)
+  const { txt, setTxt } = useContext(cartValue);
   const [loading, setLoading] = useState(false);
   const { searchName } = useParams();
   const [foundProducts, setFoundProducts] = useState([]);
   const [colorsArray, setColorsArray] = useState([]);
   const [materialArray, setMaterialArray] = useState([]);
   const navigate = useNavigate();
-
-  useEffect(()=>{
-    setTxt(searchName)
-  },[searchName])
-
+  const [spinSearch, setSpinsearch] = useState(true);
+  useEffect(() => {
+    setSpinsearch(true)
+    setTxt(searchName);
+  }, [searchName]);
+ 
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  }, []);
   const [color, setColor] = useState(null);
   const [material, setMaterial] = useState(null);
   const [price, setPrice] = useState(
@@ -50,6 +57,7 @@ function SearchPage() {
   const [filterPro, setFilterProduct] = useState();
 
   useEffect(() => {
+    setSpinsearch(true);
     setActivePage(1);
   }, [sort, color, material, price]);
 
@@ -60,7 +68,8 @@ function SearchPage() {
       color,
       material,
       price,
-      sort
+      sort,
+      setSpinsearch
     );
   }, [searchName]);
 
@@ -104,7 +113,8 @@ function SearchPage() {
       setFoundProducts,
       setLoading,
       toast,
-      navigate
+      navigate,
+      setSpinsearch
     );
   }, [activePage, filterPro, searchName, sort, material, color, price, sort]);
 
@@ -141,7 +151,6 @@ function SearchPage() {
         <Container>
           <Navbar />
           <SearchpageBody
-           
             color={color}
             material={material}
             price={price}
@@ -157,8 +166,11 @@ function SearchPage() {
             colorsArray={colorsArray}
             materialArray={materialArray}
             searchName={searchName}
+            foundProducts={foundProducts}
+            spinSearch={spinSearch}
+            setSpinsearch={setSpinsearch}
           />
-          {foundProducts?.length > 0 && (
+          {!spinSearch && foundProducts?.length > 0 && (
             <PageControl>
               <Pagination>
                 <Pagination.Prev onClick={handlePrev} />
@@ -177,6 +189,7 @@ function SearchPage() {
               </Pagination>
             </PageControl>
           )}
+
           <Footer />
         </Container>
       )}

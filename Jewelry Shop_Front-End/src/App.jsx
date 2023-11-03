@@ -23,17 +23,31 @@ import WatchOrder from './pages/WatchOrder.jsx'
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "./redux/Login.jsx";
 import { getNumber } from "./redux/GetNumber.jsx";
+import RiseLoader from "react-spinners/RiseLoader";
 import { fetchDataAndDispatch } from "./services/genUser.js";
 import axios from "axios";
 import NewPass from "./pages/NewPassword.jsx"
+<<<<<<< HEAD
 import ThankYou from "./pages/ThankYou.jsx";
+=======
+import Success from "./components/error/Success.jsx"
+>>>>>>> d763bcb430310a2e5916d0ac78595fc5c037d121
 const Container = styled.div``;
 export const cartValue = createContext();
 function App() {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [txt, setTxt] = useState();
   const [cookieChangeTrigger, setCookieChangeTrigger] = useState(0);
 
+  useEffect(()=>{
+    setLoading(true)
+  },[])
+  useEffect(()=>{
+    setTimeout(()=>{
+      setLoading(false)
+    },2000)
+  },[])
   const checkForCookieChanges = useCallback(() => {
     const currentCookies = document.cookie;
     if (currentCookies !== cookieChangeTrigger) {
@@ -91,7 +105,26 @@ function App() {
     console.log(cartView?.productList.length);
     dispatch(getNumber(cartView?.productList.length));
   }, [cartView]);
+  // useEffect(()=>{
+  //   setTimeout(()=>{
+  //     setLoading(false)
+  //   },2000)
+  // },[])
   return (
+      <>
+      {loading ? (
+        <Container
+          style={{
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <RiseLoader color={"#575855"} size={30} loading={loading} />
+        </Container>
+      ) : (
     <Container>
       <cartValue.Provider
         value={{
@@ -126,11 +159,14 @@ function App() {
             <Route path="/forgot" element={<Forgot />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/newpass" element={<NewPass />} />
+            <Route path="/success/:id" element={<Success />} />
             <Route path="/order" element={<WatchOrder />} />
           </Routes>
         </BrowserRouter>
       </cartValue.Provider>
     </Container>
+  )};
+  </>
   );
 }
 

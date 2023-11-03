@@ -131,6 +131,7 @@ const CommentAction = styled.div`
 const CommentDisplay = styled.div``;
 const CommentController = styled.div``;
 const ProductBody = (props) => {
+  const {setSpin} = props
   const numberCart = useSelector((state) => state?.getNumber?.value);
   const user = useSelector((state) => state?.loginController);
   const { cartView, setViewCart } = useContext(cartValue);
@@ -229,6 +230,9 @@ const ProductBody = (props) => {
 
       setCartData(newCart);
       setShowCartPopup(true);
+      setTimeout(()=>{
+        setSpin(false)
+      },[1500])
     }
   };
   console.log(cartView);
