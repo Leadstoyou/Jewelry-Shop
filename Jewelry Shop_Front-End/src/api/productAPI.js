@@ -194,5 +194,29 @@ const CollectionFilterCategory = async (
     );
   }
 };
-
-export { CollectionAPI, CollectionAPISearch, CollectionFilterSearch ,CollectionFilterCategory};
+const viewOrderDetail = async () => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_ORDER}/viewOrder`,
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+      withCredentials: true,
+    }
+    );
+    return response;
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: productAPI.js:214 ~ viewOrderDetail ~ error:",
+      error
+    );
+  }
+};
+export {
+  CollectionAPI,
+  CollectionAPISearch,
+  CollectionFilterSearch,
+  CollectionFilterCategory,
+  viewOrderDetail,
+};

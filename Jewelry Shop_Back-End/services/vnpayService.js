@@ -17,7 +17,6 @@ paymentRouter.post("/create_payment_url", function (req, res, next) {
   var returnUrl = "http://localhost:9999/api/v1/payment/vnpay_return";
 
   var date = new Date();
-  console.log(req.body.amount);
   var createDate = dateFormat(date, "yyyymmddHHmmss");
   var orderId = dateFormat(date, "HHmmss");
   var amount = req.body.amount;
@@ -77,7 +76,7 @@ paymentRouter.get("/vnpay_return", function (req, res, next) {
 
   if (secureHash === signed) {
     console.log(vnp_Params);
-    res.redirect("http://localhost:5173/Jewelry-Shop/123");
+    res.redirect("http://localhost:5173/Jewelry-Shop/thank-you");
     // res.render('success', {code: vnp_Params['vnp_ResponseCode']})
   } else {
     console.log(vnp_Params);

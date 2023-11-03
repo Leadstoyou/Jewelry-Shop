@@ -177,10 +177,9 @@ const addToCartAPI = async (notify, success, newCart) => {
       "http://localhost:9999/api/v1/cart/add",
       data,
       {
-    
-          headers: {
-            Authorization: `Bearer ${getAccessTokenFromCookie()}`,
-          },
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
         withCredentials: true,
       }
     );
@@ -196,7 +195,6 @@ const addToCartAPI = async (notify, success, newCart) => {
   }
 };
 
-
 //getToken
 const viewCartAPI = async (cartToken, setViewCart) => {
   try {
@@ -211,15 +209,12 @@ const viewCartAPI = async (cartToken, setViewCart) => {
       headers.Authorization = `Bearer ${accessToken}`;
     }
 
-    const response = await axios.get(
-      "http://localhost:9999/api/v1/cart/view",
-      {
-          headers: {
-            Authorization: `Bearer ${getAccessTokenFromCookie()}`,
-          },
-        withCredentials: true,// Use the headers object you've constructed
-      }
-    );
+    const response = await axios.get("http://localhost:9999/api/v1/cart/view", {
+      headers: {
+        Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+      },
+      withCredentials: true, // Use the headers object you've constructed
+    });
     console.log("API response:", response.data);
     if (response.status === 200) {
       setViewCart(response.data);
@@ -230,19 +225,6 @@ const viewCartAPI = async (cartToken, setViewCart) => {
     console.error("Error while fetching cart data:", error);
   }
 };
-
-
-//check login in cookies
-function getCookieValue(cookieName) {
-  const cookies = document.cookie.split("; ");
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i].split("=");
-    if (cookie[0] === cookieName) {
-      return decodeURIComponent(cookie[1]);
-    }
-  }
-  return null;
-}
 
 //update product in recycle
 const updateInRecycler = async (notify, success, setUpdateData, idProduct) => {
@@ -288,7 +270,6 @@ const removeFromCart = async (productId, cartToken, setDeleteCart) => {
   }
 };
 
-
 const updateCart = async (productId, quantity, setCartUpdate) => {
   try {
     const product_id = productId;
@@ -300,7 +281,7 @@ const updateCart = async (productId, quantity, setCartUpdate) => {
       { withCredentials: true }
     );
     if (response.status === 200) {
-      setCartUpdate(response.data.productList)
+      setCartUpdate(response.data.productList);
       console.log("Update cart successfully !!!");
     } else {
       console.log("Failed to update the cart");
@@ -310,21 +291,45 @@ const updateCart = async (productId, quantity, setCartUpdate) => {
   }
 };
 
-const Logout = async ()=>{
+const Logout = async () => {
   try {
-    const response = await axios.get("http://localhost:9999/api/v1/account/logout",{withCredentials:true});
-    if(response.status === 200){
+    const response = await axios.get(
+      "http://localhost:9999/api/v1/account/logout",
+      { withCredentials: true }
+    );
+    if (response.status === 200) {
       console.log("Logout successfully");
-    }else{
+    } else {
       console.log("Failed to log out ");
     }
   } catch (error) {
     console.log(error);
   }
-}
+};
 
-
-
+const createNewOrder = async () => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_ORDER}/checkouts`,
+      {
+        orderStatus:true
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+      withCredentials: true,
+    }
+    );
+    if (response.status === 200) {
+      console.log("Logout successfully");
+    } else {
+      console.log("Failed to log out ");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export {
   getAllProducts,
@@ -337,5 +342,6 @@ export {
   updateInRecycler,
   removeFromCart,
   updateCart,
-  Logout
+  Logout,
+  createNewOrder
 };

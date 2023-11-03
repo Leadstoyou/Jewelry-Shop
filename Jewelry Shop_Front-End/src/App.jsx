@@ -25,6 +25,7 @@ import { getNumber } from "./redux/GetNumber.jsx";
 import { fetchDataAndDispatch } from "./services/genUser.js";
 import axios from "axios";
 import NewPass from "./pages/NewPassword.jsx"
+import ThankYou from "./pages/ThankYou.jsx";
 const Container = styled.div``;
 export const cartValue = createContext();
 function App() {
@@ -109,7 +110,7 @@ function App() {
             <Route path="/" element={<Homepage cartView={cartView} />} />
 
             <Route path="/search/:searchName" element={<SearchPage />} />
-
+            <Route path="/thank-you" element={<ThankYou/>}/>
             <Route path="/collections/:category" element={<Collections />} />
             <Route path="/product/:id" element={<Products />} />
             <Route path="/cart" element={<CartPage />} />
