@@ -123,28 +123,45 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
   }
 };
 
-  const updateProductInCart = async (cartToken, productId, quantity, price) => {
-    try {
-      const product = await productRepository.getProductById(productId);
-      //const price = Number(product.productPrice);
-      if(quantity > product.quantity){
-        throw new Error ("Not enough quantity in stock")
-      }else {
+const updateProductInCart = async (cartToken, productId, quantity, price) => {
+  try {
+    const product = await productRepository.getProductById(productId);
+  
+    if (quantity > product.quantity) {
+      throw new Error("Not enough quantity in stock");
+    } else {
       const updatedCart = await Cart.findOneAndUpdate(
-        { cart_token: cartToken, 'productList.product_id':  productId},
+        { cart_token: cartToken, 'productList.product_id': productId },
         {
           $set: {
             'productList.$.quantity': quantity,
           },
         },
-        {new: true}
+        { new: true }
       );
-      return updatedCart ;
+      
+      let totalPrice = 0;
+
+      for (const product of updatedCart.productList) {
+        if (
+          typeof product.quantity === "number" &&
+          typeof product.price === "number" &&
+          !isNaN(product.quantity) &&
+          !isNaN(product.price)
+        ) {
+          totalPrice += product.quantity * product.price;
+        }
       }
-    } catch (error) {
-      throw error;
+
+      updatedCart.total = totalPrice;
+      await updatedCart.save();
+      
+      return updatedCart;
     }
-  };
+  } catch (error) {
+    throw error;
+  }
+};
 
   const updateTotalPrice = async (cartToken) => {
     try {
