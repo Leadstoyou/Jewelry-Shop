@@ -19,6 +19,7 @@ import ListDeleteProduct from "./components/dashboard/product/ListDeleteProduct"
 import Checkouts from "./pages/Checkouts";
 import { viewCartAPI } from "./api/connectApi.js";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
+import WatchOrder from './pages/WatchOrder.jsx'
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "./redux/Login.jsx";
 import { getNumber } from "./redux/GetNumber.jsx";
@@ -124,6 +125,7 @@ function App() {
             <Route path="/forgot" element={<Forgot />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/newpass" element={<NewPass />} />
+            <Route path="/order" element={<WatchOrder />} />
           </Routes>
         </BrowserRouter>
       </cartValue.Provider>

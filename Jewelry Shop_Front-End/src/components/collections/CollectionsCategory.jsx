@@ -91,6 +91,7 @@ const PagingController = styled.div`
 `;
 const CollectionsCategory = (props) => {
   const {
+    maxPrice,
     products,
     materialArray,
     colorsArray,
@@ -215,6 +216,7 @@ const CollectionsCategory = (props) => {
               </TextInDropdown>
             ))}
           </DropdownOne>
+          {!maxPrice && (
           <DropdownOne
             onChange={(e) =>
               handleSelected(color, material, e.target.value, sort)
@@ -270,6 +272,7 @@ const CollectionsCategory = (props) => {
               Trên 4.000.000 đ
             </TextInDropdown>
           </DropdownOne>
+          )}
         </ItemOne>
         <ItemOne>
           <TextSearch>Sắp xếp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</TextSearch>
