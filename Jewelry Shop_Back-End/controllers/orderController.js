@@ -54,4 +54,36 @@ const updateOrderStatus = async (req, res) => {
     res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
   }
 };
-  export default {createOrder, getOrder, getAllOrder, updateOrderStatus}
+
+const getAmountInMonth =  async (req, res) => {
+    try {
+      const { month } = req.params;
+
+      if(month<1 || month >12){
+        res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Invalid month value" });
+        return;
+      }
+      const orders = await orderRepository.getAmountInMonth(month);
+      res.json(orders);
+    } catch (error) {
+      console.error(error);
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+    }
+  };
+
+  const getAllOrdersInMonth =  async (req, res) => {
+    try {
+      const { month } = req.params;
+
+      if(month<1 || month >12){
+        res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Invalid month value" });
+        return;
+      }
+      const orders = await orderRepository.getAllOrdersInMonth(month);
+      res.json(orders);
+    } catch (error) {
+      console.error(error);
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+    }
+  };
+  export default {createOrder, getOrder, getAllOrder, updateOrderStatus,getAmountInMonth, getAllOrdersInMonth}
