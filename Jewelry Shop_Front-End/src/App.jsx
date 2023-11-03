@@ -23,6 +23,7 @@ import WatchOrder from './pages/WatchOrder.jsx'
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "./redux/Login.jsx";
 import { getNumber } from "./redux/GetNumber.jsx";
+import RiseLoader from "react-spinners/RiseLoader";
 import { fetchDataAndDispatch } from "./services/genUser.js";
 import axios from "axios";
 import NewPass from "./pages/NewPassword.jsx"
@@ -31,9 +32,18 @@ const Container = styled.div``;
 export const cartValue = createContext();
 function App() {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [txt, setTxt] = useState();
   const [cookieChangeTrigger, setCookieChangeTrigger] = useState(0);
 
+  useEffect(()=>{
+    setLoading(true)
+  },[])
+  useEffect(()=>{
+    setTimeout(()=>{
+      setLoading(false)
+    },2000)
+  },[])
   const checkForCookieChanges = useCallback(() => {
     const currentCookies = document.cookie;
     if (currentCookies !== cookieChangeTrigger) {
@@ -91,7 +101,26 @@ function App() {
     console.log(cartView?.productList.length);
     dispatch(getNumber(cartView?.productList.length));
   }, [cartView]);
+  // useEffect(()=>{
+  //   setTimeout(()=>{
+  //     setLoading(false)
+  //   },2000)
+  // },[])
   return (
+      <>
+      {loading ? (
+        <Container
+          style={{
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <RiseLoader color={"#575855"} size={30} loading={loading} />
+        </Container>
+      ) : (
     <Container>
       <cartValue.Provider
         value={{
@@ -132,6 +161,8 @@ function App() {
         </BrowserRouter>
       </cartValue.Provider>
     </Container>
+  )};
+  </>
   );
 }
 
