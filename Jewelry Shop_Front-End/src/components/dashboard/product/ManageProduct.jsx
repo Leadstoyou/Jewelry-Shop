@@ -19,6 +19,7 @@ import axios from "axios";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
+import { CollectionFilterSearchAndPagination } from "../../../api/productAPI.js";
 const Container = styled.div``;
 const Function = styled.div`
   background-color: #c5c2c2;
@@ -172,7 +173,6 @@ const Delete = styled.button`
 `;
 
 const InputSearch = styled.input`
-  
   outline: none;
   border: none;
 `;
@@ -181,6 +181,7 @@ const InputSearch = styled.input`
 export const UpdateControl = createContext();
 const ManageProduct = () => {
   const navigate = useNavigate();
+  const [searchText, setSearchText] = useState(null);
   const [idDelete, setIdDelete] = useState(null);
   const [updateData, setUpdateData] = useState(null);
   const [updateProduct, setUpdateProduct] = useState(null);
@@ -189,6 +190,7 @@ const ManageProduct = () => {
   const [addData, setAddData] = useState({});
   const [existErr, setExist] = useState(false);
   const [modalShow, setModalShow] = useState(false);
+
   const notify = (text) => {
     toast.error(text, {
       position: "top-right",
@@ -325,34 +327,75 @@ const ManageProduct = () => {
 
   //get data
   //allProduct, setAllproduct
+  let Allpage = [];
   const [activePage, setActivePage] = useState(1);
   const limitP = 5;
   const [totalPage, setTotalpage] = useState(0);
+  console.log("active page: " + activePage);
   useEffect(() => {
-    getAllProducts(setAllproduct, setTotalpage, notify, limitP, activePage);
-  }, [addData, updateData, updateProduct, idDelete, activePage, totalPage]);
+    if (searchText !== "") {
+      Allpage = [];
+      CollectionFilterSearchAndPagination(
+        setAllproduct,
+        searchText,
+        limitP,
+        setTotalpage,
+        activePage
+      );
+    }
+  }, [searchText, addData, updateData, updateProduct, idDelete, activePage]);
+
+  useEffect(() => {
+    if (searchText === "") {
+      Allpage = [];
+      getAllProducts(setAllproduct, setTotalpage, notify, limitP, activePage);
+    }
+  }, [searchText, addData, updateData, updateProduct, idDelete, activePage]);
 
   useEffect(() => {
     console.log(allProduct);
     console.log(totalPage);
+    if (!allProduct && activePage > 1) {
+      setActivePage(activePage - 1);
+    }
   }, [allProduct]);
 
+  useEffect(() => {
+    console.log(allProduct);
+    console.log(totalPage);
+    if (!allProduct && activePage > 1) {
+      setActivePage(activePage - 1);
+    }
+  }, [allProduct]);
+
+  useEffect(() => {
+    setActivePage(1);
+  }, [searchText]);
+
   const categories = ["Dây Chuyền", "Vòng tay", "Hoa Tai", "Charm", "Nhẫn"];
-  const Allpage = [];
+
   for (let i = 1; i <= totalPage; i++) {
     Allpage.push(i);
   }
   console.log(Allpage);
   const handlePrev = () => {
-    if (activePage > 1) {
-      setActivePage(activePage - 1);
-    }
+    setActivePage((prevPage) => {
+      if (prevPage > 1) {
+        return prevPage - 1;
+      }
+      return prevPage;
+    });
   };
+
   const handleNext = () => {
-    if (activePage < totalPage) {
-      setActivePage(activePage + 1);
-    }
+    setActivePage((prevPage) => {
+      if (prevPage < totalPage) {
+        return prevPage + 1;
+      }
+      return prevPage;
+    });
   };
+
   return (
     <Container>
       <ControlHome onClick={() => navigate("/")}>
@@ -367,9 +410,11 @@ const ManageProduct = () => {
           <AddController.Provider value={{ addData, setAddData }}>
             <BtnControl>
               <div>
-                <div style={{ backgroundColor: "white" , marginTop:'20%'}}>
+                <div style={{ backgroundColor: "white", marginTop: "20%" }}>
                   <SearchIcon />
-                  <InputSearch />
+                  <InputSearch
+                    onChange={(e) => setSearchText(e.target.value)}
+                  />
                 </div>
               </div>
               <div style={{ display: "flex", flexDirection: "column" }}>
@@ -639,20 +684,23 @@ const ManageProduct = () => {
             onHide={() => setShowUpdate(false)}
           />
         </UpdateControl.Provider>
-        <PageControl>
-          <Pagination>
-            <Pagination.Prev onClick={handlePrev} />
-            {Allpage.map((page) => (
-              <Pagination.Item
-                active={page === activePage}
-                onClick={() => setActivePage(page)}
-              >
-                {page}
-              </Pagination.Item>
-            ))}
-            <Pagination.Next onClick={handleNext} />
-          </Pagination>
-        </PageControl>
+        {allProduct && (
+          <PageControl>
+            <Pagination>
+              <Pagination.Prev onClick={handlePrev} />
+              {Allpage.map((page) => (
+                <Pagination.Item
+                  key={page}
+                  active={page === activePage}
+                  onClick={() => setActivePage(page)}
+                >
+                  {page}
+                </Pagination.Item>
+              ))}
+              <Pagination.Next onClick={handleNext} />
+            </Pagination>
+          </PageControl>
+        )}
       </Function>
       <ToastContainer
         style={{ height: "500px" }}

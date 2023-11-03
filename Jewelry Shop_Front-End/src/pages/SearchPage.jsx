@@ -4,13 +4,14 @@ import Footer from "../components/Footer";
 import RiseLoader from "react-spinners/RiseLoader";
 import "aos/dist/aos.css";
 import SearchpageBody from "../components/searchpage/SearchpageBody";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Pagination from "react-bootstrap/Pagination";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CollectionAPISearch } from "../api/productAPI";
 import { CollectionFilterSearch } from "../api/productAPI";
+import { cartValue } from "../App";
 const Container = styled.div`
   font-family: "Jost", sans-serif;
 `;
@@ -22,12 +23,17 @@ const PageControl = styled.div`
   margin-bottom: 20px;
 `;
 function SearchPage() {
+  const {txt,setTxt}=useContext(cartValue)
   const [loading, setLoading] = useState(false);
   const { searchName } = useParams();
   const [foundProducts, setFoundProducts] = useState([]);
   const [colorsArray, setColorsArray] = useState([]);
   const [materialArray, setMaterialArray] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(()=>{
+    setTxt(searchName)
+  },[searchName])
 
   const [color, setColor] = useState(null);
   const [material, setMaterial] = useState(null);
@@ -39,10 +45,14 @@ function SearchPage() {
   );
   const [sort, setSort] = useState(JSON.stringify({}));
   const [activePage, setActivePage] = useState(1);
-  const limitP = 1;
+  const limitP = 15;
   const [totalPage, setTotalpage] = useState(0);
   const [totalSize, setTotalSize] = useState(0);
   const [filterPro, setFilterProduct] = useState();
+
+  useEffect(() => {
+    setActivePage(1);
+  }, [sort, color, material, price]);
 
   useEffect(() => {
     CollectionFilterSearch(
@@ -132,6 +142,7 @@ function SearchPage() {
         <Container>
           <Navbar />
           <SearchpageBody
+           
             color={color}
             material={material}
             price={price}
