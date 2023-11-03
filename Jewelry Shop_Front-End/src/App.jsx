@@ -25,6 +25,7 @@ import { getNumber } from "./redux/GetNumber.jsx";
 import { fetchDataAndDispatch } from "./services/genUser.js";
 import axios from "axios";
 import NewPass from "./pages/NewPassword.jsx"
+import Success from "./components/error/Success.jsx"
 const Container = styled.div``;
 export const cartValue = createContext();
 function App() {
@@ -124,6 +125,7 @@ function App() {
             <Route path="/forgot" element={<Forgot />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/newpass" element={<NewPass />} />
+            <Route path="/success" element={<Success />} />
           </Routes>
         </BrowserRouter>
       </cartValue.Provider>

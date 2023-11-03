@@ -49,6 +49,9 @@ const ManageStaff = () => {
     if(filterRole){
       roleAction = `role=${filterRole}`
     }
+    if(totalPage <= 10){
+      activePage = 1
+    }
     axios
       .get(
         `http://localhost:9999/api/v1/users/search?${searchString}&${roleAction}&${statusAction}&size=${size}&page=${activePage}`,
@@ -158,6 +161,7 @@ const ManageStaff = () => {
 
 //Change Role
 const handleChange = async (action, userId) => {
+  setAction(action)
   console.log(userId); // User ID
   console.log(action); // New status
   if (changeStatus(userId, action)) {
@@ -169,7 +173,7 @@ const handleChange = async (action, userId) => {
 const handleChangeBlock = async (block, userId) => {
   console.log(userId); // User ID
   console.log(block); // New status
-
+setBlock(block);
   try {
 
     if ( changeAdmin(userId, block)) {
