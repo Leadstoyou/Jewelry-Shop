@@ -197,7 +197,7 @@ const addToCartAPI = async (notify, success, newCart) => {
   }
 };
 
-//getToken
+//view cart
 const viewCartAPI = async (cartToken, setViewCart) => {
   try {
     const token = cartToken;
@@ -228,7 +228,7 @@ const viewCartAPI = async (cartToken, setViewCart) => {
   }
 };
 
-//getToken
+//add order
 const addOrder = async (toast,setOrder) => {
   try {
     const orderStatus = true;
@@ -253,6 +253,31 @@ const addOrder = async (toast,setOrder) => {
     toast?.error("Failed to fetch cart data");
   }
 };
+
+//view order
+const viewOrder = async (toast,setOrderByUser) => {
+  try {
+    const response = await axios.get(
+      "http://localhost:9999/api/v1/order/view",
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true, // Use the headers object you've constructed
+      }
+    );
+    console.log("Hiii:", response.data);
+    if (response.status === 200) {
+      
+       setOrderByUser(response.data)
+    } else {
+      toast?.error("Failed to fetch cart data");
+    }
+  } catch (error) {
+    toast?.error("Failed to fetch cart data");
+  }
+};
+
 
 //check login in cookies
 
@@ -365,4 +390,5 @@ export {
   updateCart,
   Logout,
   addOrder,
+  viewOrder
 };
