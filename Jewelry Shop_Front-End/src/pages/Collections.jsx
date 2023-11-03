@@ -51,7 +51,7 @@ const Collections = () => {
   );
   const navigate = useNavigate();
   const [sort, setSort] = useState(JSON.stringify({}));
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const notify = (text) => {
     toast.error(text, {
       position: "top-right",
@@ -145,6 +145,13 @@ const Collections = () => {
     }
   };
 
+  //loading
+  useEffect(() => {
+    const delay = 2000; 
+    setTimeout(() => {
+      setLoading(false)
+    }, delay);
+  }, []);
   return (
     <>
       {loading ? (
