@@ -44,7 +44,7 @@ const Register = () => {
     if (validate()) {
       try {
         console.log("ok");
-       const response = await axios.post("http://localhost:9999/api/v1/users/register", {
+       const response = await axios.post("http://localhost:9999/api/v1/account/register", {
           userName:formData.fullName,
           userEmail:formData.email,
           userPassword:formData.password,

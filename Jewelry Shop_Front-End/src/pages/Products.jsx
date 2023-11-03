@@ -84,7 +84,7 @@ const Total = styled.div`
 
 const Products = () => {
   const navigate = useNavigate();
-  var { number } = useContext(cartValue);
+  var { number } = useContext(cartValue ? cartValue : 0);
   const { cartView, setViewCart, setShowCartPopup, showCartPopup } =
     useContext(cartValue);
   const { cartData, setCartData } = useContext(cartValue);
@@ -92,6 +92,7 @@ const Products = () => {
   const [product, setProduct] = useState({});
 
   const { id } = useParams();
+
   useEffect(() => {
     setLoading(true);
     async function fetchData() {

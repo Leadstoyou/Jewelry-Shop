@@ -8,7 +8,7 @@ import Product from "./Product";
 
 const Container = styled.div`
   margin-top: 100px;
-  margin-bottom: 15vh;
+
 `;
 const Header = styled.div`
   display: flex;
@@ -43,8 +43,9 @@ const TitleProduct = styled.div`
 `;
 const ProductList = styled.div`
   margin-top: 30px;
-  margin-left: 40px;
-  margin-right: 35px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: ${({ productLength }) => (productLength > 0 ? '0' : '10%')};
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   align-items: center;
@@ -76,6 +77,7 @@ const ItemOne = styled.div`
   gap: 20px;
 `;
 const DropdownOne = styled.select`
+  outline: none;
   padding: 5px;
   border: 5px solid #c3bebe;
 `;
@@ -89,7 +91,8 @@ const NotFound = styled.div`
 `;
 const SearchpageBody = (props) => {
   
-  const { products, materialArray, colorsArray, fetchData , searchName } = props;
+  const { products, materialArray, colorsArray,color,material,price,sort, searchName,setColor,setMaterial,setPrice,setSort , filterPro} = props;
+  
   const [searchText, setSearchText] = useState(searchName);
   const [foundProducts, setFoundProducts] = useState();
   const [colorsArrayTemp, setColorsArrayTemp] = useState(colorsArray);
@@ -112,30 +115,35 @@ const SearchpageBody = (props) => {
   }, [products]);
 
   const handleSelected = (color, material, price, sort) => {
-    setSelectedColor(color);
-    setSelectedMaterial(material);
-    setSelectedPrice(price);
-    setSelectedSort(sort);
+    console.log(color, material, price, sort);
+   
+    setColor(color);
+    setMaterial(material);
+    setPrice(price);
+    setSort(sort);
 
-    fetchData(color, material, JSON.parse(price), JSON.parse(sort));
   };
 
   return (
     <Container data-aos="fade-up">
       <Header data-aos="fade-up">
         <Title>
+        
+          
           <TitleItem>Tìm kiếm</TitleItem>
+      
         </Title>
         <Text>
           <TextItem>
-            {foundProducts?.length ? (
+         {props.productLength > 0 ?
               <>
                 {" "}
-                Có <Inline>{foundProducts?.length} sản phẩm</Inline>cho tìm kiếm{" "}
-              </>
-            ) : (
-              ""
-            )}
+                Có <Inline>{props?.total} sản phẩm</Inline> cho tìm kiếm{" "}
+              </> : <>
+                {" "}
+                Có <Inline>0 sản phẩm</Inline> cho tìm kiếm{" "}
+              </>}
+           
           </TextItem>
         </Text>
       </Header>
@@ -146,7 +154,7 @@ const SearchpageBody = (props) => {
       </TitleProduct>
 
      
-       
+    
           <SearchController data-aos="fade-up">
             <ItemOne>
               <TextSearch>Lọc sản phẩm</TextSearch>
@@ -154,9 +162,9 @@ const SearchpageBody = (props) => {
             onChange={(e) =>
               handleSelected(
                 e.target.value,
-                selectedMaterial,
-                selectedPrice,
-                selectedSort
+                material,
+                price,
+                sort
               )
             }
           >
@@ -183,10 +191,10 @@ const SearchpageBody = (props) => {
           <DropdownOne
             onChange={(e) =>
               handleSelected(
-                selectedColor,
+                color,
                 e.target.value,
-                selectedPrice,
-                selectedSort
+                price,
+                sort
               )
             }
           >
@@ -213,10 +221,10 @@ const SearchpageBody = (props) => {
           <DropdownOne
             onChange={(e) =>
               handleSelected(
-                selectedColor,
-                selectedMaterial,
+                color,
+                material,
                 e.target.value,
-                selectedSort
+                sort
               )
             }
           >
@@ -276,9 +284,9 @@ const SearchpageBody = (props) => {
           <DropdownOne
             onChange={(e) =>
               handleSelected(
-                selectedColor,
-                selectedMaterial,
-                selectedPrice,
+                color,
+                material,
+                price,
                 e.target.value
               )
             }
@@ -307,8 +315,9 @@ const SearchpageBody = (props) => {
           </DropdownOne>
         </ItemOne>
           </SearchController>
-          <ProductList data-aos="fade-up">
-          { foundProducts ? (foundProducts?.map((product, index) => (
+      
+          <ProductList data-aos="fade-up" productLength={props.productLength}>
+          { props.productLength > 0 ? (foundProducts?.map((product, index) => (
               <Product product={product} key={index} />
              ))) : ( <div style={{ position:'absolute' ,top : '25%', right:'25%' }}>
         <h1 >Not found product you have just filtered !!!</h1>

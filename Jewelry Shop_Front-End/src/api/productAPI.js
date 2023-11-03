@@ -14,17 +14,22 @@ function getAccessTokenFromCookie() {
 }
 
 const CollectionAPI = async (
+  limitP,
+  setTotalpage,
+  setTotalSize,
+  activePage,
   category,
   color,
   material,
   price,
   sort,
-  setColorsArray,
-  setMaterialArray,
   setFoundProducts,
-  setLoading,toast,navigate
+  setLoading,
+  toast,
+  navigate
 ) => {
   try {
+    console.log("ldmas", category);
     const categories = ["Dây Chuyền", "Vòng tay", "Hoa Tai", "Charm", "Nhẫn"];
     if (!categories.includes(category)) {
       throw new Error("Invalid category");
@@ -32,12 +37,15 @@ const CollectionAPI = async (
     const response = await axios.post(
       `${import.meta.env.VITE_API_PRODUCTS}/view`,
       {
+        limit: limitP,
+        page: activePage,
+        isDeleted: false,
         category: category,
         color: color,
         material: material,
-        minPrice: price?.minPrice,
-        maxPrice: price?.maxPrice,
-        sort: sort,
+        minPrice: JSON.parse(price)?.minPrice,
+        maxPrice: JSON.parse(price)?.maxPrice,
+        sort: JSON.parse(sort),
       },
       {
         headers: {
@@ -48,47 +56,93 @@ const CollectionAPI = async (
     );
 
     const data = response.data?.data?.products;
-    if (!color && !material && !price && !sort) {
-      const extractUnique = (property) => [
-        ...new Set(data.flatMap((value) => value[property])),
-      ];
-      setMaterialArray(extractUnique("productMaterials"));
-      setColorsArray(extractUnique("productColors"));
-    }
+    const totalPage = response?.data?.data?.totalPages;
+    const totalPro = response?.data?.data?.totalProducts;
+    console.log(response);
+    setTotalpage(totalPage);
+    setTotalSize(totalPro);
     setFoundProducts(data);
     setLoading(false);
   } catch (error) {
     setLoading(false);
-    if(error.response.status === 401){
-      navigate('/login');
-    }
-    toast.error(error.response.data.message);
-    console.error("Error fetching data:", error.response.data.message);
+    console.error("Error fetching data:", error);
   }
 };
 
 const CollectionAPISearch = async (
+  limitP,
+  setTotalpage,
+  setTotalSize,
+  activePage,
   searchName,
   color,
   material,
   price,
   sort,
-  setColorsArray,
-  setMaterialArray,
   setFoundProducts,
-  setLoading,toast,navigate
+  setLoading,
+  toast,
+  navigate
 ) => {
   try {
-
     const response = await axios.post(
       `${import.meta.env.VITE_API_PRODUCTS}/view`,
       {
+        limit: limitP,
+        page: activePage,
+        isDeleted: false,
         searchName: searchName,
         color: color,
         material: material,
-        minPrice: price?.minPrice,
-        maxPrice: price?.maxPrice,
-        sort: sort,
+        minPrice: JSON.parse(price)?.minPrice,
+        maxPrice: JSON.parse(price)?.maxPrice,
+        sort: JSON.parse(sort),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true,
+      }
+    );
+    const data = response.data?.data?.products;
+    const totalPage = response?.data?.data?.totalPages;
+    const totalPro = response?.data?.data?.totalProducts;
+    setTotalpage(totalPage);
+    setTotalSize(totalPro);
+    setFoundProducts(data);
+    setLoading(false);
+  } catch (error) {
+    setLoading(false);
+
+    if (error.response && error.response.status === 401) {
+      navigate("/login");
+    }
+
+    if (error.response && error.response.data) {
+      toast.error(error.response.data.message);
+    } else {
+      toast.error("Error fetching data");
+    }
+
+    console.error("Error fetching data:", error);
+  }
+};
+
+const CollectionFilterSearch = async (
+  setFilterProduct,
+  searchName,
+  color,
+  material,
+  price,
+  sort
+) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_PRODUCTS}/view`,
+      {
+        isDeleted: false,
+        searchName: searchName,
       },
       {
         headers: {
@@ -99,23 +153,46 @@ const CollectionAPISearch = async (
     );
 
     const data = response.data?.data?.products;
-    if (!color && !material && !price && !sort) {
-      const extractUnique = (property) => [
-        ...new Set(data.flatMap((value) => value[property])),
-      ];
-      setMaterialArray(extractUnique("productMaterials"));
-      setColorsArray(extractUnique("productColors"));
-    }
-    setFoundProducts(data);
-    setLoading(false);
+    setFilterProduct(data);
   } catch (error) {
-    setLoading(false);
-    if(error.response.status === 401){
-      navigate('/login');
-    }
-    toast.error(error.response.data.message);
-    console.error("Error fetching data:", error.response.data.message);
+    console.error(
+      "Error fetching data:",
+      error.response?.data?.message || error.message
+    );
   }
 };
 
-export { CollectionAPI , CollectionAPISearch };
+const CollectionFilterCategory = async (
+  setFilterProduct,
+  category,
+  color,
+  material,
+  price,
+  sort
+) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_PRODUCTS}/view`,
+      {
+        isDeleted: false,
+        category: category,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true,
+      }
+    );
+
+    const data = response.data?.data?.products;
+    setFilterProduct(data);
+  } catch (error) {
+    console.error(
+      "Error fetching data:",
+      error.response?.data?.message || error.message
+    );
+  }
+};
+
+export { CollectionAPI, CollectionAPISearch, CollectionFilterSearch ,CollectionFilterCategory};

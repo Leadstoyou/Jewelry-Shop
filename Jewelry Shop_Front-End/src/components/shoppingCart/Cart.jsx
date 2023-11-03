@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { toast } from "react-toastify";
-
+import { getNumber } from "../../redux/GetNumber.jsx";
 import {
   viewCartAPI,
   removeFromCart,
   updateCart,
 } from "../../api/connectApi.js";
+import { useDispatch } from "react-redux";
 const Container = styled.div`
   display: flex;
   align-items: stretch;
@@ -17,7 +18,7 @@ const Container = styled.div`
 
   @media (max-width: 1500px) {
     padding: 25px;
-  } 
+  }
   margin-top: 15vh;
 `;
 
@@ -272,8 +273,8 @@ const EmptyCartContainer = styled.div`
   height: 50vh; /* You can adjust the height based on your layout */
 `;
 
-
 const ShoppingCart = () => {
+  const dispatch = useDispatch();
   const [isAgreedToTerms, setIsAgreedToTerms] = useState(false);
   const [exportBill, setExportBill] = useState(false);
   const [giftNotes, setGiftNotes] = useState("");
@@ -283,14 +284,7 @@ const ShoppingCart = () => {
   const [cartData, setCartData] = useState();
 
   //Lấy product data
-
-  function truncateDescription(description, maxLength) {
-    if (description.length > maxLength) {
-      return description.slice(0, maxLength) + " ...";
-    }
-    return description;
-  }
-
+  const [cartUpdate, setCartUpdate] = useState();
   const [deleteCart, setDeleteCart] = useState();
   useEffect(() => {
     const cartTokenValue = null;
@@ -302,7 +296,10 @@ const ShoppingCart = () => {
       }
     };
     fetchData();
-  }, [deleteCart]);
+  }, [deleteCart, cartUpdate]);
+  useEffect(() => {
+    dispatch(getNumber(cartData?.productList?.length));
+  }, [cartData]);
   const cartTokenValue = cartData?.cart_token;
 
   const handleRemoveProduct = async (productId) => {
@@ -318,23 +315,11 @@ const ShoppingCart = () => {
 
   const handleUpdateQuantity = async (productId, newQuantity) => {
     try {
-      await updateCart(productId, newQuantity, cartTokenValue, () => {}, () => {});
+      await updateCart(productId, newQuantity, setCartUpdate);
       toast.success("Quantity updated successfully");
     } catch (error) {
       console.error("Error updating quantity:", error);
       toast.error("Failed to update quantity");
-    }
-  };
-
-  const formattedPrice = (price) => {
-    const priceNumber = parseFloat(price);
-    if (!isNaN(priceNumber) && isFinite(priceNumber)) {
-      return priceNumber.toLocaleString("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      });
-    } else {
-      return "0";
     }
   };
 
@@ -407,7 +392,9 @@ const ShoppingCart = () => {
     return (
       <EmptyCartContainer>
         <Title>Your Cart is Empty</Title>
-        <ContinueShoppingLink href="/">Click here to continue shopping</ContinueShoppingLink>
+        <ContinueShoppingLink href="/">
+          Click here to continue shopping
+        </ContinueShoppingLink>
       </EmptyCartContainer>
     );
   }
@@ -422,29 +409,34 @@ const ShoppingCart = () => {
                 <ProductContainer>
                   <ProductImage src={product.productImage} />
                   <ProductInfo>
-                    <h6
-                      onMouseEnter={() =>
-                        setHoveredDescription(product.productDescription)
-                      }
-                      onMouseLeave={() => setHoveredDescription(null)}
-                    >
-                      {hoveredDescription
-                        ? product.productDescription
-                        : truncateDescription(product.productDescription, 100)}
-                    </h6>
-                    <ProductCategory>Product Category:</ProductCategory>
+                    <h6>{product?.productName}</h6>
+                    <ProductCategory>
+                      Product Category: {product?.productCategory}
+                    </ProductCategory>
                     <ProductPrice>
-                      Price: {formattedPrice(product.price)}
+                      Price: {product?.price?.toLocaleString("vn-VI")}
                     </ProductPrice>
                   </ProductInfo>
-                  <QuantityContainer>
-          <QuantityLabel>Quantity</QuantityLabel>
-          <QuantitySelect
-            value={product.quantity}
-            onChange={(e) => handleUpdateQuantity(product.product_id, e.target.value)}
-          />
-        </QuantityContainer>
-                  <ProductPrice> {formattedPrice(product.price)}</ProductPrice>
+
+                  <QuantityLabel>Quantity</QuantityLabel>
+                  <QuantitySelect
+                    type="number"
+                    defaultValue={
+                      product?.quantity > 5
+                    }
+                   
+                    min={0}
+                    max={10}
+                    onChange={(e) => {
+                      handleUpdateQuantity(product.product_id, value);
+                    }}
+                  />
+
+                  <section></section>
+                  <ProductPrice>
+                    {" "}
+                    {product?.price?.toLocaleString("vn-VI")}
+                  </ProductPrice>
                   <DeleteButton
                     onClick={() => handleRemoveProduct(product.product_id)}
                   >
@@ -456,15 +448,18 @@ const ShoppingCart = () => {
             ))}
           </LeftPanel>
         </ScrollingArea>
-        {!cartData || cartData.productList.length === 0 && (
-        <EmptyCartContainer>
-          <Title>Your Cart is Empty</Title>
-          <ContinueShoppingLink href="/">Click here to continue shopping</ContinueShoppingLink>
-        </EmptyCartContainer>
-      )}
-      
+        {!cartData ||
+          (cartData.productList.length === 0 && (
+            <EmptyCartContainer>
+              <Title>Your Cart is Empty</Title>
+              <ContinueShoppingLink href="/">
+                Click here to continue shopping
+              </ContinueShoppingLink>
+            </EmptyCartContainer>
+          ))}
+
         <RightPanel>
-          <Title>Total: {formattedPrice(cartData?.total)}</Title>
+          <Title>Total: {cartData?.total?.toLocaleString("vn-VI")}</Title>
           <CheckboxContainer>
             <input
               type="checkbox"
@@ -519,7 +514,6 @@ const ShoppingCart = () => {
             </ArrowIcon>
           </ContinueShoppingLink>
         </RightPanel>
-        
       </Container>
       <PoliciesContainer className="ega-policies">
         <div className="row">

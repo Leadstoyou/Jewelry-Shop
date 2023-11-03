@@ -11,6 +11,8 @@ import Switch from "react-switch";
 import "../style/ManagerStaff.scss";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import {axiosConfig} from "../../../config/acessToken.js"
+
 const ControlHome = styled.div`
   position: absolute;
   top: 0;
@@ -26,36 +28,30 @@ const ManageStaff = () => {
   const [filterRole, setFilterRole] = useState("");
   const [filterAction, setFilterAction] = useState("");
   const [action, setAction] = useState(false);
+  const [block, setBlock] = useState(false);
   const [activePage, setActivePage] = useState(1);
   const [calledApi, setCalledApi] = useState(false);
   const [totalPage, setTotalPage] = useState(10);
+  const [userIds, setUserIds] = useState(null);
 
-  
   const size = 10;
 
-  function getCookieValue(cookieName) {
-    const cookies = document.cookie.split("; ");
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].split("=");
-      if (cookie[0] === cookieName) {
-        return decodeURIComponent(cookie[1]);
-      }
-    }
-    return null;
-  }
-
-  const accessToken = getCookieValue("accessToken");
-
-  const axiosConfig = {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  };
-
+//Connect api to take all user
   const connectAPI = (search, filterRole, filterAction, activePage) => {
+
+    let searchString, statusAction, roleAction 
+    if(search ){
+      searchString = `search=${search}`
+    }
+    if(filterAction){
+      statusAction = `status=${filterAction}`
+    }
+    if(filterRole){
+      roleAction = `role=${filterRole}`
+    }
     axios
       .get(
-        `http://localhost:9999/api/v1/users/search?search=${search}&role=${filterRole}&status=${filterAction}&size=${size}&page=${activePage}`,
+        `http://localhost:9999/api/v1/users/search?${searchString}&${roleAction}&${statusAction}&size=${size}&page=${activePage}`,
         axiosConfig
       )
       .then((response) => {
@@ -71,9 +67,9 @@ const ManageStaff = () => {
         console.error("An error occurred:", error);
       });
   };
+  
 
-
-
+//Change Role
   const changeRole = async (userId, newRole) => {
     try {
       const response = await axios.put(
@@ -88,14 +84,14 @@ const ManageStaff = () => {
     catch (error) {
       console.log(error);
     }};
-  
+  //Change Status
     const changeStatus = async (userId, newStatus) => {
       try {
         const response = await axios.put(
           "http://localhost:9999/api/v1/users/updateStatus",
           {
-            userId: userId,
-            newStatus: newStatus,
+            userId,
+            newStatus,
           },
           axiosConfig
         );
@@ -103,16 +99,31 @@ const ManageStaff = () => {
       catch (error) {
         console.log(error);
       }};
-    
+    //Block account
+      const changeAdmin = async (userId,newBlock) => {
+        try {
+          const response = await axios.put(
+            "http://localhost:9999/api/v1/users/updateBlock",
+            {
+              userId ,
+              newBlock
+            },
+            axiosConfig
+          );
+        }
+        catch (error) {
+          console.log(error);
+        }};
 
   const handleSearch = () => {
     connectAPI(search, filterRole, filterAction, 1);
   };
  
   const handleNewRole = (userId, newRole) => {
-   
+   console.log(newRole);
     if (window.confirm("Do you want to change your role")) {
           changeRole(userId, newRole).then(() => {
+            console.log("change success");
             connectAPI(search, filterRole, filterAction, activePage);
     
           })
@@ -142,25 +153,38 @@ const ManageStaff = () => {
     if (activePage < totalPage) {
       setActivePage(activePage + 1);
       connectAPI(search, filterRole, filterAction, activePage+1);
-
-    
     }
   };
-//switch change r
 
-const handleChange = (action, userId) => {
+//Change Role
+const handleChange = async (action, userId) => {
   console.log(userId); // User ID
   console.log(action); // New status
-
-  setAction(action);
-
   if (changeStatus(userId, action)) {
     connectAPI(search, filterRole, filterAction, activePage);
     alert("Status updated");
   }
 };
 
+const handleChangeBlock = async (block, userId) => {
+  console.log(userId); // User ID
+  console.log(block); // New status
 
+  try {
+
+    if ( changeAdmin(userId, block)) {
+      console.log(block);
+    connectAPI(search, filterRole, filterAction, activePage);
+    }
+  } catch (error) {
+    console.error("An error occurred:", error);
+  }
+}
+
+ const handleView = (userIds) =>{
+  setModalShow(true)
+  setUserIds(userIds);
+ }
   useEffect(() => {
     if (!calledApi) {
       connectAPI(search, filterRole, filterAction, activePage);
@@ -246,11 +270,12 @@ const handleChange = (action, userId) => {
             <th>Phone Number</th>
             <th>Role</th>
             <th>Status</th>
+            <th>Block</th>
             <th>Actor</th>
           </tr>
         </thead>
         <tbody>
-          {userData || userData.length > 0 ? (
+          {userData && userData.length > 0 ? (
             userData        
               .map((user, index) => (
                 <tr key={index}>
@@ -271,9 +296,13 @@ const handleChange = (action, userId) => {
                   <Switch onChange={(action) => handleChange(action, user._id)} checked={user.isActive} />
                   </td>
                   <td>
+                  <Switch onChange={(block) => handleChangeBlock(block,user._id)} checked={user.isDelete} />
+                  </td>
+                  <td>
                     <button
                       className="button"
-                      onClick={() => setModalShow(true)}
+                      onClick={()=>handleView(user._id)}
+                    
                     >
                       View
                     </button>
@@ -286,7 +315,7 @@ const handleChange = (action, userId) => {
             </tr>
           )}
 
-          <ViewDetail show={modalShow} onHide={() => setModalShow(false)} />
+          <ViewDetail show={modalShow} onHide={() => setModalShow(false) } userIds={userIds} />
         </tbody>
       </Table>
       <div className="paging">

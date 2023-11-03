@@ -6,7 +6,9 @@ import Jwt from "jsonwebtoken";
 
 const getCartByUser = async (userId) =>{
   try {
-    const cart = await Cart.findOne({ user_id: userId }).exec();
+
+    const cart = await Cart.findOne({ user_id: userId}).exec();
+
     return cart;
   } catch (error) {
     throw error;
@@ -64,10 +66,10 @@ const createCartToken = async (cartId) => {
   }
 };
 
-const addProductToCart = async (cartToken, productId, quantity, size, color, material, price, productImage, productDes) => {
+const addProductToCart = async (cartToken, productId, quantity, size, color, material) => {
   try {
     const cart = await Cart.findById(cartToken);
-
+    const product = await Product.findById(productId);
     const existingProductIndex = cart.productList.findIndex((product) => String(product.product_id) === String(productId));
     
     if (existingProductIndex !== -1) {
@@ -78,25 +80,29 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
       } else {
         cart.productList.push({
           product_id: productId,
+          productName: product.productName,
+          productCategory: product.productCategory,
           quantity: quantity,
           size: size,
           color: color,
           material: material,
-          price: price,
-          productImage: productImage,
-          productDescription: productDes
+          price: product.productPrice,
+          productImage: product.productImage,
+          productDescription: product.productDescription
         });
       }
     } else {
       cart.productList.push({
         product_id: productId,
-        quantity: quantity,
-        size: size,
-        color: color,
-        material: material,
-        price: price,
-        productImage: productImage,
-        productDescription: productDes
+        productName: product.productName,
+          productCategory: product.productCategory,
+          quantity: quantity,
+          size: size,
+          color: color,
+          material: material,
+          price: product.productPrice,
+          productImage: product.productImage,
+          productDescription: product.productDescription
       });
     }
 
@@ -117,9 +123,10 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
   }
 };
 
-  const updateProductInCart = async (cartToken, productId, quantity, size, color, material, price) => {
+  const updateProductInCart = async (cartToken, productId, quantity, price) => {
     try {
       const product = await productRepository.getProductById(productId);
+      //const price = Number(product.productPrice);
       if(quantity > product.quantity){
         throw new Error ("Not enough quantity in stock")
       }else {
@@ -128,9 +135,7 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
         {
           $set: {
             'productList.$.quantity': quantity,
-            'productList.$.size': size,
-            'productList.$.color': color,
-            'productList.$.material': material,
+
              total: quantity*price,
           },
         },
@@ -196,11 +201,20 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
 
   const removeCart = async (cartId) => {
     try {
-      await Cart.findByIdAndUpdate(cartId, { isCheckOut: true });
+    await Cart.findByIdAndDelete(cartId);
     } catch (error) {
-      throw error;
+    throw error;
+    }
+    };
+
+  const deleteAllCarts = async () => {
+    try {
+      await Cart.deleteMany({});
+    } catch (error) {
+      throw new Error('Failed to delete all carts.');
     }
   };
+  
 
-export default {getCartByTokenCookie, getCartByUser, updateTotalPrice, updateProductInCart,createCartToken, createEmptyCart, removeCart, getCartByToken, addProductToCart, removeFromCart};
+export default {deleteAllCarts,getCartByTokenCookie, getCartByUser, updateTotalPrice, updateProductInCart,createCartToken, createEmptyCart, removeCart, getCartByToken, addProductToCart, removeFromCart};
 

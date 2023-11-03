@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../style/Login.scss";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from "react-redux";
-import {login} from '../redux/Login.jsx'
+import { login } from "../redux/Login.jsx";
+import { getNumber } from "../redux/GetNumber.jsx";
+import { cartValue } from "../App.jsx";
+import { viewCartAPI } from "../api/connectApi";
 const Logins = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -25,26 +28,34 @@ const Logins = () => {
     }
   }, []);
 
+  const [dataCart, setcartData] = useState();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (validate()) {
       try {
-        const response = await axios.post("http://localhost:9999/api/v1/users/login", {
-          userEmail: email,
-          userPassword: password,
-        },{
-          withCredentials: true,
-        });
+        const response = await axios.post(
+          "http://localhost:9999/api/v1/account/login",
+          {
+            userEmail: email,
+            userPassword: password,
+          },
+          {
+            withCredentials: true,
+          }
+        );
         if (response.status === 200) {
-          dispatch(login(response?.data?.data))
-          console.log(response);
           console.log("Login successful");
-          navigate("/"); 
+          
+          dispatch(getNumber(dataCart?.productList?.length));
+          dispatch(login(response?.data?.data));
+          // navigate("/");
+          document.location="/"
         }
       } catch (error) {
         toast.error(error.response.data.message);
-      } 
+      }
     }
   };
 

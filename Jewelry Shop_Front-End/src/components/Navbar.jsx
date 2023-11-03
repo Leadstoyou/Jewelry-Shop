@@ -5,7 +5,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Badge from "@mui/material/Badge";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import videoFile from "../assets/video.mp4"; // Import the video file using ES6 module syntax
 import { ToastContainer, toast } from "react-toastify";
@@ -13,7 +13,10 @@ import "react-toastify/dist/ReactToastify.css";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import { useSelector } from "react-redux";
-
+import { useDispatch } from "react-redux";
+import { getNumber } from "../redux/GetNumber.jsx";
+import { cartValue } from "../App";
+import { Logout } from '../api/connectApi.js'
 const Container = styled.div`
   background-color: #d5d3d3;
   position: relative;
@@ -120,6 +123,8 @@ const Button = styled.button`
 `;
 
 const Navbar = (props) => {
+  const { changeInitial } = useContext(cartValue);
+  const dispatch = useDispatch();
   const numberCart = useSelector((state) => state?.getNumber?.value);
   const user = useSelector((state) => state?.loginController);
   const [showContent, setShowContent] = useState(false);
@@ -129,11 +134,11 @@ const Navbar = (props) => {
   };
   const handleLogout = () => {
     toggleContent();
-    document.cookie =
-      "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie =
-      "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    navigate('/')  
+    changeInitial();
+    Logout();
+    
+    dispatch(getNumber(0));
+    navigate("/");
   };
   const notify = () => {
     toast.error("Vui lòng không để trống trường tìm kiếm !!!", {
@@ -217,10 +222,11 @@ const Navbar = (props) => {
             </Item>
             <div
               style={{
-                width: "100px",
+                width: "150px",
                 height: "100px",
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "center",
                 borderRadius: "50%",
                 cursor: "pointer",
                 zIndex: "2",
@@ -228,7 +234,9 @@ const Navbar = (props) => {
             >
               {Object.keys(user).length === 0 || user?.value === undefined ? (
                 <div onClick={() => navigate("/login")}>
-                  <Button>SIGN IN</Button>
+                  <Button style={{ marginLeft: "auto", marginRight: "auto" }}>
+                    SIGN IN
+                  </Button>
                 </div>
               ) : (
                 <>
@@ -239,7 +247,14 @@ const Navbar = (props) => {
                     <DashboardIcon />
                   </Item>
 
-                  <div style={{ position: "relative" , height : '50%' }}>
+                  <div
+                    style={{
+                      position: "relative",
+                      width: "40%",
+                      height: "50%",
+                      marginLeft: "15%",
+                    }}
+                  >
                     <img
                       src={user?.value?.userAvatar}
                       width="100%" // Adjust the width as needed

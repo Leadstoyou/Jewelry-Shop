@@ -10,6 +10,7 @@ import "../style/Profile.scss";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/Login";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import {axiosConfig} from "../config/acessToken.js"
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -24,28 +25,8 @@ const Profile = () => {
   const [newPassword, setNewPassword] = useState("");
   const [checkPassword, setCheckPassword] = useState("");
   const [calledApi, setCalledApi] = useState(false);
-  const [userUpdated, setUserUpdated] = useState();
 
-  // Hàm để lấy giá trị từ một cookie theo tên
-  function getCookieValue(cookieName) {
-    const cookies = document.cookie.split("; ");
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].split("=");
-      if (cookie[0] === cookieName) {
-        return decodeURIComponent(cookie[1]);
-      }
-    }
-    return null;
-  }
 
-  const accessToken = getCookieValue("accessToken");
-
-  const axiosConfig = {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  };
-  if (accessToken) {
     useEffect(() => {
       async function fetchData() {
         if (!calledApi) {
@@ -89,9 +70,7 @@ const Profile = () => {
 
       fetchData();
     }, [calledApi]);
-  } else {
-    console.log("Không tìm thấy access token trong cookie.");
-  }
+ 
 
   const handleImageUpload = (e) => {
     const selectedImage = e.target.files[0];

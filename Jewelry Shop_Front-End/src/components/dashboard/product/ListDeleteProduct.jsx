@@ -16,6 +16,7 @@ import { addProduct } from "../../../api/connectApi.js";
 import { deleteProduct } from "../../../api/connectApi.js";
 import Pagination from "react-bootstrap/Pagination";
 import axios from "axios";
+import SearchIcon from "@mui/icons-material/Search";
 import { getAllProductsDelete } from "../../../api/connectApi.js";
 import { useNavigate } from "react-router-dom";
 import { updateInRecycler } from "../../../api/connectApi.js";
@@ -33,12 +34,12 @@ const Table = styled.table`
 `;
 const TrHead = styled.tr`
   border-collapse: collapse;
-  background-color: #8080f1;
+  background-color: #c6c3c3;
 `;
 const Tr = styled.tr`
   border-collapse: collapse;
   background-color: #f8f6f6;
-  border-bottom: 1px solid #aeaef5;
+  border-bottom: 1px solid #d8d8db;
 `;
 const Th = styled.th`
   border-collapse: collapse;
@@ -53,7 +54,9 @@ const PageControl = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  padding: 20px;
+  height: 100%;
+  background-color: #c6c3c3;
 `;
 
 const Header = styled.div`
@@ -67,6 +70,25 @@ const ControlButton = styled.div`
   top: 0;
   left: 0;
 `;
+const Restore = styled.button`
+  margin-right: 5px;
+  border: none;
+  outline: none;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: blue;
+  color: white;
+  cursor: pointer;
+  &:hover {
+    background-color: #5050f5;
+  }
+`;
+const InputSearch = styled.input`
+  
+  outline: none;
+  border: none;
+`;
+
 const ListDeleteProduct = () => {
   var idNumber = 1;
   const navigate = useNavigate();
@@ -112,7 +134,7 @@ const ListDeleteProduct = () => {
       setActivePage,
       isDeleted
     );
-  }, [activePage,updateData]);
+  }, [activePage, updateData]);
   console.log("all product" + allProduct);
   console.log(allProduct);
   const Allpage = [];
@@ -132,7 +154,9 @@ const ListDeleteProduct = () => {
   };
 
   const handleRestore = (id) => {
-    updateInRecycler(notify,success,setUpdateData,id)
+    if (confirm("Are you sure you want to restore ?")) {
+      updateInRecycler(notify, success, setUpdateData, id);
+    }
   };
 
   return (
@@ -153,6 +177,12 @@ const ListDeleteProduct = () => {
           </button>
         </ControlButton>
       </Header>
+      <div>
+        <div style={{ backgroundColor: "white" , border : '0.5px solid black' , width:'15%'}}>
+          <SearchIcon />
+          <InputSearch />
+        </div>
+      </div>
       <ControlBody>
         <Table>
           <TrHead>
@@ -185,21 +215,9 @@ const ListDeleteProduct = () => {
                   <Td>{p.productPrice.toLocaleString("vi-VN")}đ</Td>
                   <Td>{p.productCategory}</Td>
                   <Td style={{ width: "10%" }}>
-                    <button
-                      onClick={()=>handleRestore(p._id)}
-                      style={{
-                        marginRight: "5px",
-                        border: "none",
-                        outline: "none",
-                        padding: "10px",
-                        borderRadius: "5px",
-                        backgroundColor: "blue",
-                        color: "white",
-                        cursor: "pointer",
-                      }}
-                    >
+                    <Restore onClick={() => handleRestore(p._id)}>
                       Restore
-                    </button>
+                    </Restore>
                   </Td>
                 </Tr>
               );
