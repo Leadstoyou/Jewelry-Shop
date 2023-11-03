@@ -135,8 +135,6 @@ const addProductToCart = async (cartToken, productId, quantity, size, color, mat
         {
           $set: {
             'productList.$.quantity': quantity,
-
-             total: quantity*price,
           },
         },
         {new: true}
