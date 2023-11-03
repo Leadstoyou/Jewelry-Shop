@@ -324,17 +324,12 @@ const userForgotPasswordRepository = async (userEmail) => {
         message: Exception.CANNOT_FIND_USER,
       };
     }
-
     existingUser.createPasswordChangedToken();
     await existingUser.save();
-    const resetToken = existingUser.userPasswordResetToken;
-    const emailSubject = "Bạn forgot password";
-    const emailBody = `Đây là mã code resetpassword, mã code tồn tại trong 15p: ${resetToken}`;
-    await sendEmailService.sendEmailService(userEmail, emailSubject, emailBody);
-
     return {
       success: true,
       message: SuccessConstants.FORGOT_PASSWORD_SUCCESS,
+      data: existingUser,
     };
   } catch (exception) {
     return {
