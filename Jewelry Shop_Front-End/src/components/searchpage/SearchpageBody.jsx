@@ -1,11 +1,11 @@
 import Aos from "aos";
 import "aos/dist/aos.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Pagination from "react-bootstrap/Pagination";
 import styled from "styled-components";
 import Product from "./Product";
-
+import { cartValue } from "../../App";
 const Container = styled.div`
   margin-top: 100px;
 
@@ -92,7 +92,7 @@ const NotFound = styled.div`
 const SearchpageBody = (props) => {
   
   const { products, materialArray, colorsArray,color,material,price,sort, searchName,setColor,setMaterial,setPrice,setSort , filterPro} = props;
-  
+  const {txt} = useContext(cartValue)
   const [searchText, setSearchText] = useState(searchName);
   const [foundProducts, setFoundProducts] = useState();
   const [colorsArrayTemp, setColorsArrayTemp] = useState(colorsArray);
@@ -149,7 +149,7 @@ const SearchpageBody = (props) => {
       </Header>
       <TitleProduct data-aos="fade-up">
         <Result>
-          Kết quả tìm kiếm cho <Inline>"{searchText}"</Inline>
+          Kết quả tìm kiếm cho <Inline>"{txt}"</Inline>
         </Result>
       </TitleProduct>
 

@@ -5,6 +5,7 @@ import slide1 from "../assets/slide1.jpg";
 import Aos from "aos";
 import "aos/dist/aos.css";
 import { useNavigate } from "react-router-dom";
+import img from '../assets/exportimg.jsx'
 const Container = styled.div`
   margin-top: 10vh;
 `;
@@ -18,11 +19,11 @@ const Left = styled.div`
  
   margin-left : 20px;
   margin-right: 20px;
-  display: grid;
-  grid-template-columns: 30% 30% 30%;
+  display: flex;
+  flex-wrap: wrap;
   gap: 3vw;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 `;
 const Right = styled.div`
   display: flex;
@@ -98,15 +99,17 @@ const ElementOne = ({ item }) => {
   useEffect(() => {
     Aos.init({ duration: 2000 });
   }, []);
+  const imgArray = [ img.charm , img.vongtay , img.nhan , img.hoatai , img.daychuyen]
+  const array=["Charm","Vòng tay","Hoa Tai","Dây Chuyền","Nhẫn" ]
   const navigate = useNavigate()
   return (
     <Container data-aos="fade-up">
       <Wrapper>
         <Left>
-          {categoryElementEvent.map((item) => (
-            <Controller key={item.id} onClick={()=> navigate('/collections')}>
+          {categoryElementEvent.map((item,index) => (
+            <Controller style={{flexBasis:'30%'}} key={item.id} onClick={()=> navigate(`/collections/${array[index]}?price=2000000`)}>
               <ImageController>
-                <Image src={slide1} />
+                <Image src={imgArray[index]} />
               </ImageController>
               <LeftItem>
                 <Title key={item.id}>{item.category_name}</Title>
@@ -116,7 +119,7 @@ const ElementOne = ({ item }) => {
         </Left>
         <Right>
           <TextRight>Hơn cả một món quà</TextRight>
-          <ButtonRight onClick={()=> navigate('/collections')}>Xem ngay</ButtonRight>
+          <ButtonRight onClick={()=> navigate('/collections/Charm')}>Xem ngay</ButtonRight>
         </Right>
       </Wrapper>
     </Container>

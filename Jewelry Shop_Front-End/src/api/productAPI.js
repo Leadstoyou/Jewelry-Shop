@@ -85,19 +85,26 @@ const CollectionAPISearch = async (
   navigate
 ) => {
   try {
+    // Create the base payload object
+    const payload = {
+      limit: limitP,
+      page: activePage,
+      isDeleted: false,
+      color,
+      material,
+      minPrice: JSON.parse(price)?.minPrice,
+      maxPrice: JSON.parse(price)?.maxPrice,
+      sort: JSON.parse(sort),
+    };
+
+    // Conditionally add the searchName property
+    if (searchName) {
+      payload.searchName = searchName;
+    }
+
     const response = await axios.post(
       `${import.meta.env.VITE_API_PRODUCTS}/view`,
-      {
-        limit: limitP,
-        page: activePage,
-        isDeleted: false,
-        searchName: searchName,
-        color: color,
-        material: material,
-        minPrice: JSON.parse(price)?.minPrice,
-        maxPrice: JSON.parse(price)?.maxPrice,
-        sort: JSON.parse(sort),
-      },
+      payload,
       {
         headers: {
           Authorization: `Bearer ${getAccessTokenFromCookie()}`,
@@ -105,6 +112,7 @@ const CollectionAPISearch = async (
         withCredentials: true,
       }
     );
+
     const data = response.data?.data?.products;
     const totalPage = response?.data?.data?.totalPages;
     const totalPro = response?.data?.data?.totalProducts;
@@ -128,6 +136,7 @@ const CollectionAPISearch = async (
     console.error("Error fetching data:", error);
   }
 };
+
 
 const CollectionFilterSearch = async (
   setFilterProduct,
@@ -162,6 +171,92 @@ const CollectionFilterSearch = async (
   }
 };
 
+
+const CollectionFilterSearchAndPagination = async (
+  setFilterProduct,
+  searchName,
+  limitP,
+  setTotalpage,
+  activePage
+) => {
+  try {
+    const limit = limitP;
+    // const page = activePage;
+    var pageCheck = activePage;
+    if (activePage === 1) {
+      pageCheck = 1;
+    }
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_PRODUCTS}/view`,
+      {
+        isDeleted: false,
+        searchName: searchName,
+        limit, page : pageCheck 
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true,
+      }
+    );
+
+    const data = response.data?.data?.products;
+    setFilterProduct(data);
+    setTotalpage(response.data.data.totalPages);
+  } catch (error) {
+    console.error(
+      "Error fetching data:",
+      error.response?.data?.message || error.message
+    );
+  }
+};
+
+
+const CollectionFilterSearchDeleteAndPagination = async (
+  setFilterProduct,
+  searchName,
+  limitP,
+  setTotalpage,
+  activePage
+) => {
+  try {
+    const limit = limitP;
+    // const page = activePage;
+    var pageCheck = activePage;
+    if (activePage === 1) {
+      pageCheck = 1;
+    }
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_PRODUCTS}/view`,
+      {
+        isDeleted: true,
+        searchName: searchName,
+        limit, page : pageCheck 
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true,
+      }
+    );
+
+    const data = response.data?.data?.products;
+    setFilterProduct(data);
+    setTotalpage(response.data.data.totalPages);
+  } catch (error) {
+    console.error(
+      "Error fetching data:",
+      error.response?.data?.message || error.message
+    );
+  }
+};
+
+
+
+
+
 const CollectionFilterCategory = async (
   setFilterProduct,
   category,
@@ -195,4 +290,4 @@ const CollectionFilterCategory = async (
   }
 };
 
-export { CollectionAPI, CollectionAPISearch, CollectionFilterSearch ,CollectionFilterCategory};
+export { CollectionAPI,CollectionFilterSearchDeleteAndPagination, CollectionAPISearch, CollectionFilterSearch ,CollectionFilterCategory , CollectionFilterSearchAndPagination};

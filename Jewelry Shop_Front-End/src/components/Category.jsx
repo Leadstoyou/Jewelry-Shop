@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import img from "../assets/charm.jpg";
+
 import { useNavigate } from "react-router-dom";
 const Container = styled.div`
   border: 1px solid #d6d2d2;
@@ -10,7 +10,6 @@ const Container = styled.div`
   box-sizing: border-box;
   &:hover {
     opacity: 0.8;
-    
   }
 `;
 const ImageController = styled.div``;
@@ -19,7 +18,7 @@ const TextController = styled.div``;
 const Title = styled.div`
   display: inline-block;
   position: relative;
-  
+
   &::after {
     content: "";
     position: absolute;
@@ -28,8 +27,8 @@ const Title = styled.div`
     bottom: 0;
     border-bottom: 1px solid #cf8989;
   }
-  
-  &:hover{
+
+  &:hover {
     &::after {
       content: "";
       position: absolute;
@@ -40,10 +39,12 @@ const Title = styled.div`
     }
   }
 `;
-const Category = ({ item }) => {
-  const navigate = useNavigate()
+const Category = ({ item, img }) => {
+  console.log("img");
+  console.log(img);
+  const navigate = useNavigate();
   return (
-    <Container onClick={()=> navigate('/collections')}>
+    <Container onClick={() => navigate("/collections")}>
       <ImageController>
         <Image src={img} />
       </ImageController>

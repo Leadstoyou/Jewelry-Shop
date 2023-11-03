@@ -19,6 +19,7 @@ const Container = styled.div`
   position: relative;
   font-weight: 500;
   gap: 10px;
+  
  
 `;
 

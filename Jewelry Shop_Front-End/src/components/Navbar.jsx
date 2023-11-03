@@ -5,7 +5,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Badge from "@mui/material/Badge";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import videoFile from "../assets/video.mp4"; // Import the video file using ES6 module syntax
 import { ToastContainer, toast } from "react-toastify";
@@ -123,11 +123,16 @@ const Button = styled.button`
 `;
 
 const Navbar = (props) => {
-  const { changeInitial } = useContext(cartValue);
+  const { changeInitial , txt , setTxt } = useContext(cartValue);
   const dispatch = useDispatch();
   const numberCart = useSelector((state) => state?.getNumber?.value);
   const user = useSelector((state) => state?.loginController);
   const [showContent, setShowContent] = useState(false);
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  // useEffect(()=>{
+  //   setTxt(searchQuery)
+  // },[searchQuery])
 
   const toggleContent = () => {
     setShowContent(!showContent);
@@ -152,9 +157,7 @@ const Navbar = (props) => {
       theme: "colored",
     });
   };
-  const navigate = useNavigate();
-  // const [searchText , setSearchText] = useState("")
-  const [searchQuery, setSearchQuery] = useState("");
+
 
   // Function to handle Enter key press
   const handleKeyPress = (event) => {
