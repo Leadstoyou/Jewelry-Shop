@@ -6,7 +6,7 @@ import RiseLoader from "react-spinners/RiseLoader";
 import CollectionsHeader from "../components/collections/CollectionsHeader";
 import { useEffect, useState } from "react";
 import CollectionsCategory from "../components/collections/CollectionsCategory";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CollectionAPI } from "../api/productAPI";
@@ -31,6 +31,12 @@ const PageControl = styled.div`
 `;
 const Collections = () => {
   const { category } = useParams();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const maxPrice = searchParams.get("maxPrice");
+
+  console.log("maxPrice: " + maxPrice);
+
   const [foundProducts, setFoundProducts] = useState([]);
   const [colorsArray, setColorsArray] = useState();
   const [materialArray, setMaterialArray] = useState();
@@ -58,14 +64,14 @@ const Collections = () => {
       theme: "colored",
     });
   };
-  const [totalProduct,setTotalProduct] = useState(0)
+  const [totalProduct, setTotalProduct] = useState(0);
   const [activePage, setActivePage] = useState(1);
   const limitP = 12;
   const [totalPage, setTotalpage] = useState(0);
   const [totalSize, setTotalSize] = useState(0);
-  useEffect(()=>{
+  useEffect(() => {
     setActivePage(1);
-  },[sort,color,material,price])
+  }, [sort, color, material, price]);
 
   useEffect(() => {
     CollectionFilterCategory(
@@ -118,7 +124,8 @@ const Collections = () => {
       setFoundProducts,
       setLoading,
       toast,
-      navigate
+      navigate,
+      maxPrice
     );
   }, [activePage, filterPro, sort, material, color, price, sort]);
 
@@ -171,6 +178,7 @@ const Collections = () => {
             products={foundProducts}
             colorsArray={colorsArray}
             materialArray={materialArray}
+            maxPrice={maxPrice}
           />
           {foundProducts?.length > 0 && (
             <PageControl>

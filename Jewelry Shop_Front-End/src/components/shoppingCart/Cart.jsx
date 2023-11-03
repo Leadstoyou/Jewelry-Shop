@@ -43,6 +43,7 @@ const RightPanel = styled.div`
 const Title = styled.h2`
   text-align: left;
   color: #333;
+  font-size:30px;
   font-weight: bold;
 `;
 
@@ -175,7 +176,13 @@ const ContinueShoppingLink = styled.a`
   font-size: 16px;
   margin-top: 20px;
   align-items: center;
+  color: red;
+  font-weight: bolder;
   cursor: pointer;
+  text-decoration: underline;
+  &:hover{
+    color: #f86767;
+  }
 `;
 
 const ContinueShoppingText = styled.span`
@@ -347,16 +354,16 @@ const ShoppingCart = () => {
 
   const navigate = useNavigate();
   const handlePay = () => {
-    if (user) {
-      console.log("success");
-      // toast?.success("Checkout successfully");
-      addOrder(toast, setOrder);
-      dispatch(getNumber(0));
-      // setTimeout(()=>{
-      //   navigate('/')
-      // },[2000])
-    } else if (!user) {
-      toast?.error("You must login to check out");
+    if (isAgreedToTerms === false) {
+      toast.error("Please agree to Terms to checkout !!!");
+    } else if (isAgreedToTerms === true) {
+      if (user) {
+        console.log("success");
+        addOrder(toast, setOrder);
+        dispatch(getNumber(0));
+      } else if (!user) {
+        toast?.error("You must login to check out");
+      }
     }
   };
 
@@ -420,7 +427,7 @@ const ShoppingCart = () => {
     return (
       <EmptyCartContainer>
         <Title>Your Cart is Empty</Title>
-        <ContinueShoppingLink href="/">
+        <ContinueShoppingLink onClick={()=>navigate('/')}>
           Click here to continue shopping
         </ContinueShoppingLink>
       </EmptyCartContainer>
@@ -465,7 +472,7 @@ const ShoppingCart = () => {
                   <section></section>
                   <ProductPrice>
                     {" "}
-                    {product?.price?.toLocaleString("vn-VI")}
+                    {product?.price?.toLocaleString("vn-VI")}đ
                   </ProductPrice>
                   <DeleteButton onClick={() => handleRemoveProduct(product)}>
                     X
@@ -487,7 +494,7 @@ const ShoppingCart = () => {
           ))}
 
         <RightPanel>
-          <Title>Total: {cartData?.total?.toLocaleString("vn-VI")}</Title>
+          <Title>Total: {cartData?.total?.toLocaleString("vn-VI")}đ</Title>
           <CheckboxContainer>
             <input
               type="checkbox"
@@ -499,7 +506,7 @@ const ShoppingCart = () => {
               I agree to the Terms of Service
             </Label>
           </CheckboxContainer>
-          <Button onClick={handlePay} disabled={!isAgreedToTerms} type="submit">
+          <Button onClick={handlePay}  type="submit">
             THANH TOÁN
           </Button>
           <ImageUnderButton

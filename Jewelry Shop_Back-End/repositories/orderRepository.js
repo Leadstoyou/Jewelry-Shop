@@ -72,4 +72,44 @@ const createOrder = async (userId, orderStatus) => {
       throw error;
     }
   };
-  export default {createOrder, createOrderDetail, getAllOrderByUserID, getAllOrder, updateOrderStatus}
+  const getAmountInMonth =  async (month) => {
+      try {
+        const year = new Date().getFullYear(); 
+      
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+  
+        const orders = await Order.find({
+          orderDate: { $gte: startDate, $lte: endDate },
+        });
+  
+        let totalAmount = 0;
+        orders.forEach((order) => {
+          totalAmount += parseFloat(order.totalAmount);
+        });
+  
+        return { month: month, "Total Amount": totalAmount };
+      } catch (error) {
+        throw error;
+      }
+    };
+
+    const getAllOrdersInMonth =  async (month) => {
+      try {
+        const year = new Date().getFullYear(); 
+      
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+  
+        const orders = await Order.find({
+          orderDate: { $gte: startDate, $lte: endDate },
+        });
+  
+        const totalOrdersInMonth = orders.length;
+  
+        return { month: month, "Total Orders In Month": totalOrdersInMonth };
+      } catch (error) {
+        throw error;
+      }
+    };
+  export default {createOrder, createOrderDetail, getAllOrderByUserID, getAllOrder, updateOrderStatus,getAmountInMonth, getAllOrdersInMonth}
