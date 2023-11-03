@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { toast } from "react-toastify";
 import { getNumber } from "../../redux/GetNumber.jsx";
+import { useSelector } from "react-redux";
+
 import {
   viewCartAPI,
   removeFromCart,
   updateCart,
+  addOrder,
 } from "../../api/connectApi.js";
 import { useDispatch } from "react-redux";
 const Container = styled.div`
@@ -275,11 +278,14 @@ const EmptyCartContainer = styled.div`
 
 const ShoppingCart = () => {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state?.loginController?.value);
+
+  console.log(user);
   const [isAgreedToTerms, setIsAgreedToTerms] = useState(false);
   const [exportBill, setExportBill] = useState(false);
   const [giftNotes, setGiftNotes] = useState("");
   const [hoveredDescription, setHoveredDescription] = useState("");
-
+  const [order, setOrder] = useState();
   //call API view cart
   const [cartData, setCartData] = useState();
 
@@ -287,48 +293,70 @@ const ShoppingCart = () => {
   const [cartUpdate, setCartUpdate] = useState();
   const [deleteCart, setDeleteCart] = useState();
   useEffect(() => {
-    const cartTokenValue = null;
     const fetchData = async () => {
       try {
-        await viewCartAPI(cartTokenValue, setCartData);
+        await viewCartAPI("hi", setCartData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
     fetchData();
-  }, [deleteCart, cartUpdate]);
+  }, [deleteCart, cartUpdate, order]);
   useEffect(() => {
     dispatch(getNumber(cartData?.productList?.length));
   }, [cartData]);
-  const cartTokenValue = cartData?.cart_token;
 
-  const handleRemoveProduct = async (productId) => {
+  //const cartUpdate = await cartRepository.updateProductInCart(cartToken, productId, quantity, price);
+  const handleUpdateQuantity = async (productId, newQuantity, price) => {
     try {
-      console.log(productId, cartTokenValue);
-      await removeFromCart(productId, cartTokenValue, setDeleteCart);
-      toast.success("Product deleted successfully"); // Show success notification
-    } catch (error) {
-      console.error("Error removing the product:", error);
-      toast.error("Failed to delete the product"); // Show an error notification
-    }
-  };
+      if (newQuantity > 10) {
+        // toast.error("Please enter quantity of one product is less than 10 !!!");
+        document.getElementById(`${productId}`).value = 10;
+        const number = 10;
+        await updateCart(productId, number, price, setCartUpdate, toast);
 
-  const handleUpdateQuantity = async (productId, newQuantity) => {
-    try {
-      await updateCart(productId, newQuantity, setCartUpdate);
-      toast.success("Quantity updated successfully");
+        return;
+      } else if (newQuantity <= 0) {
+        document.getElementById(`${productId}`).value = 1;
+        const numberO = 1;
+        await updateCart(productId, numberO, price, setCartUpdate, toast);
+
+        return;
+      } else {
+        await updateCart(productId, newQuantity, price, setCartUpdate, toast);
+        return;
+      }
     } catch (error) {
       console.error("Error updating quantity:", error);
-      toast.error("Failed to update quantity");
     }
   };
+
+  const handleRemoveProduct = async (product, toast) => {
+    try {
+      await removeFromCart(product, setDeleteCart, toast);
+      // Show success notification
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  console.log("data cart");
+  console.log(cartData);
+  console.log("data cart update");
+  console.log(cartUpdate);
 
   const navigate = useNavigate();
   const handlePay = () => {
-    if (isAgreedToTerms) {
-      navigate("/checkouts");
-    } else {
-      alert("Please agree to the Terms of Service.");
+    if (user) {
+      console.log("success");
+      // toast?.success("Checkout successfully");
+      addOrder(toast, setOrder);
+      dispatch(getNumber(0));
+      // setTimeout(()=>{
+      //   navigate('/')
+      // },[2000])
+    } else if (!user) {
+      toast?.error("You must login to check out");
     }
   };
 
@@ -414,32 +442,32 @@ const ShoppingCart = () => {
                       Product Category: {product?.productCategory}
                     </ProductCategory>
                     <ProductPrice>
-                      Price: {product.price.toLocaleString("vn-VI")}
+                      Price: {product?.price?.toLocaleString("vn-VI")}
                     </ProductPrice>
                   </ProductInfo>
 
                   <QuantityLabel>Quantity</QuantityLabel>
                   <QuantitySelect
                     type="number"
-                    defaultValue={
-                      product?.quantity > 5
-                    }
-                   
+                    defaultValue={product?.quantity}
+                    id={`${product.product_id}`}
                     min={0}
                     max={10}
                     onChange={(e) => {
-                      handleUpdateQuantity(product.product_id, value);
+                      handleUpdateQuantity(
+                        product?.product_id,
+                        e.target.value,
+                        product?.price
+                      );
                     }}
                   />
 
                   <section></section>
                   <ProductPrice>
                     {" "}
-                    {product.price.toLocaleString("vn-VI")}
+                    {product?.price?.toLocaleString("vn-VI")}
                   </ProductPrice>
-                  <DeleteButton
-                    onClick={() => handleRemoveProduct(product.product_id)}
-                  >
+                  <DeleteButton onClick={() => handleRemoveProduct(product)}>
                     X
                   </DeleteButton>
                 </ProductContainer>
@@ -471,41 +499,14 @@ const ShoppingCart = () => {
               I agree to the Terms of Service
             </Label>
           </CheckboxContainer>
-          <form
-            id="createOrder"
-            action="http://localhost:9999/api/v1/payment/create_payment_url"
-            method="POST"
-            onSubmit={handleFormSubmit}
-          >
-            <Button
-              onClick={handlePay}
-              disabled={!isAgreedToTerms}
-              type="submit"
-            >
-              THANH TOÁN
-            </Button>
-          </form>
+          <Button onClick={handlePay} disabled={!isAgreedToTerms} type="submit">
+            THANH TOÁN
+          </Button>
           <ImageUnderButton
             src="https://theme.hstatic.net/200000103143/1000942575/14/trustbadge.jpg?v=2700"
             alt="Your Image"
           />
-          <CheckboxContainer>
-            <BillExportCheckbox
-              checked={exportBill}
-              onChange={() => setExportBill(!exportBill)}
-              style={{ WebkitAppearance: "checkbox" }}
-            />
-            <Label>Export Bill</Label>
-          </CheckboxContainer>
 
-          <DescriptionInput>
-            <label>Enter gift notes or special delivery instructions</label>
-            <textarea
-              placeholder="Note"
-              value={giftNotes}
-              onChange={(e) => setGiftNotes(e.target.value)}
-            />
-          </DescriptionInput>
           <ContinueShoppingLink href="/">
             <ContinueShoppingText>Tiếp tục mua sắm</ContinueShoppingText>
             <ArrowIcon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 6">

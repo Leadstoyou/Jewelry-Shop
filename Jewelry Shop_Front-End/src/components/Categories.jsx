@@ -3,6 +3,7 @@ import { categoryElement } from "../data";
 import Category from "./Category";
 import Aos from "aos";
 import "aos/dist/aos.css";
+import img from '../assets/exportimg.jsx'
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 const Container = styled.div`
@@ -31,15 +32,16 @@ const Categories = () => {
   useEffect(() => {
     Aos.init({ duration: 2000 });
   }, []);
+  const imgArray = [ img.charm , img.vongtay , img.nhan , img.hoatai , img.daychuyen]
   return (
     <Container data-aos="fade-up">
       <LeftController>
         <Title>Xem ngay các dòng sản phẩm cực hot</Title>
       </LeftController>
-      {categoryElement.map((item) => (
+      {categoryElement.map((item,index) => (
         <Link to={`/collections/${item.sub_name}`} key={item.id}>
           <RightController>
-            <Category key={item.id} item={item} />
+            <Category key={item.id} item={item} img={imgArray[index]}/>
           </RightController>
         </Link>
       ))}

@@ -6,6 +6,7 @@ import album4 from "../assets/album4.png";
 import Aos from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 const Container = styled.div`
   text-align: center;
   margin-top: 15vh;
@@ -39,20 +40,21 @@ const Button = styled.button`
   color: white;
   padding: 10px;
   cursor: pointer;
-  &:hover{
+  &:hover {
     background-color: #626161;
   }
 `;
 const Album = () => {
+  const navigate = useNavigate();
   useEffect(() => {
     Aos.init({ duration: 2000 });
   }, []);
   return (
-    <Container  data-aos="fade-up">
+    <Container data-aos="fade-up">
       <Header>Bộ Sưu Tập</Header>
       <AlbumC>
-        <AlbumItem >
-          <Controller>
+        <AlbumItem>
+          <Controller onClick={() => navigate("/collections/Charm")}>
             <ImageController>
               <Image src={album1} />
             </ImageController>
@@ -63,7 +65,7 @@ const Album = () => {
           </Controller>
         </AlbumItem>
         <AlbumItem>
-          <Controller>
+          <Controller onClick={() => navigate("/collections/Vòng%20tay")}>
             <ImageController>
               <Image src={album2} />
             </ImageController>
@@ -74,7 +76,7 @@ const Album = () => {
           </Controller>
         </AlbumItem>
         <AlbumItem>
-          <Controller>
+          <Controller onClick={() => navigate("/collections/Nhẫn")}>
             <ImageController>
               <Image src={album3} />
             </ImageController>
@@ -85,7 +87,7 @@ const Album = () => {
           </Controller>
         </AlbumItem>
         <AlbumItem>
-          <Controller>
+          <Controller onClick={() => navigate("/collections/Hoa%20Tai")}>
             <ImageController>
               <Image src={album4} />
             </ImageController>

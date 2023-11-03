@@ -58,11 +58,14 @@ const Collections = () => {
       theme: "colored",
     });
   };
-
+  const [totalProduct,setTotalProduct] = useState(0)
   const [activePage, setActivePage] = useState(1);
-  const limitP = 4;
+  const limitP = 12;
   const [totalPage, setTotalpage] = useState(0);
   const [totalSize, setTotalSize] = useState(0);
+  useEffect(()=>{
+    setActivePage(1);
+  },[sort,color,material,price])
 
   useEffect(() => {
     CollectionFilterCategory(
@@ -153,7 +156,7 @@ const Collections = () => {
         <Container>
           <Navbar />
 
-          <CollectionsHeader category={category} filterPro={filterPro} />
+          <CollectionsHeader category={category} totalSize={totalSize} />
           <CollectionsCategory
             color={color}
             material={material}

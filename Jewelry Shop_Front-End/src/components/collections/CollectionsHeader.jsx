@@ -45,7 +45,7 @@ const Image = styled.img`
   height: 40vh;
 `;
 const CollectionsHeader = (props) => {
-  const { category, filterPro } = props;
+  const { category, totalSize } = props;
 
   useEffect(() => {
     Aos.init({ duration: 2000 });
@@ -66,8 +66,8 @@ const CollectionsHeader = (props) => {
               {category}
             </TitleText>
             &nbsp;&nbsp;
-            {filterPro?.length && (
-              <p style={{ display: "inline-block" }}>({filterPro?.length})</p>
+            {totalSize && (
+              <p style={{ display: "inline-block" }}>({totalSize})</p>
             )}
           </Title>
         </LeftController>

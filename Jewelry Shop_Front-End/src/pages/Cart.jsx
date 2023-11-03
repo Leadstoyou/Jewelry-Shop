@@ -7,7 +7,9 @@ const CartPage = () => {
   return (
     <div>
     <Navbar className="fixed-navbar" />
-      <ShoppingCart />
+    <div style={{marginBottom:'5%'}}>
+      <ShoppingCart/>
+      </div>
       <Footer/>
     </div>
   );
