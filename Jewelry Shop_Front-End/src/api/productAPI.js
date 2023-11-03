@@ -30,13 +30,15 @@ const CollectionAPI = async (
   maxPriceValue
 ) => {
   try {
-    let maxPrice, minPrice;
-    if (maxPriceValue) {
-      maxPrice = JSON.parse(maxPriceValue);
-      minPrice = JSON.parse(0);
-    } else if (price) {
-      maxPrice = JSON.parse(price)?.maxPrice;
-      minPrice = JSON.parse(price)?.minPrice;
+
+    let maxPrice , minPrice;
+    if(maxPriceValue){
+      maxPrice = JSON.parse(maxPriceValue)
+      minPrice = JSON.parse(0)
+    }else if(price){
+      maxPrice = JSON.parse(price)?.maxPrice 
+      minPrice = JSON.parse(price)?.minPrice
+
     }
     console.log("ldmas", category);
     const categories = ["Dây Chuyền", "Vòng tay", "Hoa Tai", "Charm", "Nhẫn"];
