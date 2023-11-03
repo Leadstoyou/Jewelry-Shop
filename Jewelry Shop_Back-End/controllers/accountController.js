@@ -30,19 +30,25 @@ const userLoginController = async (req, res) => {
     });
 
     if (!loginUser.success) {
-      if(loginUser.message === "User is not active please check your email") {
-        const user = loginUser.userData;
-        accountService.handleSendEmailService(user)
-        return res.status(HttpStatusCode.FORBIDDEN).json({
-          status: "ERROR",
-          message: "Verify Email sent. User is not active,please check your email to confirm your account",
-        });
-      }
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: loginUser.message,
       });
     }
+
+    if (
+      !loginUser.success &&
+      loginUser.message === "User is not active please check your email"
+    ) {
+      const user = loginUser.userData;
+      accountService.handleSendEmailService(user);
+      return res.status(HttpStatusCode.FORBIDDEN).json({
+        status: "ERROR",
+        message:
+          "Verify Email sent. User is not active,please check your email to confirm your account",
+      });
+    }
+
     res.cookie("accessToken", loginUser.data.accessToken, {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: false,
@@ -195,7 +201,7 @@ const userRegisterController = async (req, res) => {
         message: registerUser.message,
       });
     }
-    accountService.handleSendEmailService(registerUser.data)
+    accountService.handleSendEmailService(registerUser.data);
     return res.status(HttpStatusCode.CREATED).json({
       status: "OK",
       message: registerUser.message,
