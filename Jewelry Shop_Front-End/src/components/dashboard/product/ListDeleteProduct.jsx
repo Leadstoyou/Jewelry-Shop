@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { format, parse } from "date-fns";
 import styled from "styled-components";
 import Modal from "react-bootstrap/Modal";
+import { CollectionFilterSearchDeleteAndPagination } from "../../../api/productAPI.js";
 import background from "../../../assets/backgroung.jpg";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -84,7 +85,6 @@ const Restore = styled.button`
   }
 `;
 const InputSearch = styled.input`
-  
   outline: none;
   border: none;
 `;
@@ -92,6 +92,7 @@ const InputSearch = styled.input`
 const ListDeleteProduct = () => {
   var idNumber = 1;
   const navigate = useNavigate();
+  const [searchText, setSearchText] = useState(null);
   const [updateData, setUpdateData] = useState(null);
   const [allProduct, setAllproduct] = useState(null);
   const notify = (text) => {
@@ -120,24 +121,52 @@ const ListDeleteProduct = () => {
     });
   };
   //get data
+  let Allpage = [];
   const [activePage, setActivePage] = useState(1);
   const limitP = 5;
   const [totalPage, setTotalpage] = useState(0);
   useEffect(() => {
-    const isDeleted = true;
-    getAllProductsDelete(
-      setAllproduct,
-      setTotalpage,
-      notify,
-      limitP,
-      activePage,
-      setActivePage,
-      isDeleted
-    );
-  }, [activePage, updateData]);
+    if (searchText !== "") {
+      Allpage = [];
+      CollectionFilterSearchDeleteAndPagination(
+        setAllproduct,
+        searchText,
+        limitP,
+        setTotalpage,
+        activePage
+      );
+    }
+  }, [searchText, activePage, updateData]);
+  useEffect(() => {
+    if (searchText === "") {
+      Allpage = [];
+      const isDeleted = true;
+      getAllProductsDelete(
+        setAllproduct,
+        setTotalpage,
+        notify,
+        limitP,
+        activePage,
+        setActivePage,
+        isDeleted
+      );
+    }
+  }, [searchText, activePage, updateData]);
   console.log("all product" + allProduct);
   console.log(allProduct);
-  const Allpage = [];
+
+  useEffect(() => {
+    console.log(allProduct);
+    console.log(totalPage);
+    if (!allProduct && activePage > 1) {
+      setActivePage(activePage - 1);
+    }
+  }, [allProduct]);
+
+  useEffect(() => {
+    setActivePage(1);
+  }, [searchText]);
+
   for (let i = 1; i <= totalPage; i++) {
     Allpage.push(i);
   }
@@ -178,9 +207,15 @@ const ListDeleteProduct = () => {
         </ControlButton>
       </Header>
       <div>
-        <div style={{ backgroundColor: "white" , border : '0.5px solid black' , width:'15%'}}>
+        <div
+          style={{
+            backgroundColor: "white",
+            border: "0.5px solid black",
+            width: "15%",
+          }}
+        >
           <SearchIcon />
-          <InputSearch />
+          <InputSearch onChange={(e) => setSearchText(e.target.value)} />
         </div>
       </div>
       <ControlBody>
@@ -226,20 +261,22 @@ const ListDeleteProduct = () => {
           })}
         </Table>
       </ControlBody>
-      <PageControl>
-        <Pagination>
-          <Pagination.Prev onClick={handlePrev} />
-          {Allpage.map((page) => (
-            <Pagination.Item
-              active={page === activePage}
-              onClick={() => setActivePage(page)}
-            >
-              {page}
-            </Pagination.Item>
-          ))}
-          <Pagination.Next onClick={handleNext} />
-        </Pagination>
-      </PageControl>
+      {allProduct && (
+        <PageControl>
+          <Pagination>
+            <Pagination.Prev onClick={handlePrev} />
+            {Allpage.map((page) => (
+              <Pagination.Item
+                active={page === activePage}
+                onClick={() => setActivePage(page)}
+              >
+                {page}
+              </Pagination.Item>
+            ))}
+            <Pagination.Next onClick={handleNext} />
+          </Pagination>
+        </PageControl>
+      )}
       <ToastContainer
         style={{ height: "500px" }}
         position="top-center"

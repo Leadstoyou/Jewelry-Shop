@@ -50,8 +50,8 @@ const Logins = () => {
           
           dispatch(getNumber(dataCart?.productList?.length));
           dispatch(login(response?.data?.data));
-          // navigate("/");
-          document.location="/"
+          navigate("/");
+        
         }
       } catch (error) {
         toast.error(error.response.data.message);

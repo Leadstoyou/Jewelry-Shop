@@ -100,6 +100,8 @@ const getAllProductsDelete = async (
   }
 };
 
+//getAllProduct DleteAnd search
+
 //add a product
 const addProduct = async (addData, success, notify) => {
   try {
@@ -226,6 +228,34 @@ const viewCartAPI = async (cartToken, setViewCart) => {
   }
 };
 
+//getToken
+const addOrder = async (toast,setOrder) => {
+  try {
+    const orderStatus = true;
+    const response = await axios.post(
+      "http://localhost:9999/api/v1/order/checkouts",
+      { orderStatus },
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true, // Use the headers object you've constructed
+      }
+    );
+    console.log("API response:", response.data);
+    if (response.status === 200) {
+      setOrder(response.data)
+      toast?.success("Checkout succsessfullly !!!");
+    } else {
+      toast?.error("Failed to fetch cart data");
+    }
+  } catch (error) {
+    toast?.error("Failed to fetch cart data");
+  }
+};
+
+//check login in cookies
+
 //update product in recycle
 const updateInRecycler = async (notify, success, setUpdateData, idProduct) => {
   try {
@@ -247,47 +277,62 @@ const updateInRecycler = async (notify, success, setUpdateData, idProduct) => {
   }
 };
 //removeFromCart
-const removeFromCart = async (productId, cartToken, setDeleteCart) => {
+const removeFromCart = async (product, setDeleteCart, toast) => {
   try {
-    const id = productId;
-    const token = cartToken;
+    const p = product;
     const response = await axios.delete(
-      `${import.meta.env.VITE_API_CART}/delete/${token}`,
+      `${import.meta.env.VITE_API_CART}/delete`,
       {
-        data: { product_id: id }, // Use 'params' to send query parameters
+        data: {
+          product_id: p.product_id,
+          size: p.size[0],
+          color: p.color[0],
+          material: p.material[0],
+        }, // Use 'params' to send query parameters
         withCredentials: true,
       }
     );
-    if (response.status === 200) {
-      console.log(response);
+    if (response.status >= 200 && response.status < 300) {
       setDeleteCart(response.data);
-      console.log("Product removed from the cart successfully !!!");
+      toast.success("Deleted successfully");
     } else {
-      console.log("Failed to remove the product from the cart");
+      toast?.error("Failed to delete the product");
     }
   } catch (error) {
-    console.log("Failed to remove the product from the cart"); // Log the error message here
+    toast?.error(error);
   }
 };
 
-const updateCart = async (productId, quantity, setCartUpdate) => {
+const updateCart = async (
+  productId,
+  quantity,
+  pricePro,
+  setCartUpdate,
+  toast
+) => {
   try {
+    const price = Number(pricePro);
     const product_id = productId;
-
-    const data = { product_id, quantity };
+    const data = { product_id, quantity, price };
+    console.log("data");
+    console.log(data);
     const response = await axios.post(
       `${import.meta.env.VITE_API_CART}/update`,
       data,
       { withCredentials: true }
     );
+    console.log(response);
     if (response.status === 200) {
       setCartUpdate(response.data.productList);
       console.log("Update cart successfully !!!");
+      toast.success("Quantity updated successfully");
     } else {
       console.log("Failed to update the cart");
+      toast?.error("Failed to update the cart");
     }
   } catch (error) {
     console.log("Failed to update the cart");
+    toast?.error("Failed to update the cart" + error);
   }
 };
 
@@ -296,30 +341,6 @@ const Logout = async () => {
     const response = await axios.get(
       "http://localhost:9999/api/v1/account/logout",
       { withCredentials: true }
-    );
-    if (response.status === 200) {
-      console.log("Logout successfully");
-    } else {
-      console.log("Failed to log out ");
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const createNewOrder = async () => {
-  try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_ORDER}/checkouts`,
-      {
-        orderStatus:true
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
-        },
-      withCredentials: true,
-    }
     );
     if (response.status === 200) {
       console.log("Logout successfully");
@@ -343,5 +364,5 @@ export {
   removeFromCart,
   updateCart,
   Logout,
-  createNewOrder
+  addOrder,
 };

@@ -30,7 +30,7 @@ const Container = styled.div``;
 export const cartValue = createContext();
 function App() {
   const dispatch = useDispatch();
-
+  const [txt, setTxt] = useState();
   const [cookieChangeTrigger, setCookieChangeTrigger] = useState(0);
 
   const checkForCookieChanges = useCallback(() => {
@@ -103,6 +103,7 @@ function App() {
           setShowCartPopup,
           number,
           showCartPopup,
+          txt,setTxt
         }}
       >
         <BrowserRouter basename="/Jewelry-Shop">
