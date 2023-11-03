@@ -125,7 +125,7 @@ function App() {
             <Route path="/forgot" element={<Forgot />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/newpass" element={<NewPass />} />
-            <Route path="/success" element={<Success />} />
+            <Route path="/success/:id" element={<Success />} />
           </Routes>
         </BrowserRouter>
       </cartValue.Provider>
