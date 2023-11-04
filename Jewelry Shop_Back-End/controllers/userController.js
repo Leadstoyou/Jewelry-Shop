@@ -1,6 +1,8 @@
 import { validationResult, check } from "express-validator";
 import { userRepository } from "../repositories/indexRepository.js";
 import HttpStatusCode from "../constant/HttpStatusCode.js";
+import cloudinaryService from "../services/cloudinaryService.js";
+import ConfigConstants from "../constant/ConfigConstants.js";
 
 const userGetAllUsersController = async (req, res) => {
   try {
@@ -197,8 +199,14 @@ const userUpdateProfileController = async (req, res) => {
     userAge,
     userAvatar,
   } = req.body;
-
+  let userAvtUrl = null;
   try {
+    if (userAvatar) {
+      userAvtUrl = await cloudinaryService.uploadProductImageToCloudinary(
+        userAvatar,
+        ConfigConstants.CLOUDINARY_USER_AVATAR_IMG
+      );
+    }
     const userId = req.user.userId;
     const updatedUser = await userRepository.userUpdateProfileRepository({
       userId,
@@ -207,7 +215,7 @@ const userUpdateProfileController = async (req, res) => {
       userGender,
       userAddress,
       userAge,
-      userAvatar,
+      userAvatar: userAvtUrl,
     });
 
     if (!updatedUser) {
@@ -222,6 +230,9 @@ const userUpdateProfileController = async (req, res) => {
       data: updatedUser.data,
     });
   } catch (exception) {
+    if (userAvtUrl) {
+      cloudinaryService.deleteImageFromCloudinary(userAvtUrl);
+    }
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       status: "ERROR",
       message: exception.message,
