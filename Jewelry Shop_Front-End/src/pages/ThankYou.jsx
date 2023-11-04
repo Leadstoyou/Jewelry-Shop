@@ -1,16 +1,12 @@
 import { useEffect } from "react";
-import { createNewOrder } from "../api/connectApi";
+import { makeAnNewOrder } from "../api/connectApi";
 
 const ThankYou = () => {
   useEffect(() => {
-    async function doneOrder() {
-      try {
-        await createNewOrder()
-      } catch (error) {
-        console.log("🚀 ~ file: ThankYou.jsx:10 ~ doneOrder ~ error:", error);
-      }
+    async function fetch(){
+      await makeAnNewOrder();
     }
-    doneOrder();
+    fetch();
   }, []);
   return (
     <div className="thank-you">

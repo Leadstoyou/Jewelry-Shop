@@ -280,7 +280,7 @@ const Checkouts = () => {
                         <p className="logged-in-customer-information-paragraph">
                           {`${responseData?.userInfo?.data?.userName} (${responseData?.userInfo?.data?.userEmail})`}
                           <br />
-                          <Link to={"/login"}>Đăng xuất</Link>
+                          {/* <Link to={"/login"}>Đăng xuất</Link> */}
                         </p>
                       </div>
                       {/* Login*/}
@@ -306,6 +306,7 @@ const Checkouts = () => {
                               onChange={(e) => {
                                 handleInputChange(e, setInputNameValue);
                               }}
+                              disabled
                             />
                           </div>
                         </div>
@@ -332,6 +333,8 @@ const Checkouts = () => {
                               onChange={(e) => {
                                 handleInputChange(e, setInputEmailValue);
                               }}
+                              disabled
+
                             />
                           </div>
                         </div>
@@ -359,6 +362,8 @@ const Checkouts = () => {
                               onChange={(e) => {
                                 handleInputChange(e, setInputPhoneValue);
                               }}
+                              disabled
+
                             />
                           </div>
                         </div>
@@ -409,6 +414,7 @@ const Checkouts = () => {
                                         setInputAddressValue
                                       );
                                     }}
+                                    disabled
                                   />
                                 </div>
                               </div>

@@ -229,7 +229,7 @@ const viewCartAPI = async (cartToken, setViewCart) => {
 };
 
 //add order
-const addOrder = async (toast,setOrder) => {
+const addOrder = async (toast, setOrder) => {
   try {
     const orderStatus = true;
     const response = await axios.post(
@@ -244,7 +244,7 @@ const addOrder = async (toast,setOrder) => {
     );
     console.log("API response:", response.data);
     if (response.status === 200) {
-      setOrder(response.data)
+      setOrder(response.data);
       toast?.success("Checkout succsessfullly !!!");
     } else {
       toast?.error("Failed to fetch cart data");
@@ -253,9 +253,33 @@ const addOrder = async (toast,setOrder) => {
     toast?.error("Failed to fetch cart data");
   }
 };
-
+const makeAnNewOrder = async () => {
+  try {
+    const orderStatus = true;
+    const response = await axios.post(
+      "http://localhost:9999/api/v1/order/checkouts",
+      { orderStatus },
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true, 
+      }
+    );
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      return 0;
+    }
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: connectApi.js:275 ~ makeAnNewOrder ~ error:",
+      error
+    );
+  }
+};
 //view order
-const viewOrder = async (toast,setOrderByUser) => {
+const viewOrder = async (toast, setOrderByUser) => {
   try {
     const response = await axios.get(
       "http://localhost:9999/api/v1/order/view",
@@ -268,8 +292,7 @@ const viewOrder = async (toast,setOrderByUser) => {
     );
     console.log("Hiii:", response.data);
     if (response.status === 200) {
-      
-       setOrderByUser(response.data)
+      setOrderByUser(response.data);
     } else {
       toast?.error("Failed to fetch cart data");
     }
@@ -277,7 +300,6 @@ const viewOrder = async (toast,setOrderByUser) => {
     toast?.error("Failed to fetch cart data");
   }
 };
-
 
 //check login in cookies
 
@@ -390,5 +412,6 @@ export {
   updateCart,
   Logout,
   addOrder,
-  viewOrder
+  viewOrder,
+  makeAnNewOrder,
 };
