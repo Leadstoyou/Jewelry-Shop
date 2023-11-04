@@ -8,6 +8,7 @@ import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
+  font-family: "Jost", sans-serif;
   margin-top: 9%;
   margin-bottom: 5%;
 `;
@@ -72,13 +73,50 @@ const ViewLess = styled.button`
     background-color: #ef6f6f;
   }
 `;
+
+const ViewLessInOrder = styled.button`
+  border: none;
+  background-color: grey;
+  color: white;
+  padding: 5px;
+  &:hover {
+    background-color: #bab8b8;
+  }
+`;
+
+const ViewMoreInOrder = styled.button`
+  border: none;
+  background-color: #1a1919;
+  color: white;
+  padding: 5px;
+  &:hover {
+    background-color: #797777;
+  }
+`;
+
 const WatchOrder = () => {
   const [numberProduct, setNumberProduct] = useState(3);
+  const [numberOrder, setNumberOrder] = useState(2);
   const [allOrder, setOrderByUser] = useState();
   const navigate = useNavigate();
   useEffect(() => {
     viewOrder(toast, setOrderByUser);
   }, []);
+
+  const totalQuantityOfAllOrder = allOrder?.map((order, index) => {
+    const totalPriceOfOrder = order?.productList?.reduce(
+      (total, product) => {
+        return total + product.quantity;
+      },
+      0
+    );
+    return totalPriceOfOrder;
+  }, 0);
+
+  console.log(`Total Quantity of All Orders: ${totalQuantityOfAllOrder}`);
+
+  console.log("total");
+  console.log(totalQuantityOfAllOrder);
 
   const formatOrderDate = (orderDate) => {
     const date = new Date(orderDate);
@@ -89,6 +127,13 @@ const WatchOrder = () => {
   };
   const handleViewless = () => {
     setNumberProduct(numberProduct - 3);
+  };
+
+  const handleClickMoreOrder = () => {
+    setNumberOrder(numberOrder + 2);
+  };
+  const handleClickLessOrder = () => {
+    setNumberOrder(numberOrder - 2);
   };
 
   return (
@@ -133,51 +178,83 @@ const WatchOrder = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {order?.productList?.map((o, index) => (
-                      <tr key={index} style={{ border: "1px solid #dfdddd" }}>
-                        <td style={{ width: "13%", textAlign: "center" }}>
-                          <Img src={o?.productImage} alt="Product" />
-                        </td>
-                        <td style={{ width: "19%", textAlign: "center" }}>
-                          {o?.productName}
-                        </td>
-                        <td style={{ width: "10%", textAlign: "center" }}>
-                          {o?.productCategory}
-                        </td>
-                        <td style={{ width: "10%", textAlign: "center" }}>
-                          {o?.size[0]}
-                        </td>
-                        <td style={{ width: "10%", textAlign: "center" }}>
-                          {o?.color[0]}
-                        </td>
-                        <td style={{ width: "10%", textAlign: "center" }}>
-                          {o?.material[0]}
-                        </td>
-                        <td style={{ width: "10%", textAlign: "center" }}>
-                          {o?.quantity}
-                        </td>
-                        <td style={{ width: "10%", textAlign: "center" }}>
-                          {o?.price?.toLocaleString("vn-VI")}đ
-                        </td>
-                        <td style={{ width: "8%", textAlign: "center" }}>
-                          <ButtonBuyAgain
-                            onClick={() => navigate(`/product/${o.product_id}`)}
-                          >
-                            Mua lại
-                          </ButtonBuyAgain>
-                        </td>
-                      </tr>
-                    ))}
+                    {order?.productList
+                      ?.slice(0, numberOrder)
+                      ?.map((o, index) => (
+                        <tr key={index} style={{ border: "1px solid #dfdddd" }}>
+                          <td style={{ width: "10%", textAlign: "center" }}>
+                            <Img src={o?.productImage} alt="Product" />
+                          </td>
+                          <td style={{ width: "19%", textAlign: "center" }}>
+                            {o?.productName}
+                          </td>
+                          <td style={{ width: "10%", textAlign: "center" }}>
+                            {o?.productCategory}
+                          </td>
+                          <td style={{ width: "10%", textAlign: "center" }}>
+                            {o?.size[0]}
+                          </td>
+                          <td style={{ width: "10%", textAlign: "center" }}>
+                            {o?.color[0]}
+                          </td>
+                          <td style={{ width: "10%", textAlign: "center" }}>
+                            {o?.material[0]}
+                          </td>
+                          <td style={{ width: "10%", textAlign: "center" }}>
+                            {o?.quantity}
+                          </td>
+                          <td style={{ width: "10%", textAlign: "center" }}>
+                            {o?.price?.toLocaleString("vn-VI")}đ
+                          </td>
+                          <td style={{ width: "8%", textAlign: "center" }}>
+                            <ButtonBuyAgain
+                              onClick={() =>
+                                navigate(`/product/${o.product_id}`)
+                              }
+                            >
+                              Mua lại
+                            </ButtonBuyAgain>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
+                {order?.productList?.length > 2 && (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: "10px",
+                      padding: "5px",
+                    }}
+                  >
+                    {" "}
+                    {numberOrder < order?.productList?.length && (
+                      <ViewMoreInOrder onClick={handleClickMoreOrder}>
+                        More
+                      </ViewMoreInOrder>
+                    )}
+                    {numberOrder > 2 && (
+                      <ViewLessInOrder onClick={handleClickLessOrder}>
+                        Less
+                      </ViewLessInOrder>
+                    )}
+                  </div>
+                )}
                 <div
                   style={{
                     width: "100%",
                     textAlign: "center",
                     padding: "10px",
                     backgroundColor: "#bcf1bc",
+                    display:'flex',
+                    alignContent:'center',
+                    justifyContent:'space-between',
                   }}
                 >
+                  <h6>
+                    {totalQuantityOfAllOrder[index]} sản phẩm
+                  </h6>
                   <h3>
                     Total:{" "}
                     {parseInt(order?.totalAmount)?.toLocaleString("vi-VN")}đ

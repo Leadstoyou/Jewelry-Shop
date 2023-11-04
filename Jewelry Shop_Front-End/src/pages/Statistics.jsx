@@ -60,10 +60,12 @@ const Statistics = () => {
   monthOrder = orderInMonth?.map((o) => o?.month);
   quantityOrderInMonth = orderInMonth?.map((o) => o?.totalOrdersInMonth);
   amountOrder = amountInMonth?.map((o) => o?.month);
-  amountOrderInMonth = amountInMonth?.map((o) =>
-    formatLargeNumber(o?.totalOrdersInMonth)
-  );
+  // amountOrderInMonth = amountInMonth?.map((o) =>
+  //   formatLargeNumber(o?.totalOrdersInMonth)
+  // );
+  amountOrderInMonth = amountInMonth?.map((o) => o?.totalOrdersInMonth);
 
+  const maxAmount = Math.max(...amountOrderInMonth);
   console.log(amountOrder);
   console.log(amountOrderInMonth);
   return (
@@ -102,11 +104,11 @@ const Statistics = () => {
                     },
                   ]}
                   width={600}
-                  height={300}
+                  height={500}
                 />
               </ElemetOne>
               <ElemetTwo>
-                <h4>Tổng số order trên năm</h4>
+                <h6>Tổng số order từng tháng trên năm</h6>
               </ElemetTwo>
             </ChartOne>
             <ChartOne>
@@ -119,17 +121,27 @@ const Statistics = () => {
                       scaleType: "band",
                     },
                   ]}
+                  yAxis={[
+                    {
+                      id: "quantityAxis",
+                      domain: [0, maxAmount],
+                      tickFormat: (value) => format(",")(value),
+                    },
+                  ]}
                   series={[
                     {
                       data: amountOrderInMonth,
                     },
                   ]}
                   width={700}
-                  height={300}
+                  height={500}
+                  margin={{ left: 90 }}
                 />
               </ElemetOne>
               <ElemetTwo>
-                <h4>Tổng số lợi nhuận trên năm (tính theo triệu VNĐ)</h4>
+                <h6>
+                  Tổng số lợi nhuận từng tháng trên năm (tính theo VNĐ)
+                </h6>
               </ElemetTwo>
             </ChartOne>
           </Chart>
