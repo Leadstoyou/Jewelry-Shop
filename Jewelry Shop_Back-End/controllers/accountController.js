@@ -1,8 +1,6 @@
 import { validationResult, check } from "express-validator";
 import { userRepository } from "../repositories/indexRepository.js";
 import HttpStatusCode from "../constant/HttpStatusCode.js";
-import Exception from "../constant/Exception.js";
-import sendEmailService from "../services/sendEmailService.js";
 import accountService from "../services/accountService.js";
 
 const userLoginController = async (req, res) => {
@@ -30,19 +28,25 @@ const userLoginController = async (req, res) => {
     });
 
     if (!loginUser.success) {
-      if(loginUser.message === "User is not active please check your email") {
-        const user = loginUser.userData;
-        accountService.handleSendEmailService(user)
-        return res.status(HttpStatusCode.FORBIDDEN).json({
-          status: "ERROR",
-          message: "Verify Email sent. User is not active,please check your email to confirm your account",
-        });
-      }
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: loginUser.message,
       });
     }
+
+    if (
+      !loginUser.success &&
+      loginUser.message === "User is not active please check your email"
+    ) {
+      const user = loginUser.userData;
+      accountService.verifySendEmailService(user);
+      return res.status(HttpStatusCode.FORBIDDEN).json({
+        status: "ERROR",
+        message:
+          "Verify Email sent. User is not active,please check your email to confirm your account",
+      });
+    }
+
     res.cookie("accessToken", loginUser.data.accessToken, {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: false,
@@ -195,7 +199,7 @@ const userRegisterController = async (req, res) => {
         message: registerUser.message,
       });
     }
-    accountService.handleSendEmailService(registerUser.data)
+    accountService.verifySendEmailService(registerUser.data);
     return res.status(HttpStatusCode.CREATED).json({
       status: "OK",
       message: registerUser.message,
@@ -241,7 +245,6 @@ const userForgotPasswordController = async (req, res) => {
       message: "Missing email!",
     });
   }
-
   const errors = validationResult(req);
   check("userEmail").isEmail().withMessage("Invalid email format").run(req);
   if (!errors.isEmpty()) {
@@ -250,7 +253,6 @@ const userForgotPasswordController = async (req, res) => {
       errors: errors.array(),
     });
   }
-
   try {
     const forgotPasswordUser =
       await userRepository.userForgotPasswordRepository(userEmail);
@@ -260,6 +262,7 @@ const userForgotPasswordController = async (req, res) => {
         message: forgotPasswordUser.message,
       });
     }
+    accountService.forgotPasswordSendEmailService(forgotPasswordUser.data);
     return res.status(HttpStatusCode.OK).json({
       status: "OK",
       message: forgotPasswordUser.message,

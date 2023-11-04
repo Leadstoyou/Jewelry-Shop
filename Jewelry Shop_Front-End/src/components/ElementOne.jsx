@@ -107,7 +107,7 @@ const ElementOne = ({ item }) => {
       <Wrapper>
         <Left>
           {categoryElementEvent.map((item,index) => (
-            <Controller style={{flexBasis:'30%'}} key={item.id} onClick={()=> navigate(`/collections/${array[index]}?price=2000000`)}>
+            <Controller style={{flexBasis:'30%'}} key={item.id} onClick={()=> navigate(`/collections/${array[index]}?maxPrice=2000000`)}>
               <ImageController>
                 <Image src={imgArray[index]} />
               </ImageController>

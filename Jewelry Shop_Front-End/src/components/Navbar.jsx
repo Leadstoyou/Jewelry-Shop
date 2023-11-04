@@ -7,6 +7,7 @@ import Badge from "@mui/material/Badge";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import InventoryIcon from '@mui/icons-material/Inventory';
 import videoFile from "../assets/video.mp4"; // Import the video file using ES6 module syntax
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -130,9 +131,7 @@ const Navbar = (props) => {
   const [showContent, setShowContent] = useState(false);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  // useEffect(()=>{
-  //   setTxt(searchQuery)
-  // },[searchQuery])
+
 
   const toggleContent = () => {
     setShowContent(!showContent);
@@ -273,12 +272,12 @@ const Navbar = (props) => {
                         style={{
                           position: "absolute",
                           top: "100%", // Content will appear directly below the image
-                          left: 0, // Adjust the left position if needed
+                          right: 0, // Adjust the left position if needed
                           backgroundColor: "white",
                           border: "1px solid #ccc",
                           padding: "10px",
                           boxShadow: "0 0 5px rgba(0, 0, 0, 0.2)",
-                          width: "100px",
+                          width: "150px",
                         }}
                       >
                         <span onClick={handleProfile}>
@@ -286,10 +285,16 @@ const Navbar = (props) => {
                           Profile
                         </span>
                         <hr />
+                        <span onClick={()=>navigate('/order')}>
+                          <InventoryIcon />
+                          Order
+                        </span>
+                        <hr />
                         <span onClick={handleLogout}>
                           <LogoutIcon />
                           Log out
                         </span>
+                        
                       </div>
                     )}
                   </div>

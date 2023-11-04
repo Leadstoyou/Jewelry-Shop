@@ -26,9 +26,18 @@ const CollectionAPI = async (
   setFoundProducts,
   setLoading,
   toast,
-  navigate
+  navigate,
+  maxPriceValue
 ) => {
   try {
+    let maxPrice , minPrice;
+    if(maxPriceValue){
+      maxPrice = JSON.parse(maxPriceValue)
+      minPrice = JSON.parse(0)
+    }else if(price){
+      maxPrice = JSON.parse(price)?.maxPrice 
+      minPrice = JSON.parse(price)?.minPrice
+    }
     console.log("ldmas", category);
     const categories = ["Dây Chuyền", "Vòng tay", "Hoa Tai", "Charm", "Nhẫn"];
     if (!categories.includes(category)) {
@@ -43,8 +52,8 @@ const CollectionAPI = async (
         category: category,
         color: color,
         material: material,
-        minPrice: JSON.parse(price)?.minPrice,
-        maxPrice: JSON.parse(price)?.maxPrice,
+        minPrice,
+        maxPrice,
         sort: JSON.parse(sort),
       },
       {
@@ -137,7 +146,6 @@ const CollectionAPISearch = async (
   }
 };
 
-
 const CollectionFilterSearch = async (
   setFilterProduct,
   searchName,
@@ -171,7 +179,6 @@ const CollectionFilterSearch = async (
   }
 };
 
-
 const CollectionFilterSearchAndPagination = async (
   setFilterProduct,
   searchName,
@@ -191,7 +198,8 @@ const CollectionFilterSearchAndPagination = async (
       {
         isDeleted: false,
         searchName: searchName,
-        limit, page : pageCheck 
+        limit,
+        page: pageCheck,
       },
       {
         headers: {
@@ -211,7 +219,6 @@ const CollectionFilterSearchAndPagination = async (
     );
   }
 };
-
 
 const CollectionFilterSearchDeleteAndPagination = async (
   setFilterProduct,
@@ -232,7 +239,8 @@ const CollectionFilterSearchDeleteAndPagination = async (
       {
         isDeleted: true,
         searchName: searchName,
-        limit, page : pageCheck 
+        limit,
+        page: pageCheck,
       },
       {
         headers: {
@@ -253,17 +261,14 @@ const CollectionFilterSearchDeleteAndPagination = async (
   }
 };
 
-
-
-
-
 const CollectionFilterCategory = async (
   setFilterProduct,
   category,
   color,
   material,
   price,
-  sort
+  sort,
+  maxPrice
 ) => {
   try {
     const response = await axios.post(
@@ -271,6 +276,8 @@ const CollectionFilterCategory = async (
       {
         isDeleted: false,
         category: category,
+        minPrice: 0,
+        maxPrice: maxPrice,
       },
       {
         headers: {
@@ -279,7 +286,7 @@ const CollectionFilterCategory = async (
         withCredentials: true,
       }
     );
-
+    console.log("123", response);
     const data = response.data?.data?.products;
     setFilterProduct(data);
   } catch (error) {
@@ -290,4 +297,11 @@ const CollectionFilterCategory = async (
   }
 };
 
-export { CollectionAPI,CollectionFilterSearchDeleteAndPagination, CollectionAPISearch, CollectionFilterSearch ,CollectionFilterCategory , CollectionFilterSearchAndPagination};
+export {
+  CollectionAPI,
+  CollectionFilterSearchDeleteAndPagination,
+  CollectionAPISearch,
+  CollectionFilterSearch,
+  CollectionFilterCategory,
+  CollectionFilterSearchAndPagination,
+};
