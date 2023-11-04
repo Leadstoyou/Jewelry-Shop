@@ -1,5 +1,5 @@
+import Exception from "../constant/Exception.js";
 import { Order } from "../models/indexModel.js";
-import { OrderDetail } from "../models/indexModel.js";
 import { User } from "../models/indexModel.js";
 import { Cart } from "../models/indexModel.js";
 const createOrder = async (userId, orderStatus) => {
@@ -93,7 +93,6 @@ const createOrder = async (userId, orderStatus) => {
         throw error;
       }
     };
-
     const getAllOrdersInMonth =  async (month) => {
       try {
         const year = new Date().getFullYear(); 
@@ -112,4 +111,21 @@ const createOrder = async (userId, orderStatus) => {
         throw error;
       }
     };
-  export default {createOrder, createOrderDetail, getAllOrderByUserID, getAllOrder, updateOrderStatus,getAmountInMonth, getAllOrdersInMonth}
+    const isUserBoughtProduct = async (userId, productId) => {
+      try {
+        const order = await Order.findOne({
+          user_id: userId,
+          'productList.product_id': productId,
+        }).exec();
+    
+        if (order) {
+          return true; 
+        } else {
+          return false; 
+        }
+      } catch (exception) {
+        throw new Exception(exception.message);
+      }
+    };
+    
+  export default {createOrder, createOrderDetail, getAllOrderByUserID, getAllOrder, updateOrderStatus,getAmountInMonth, getAllOrdersInMonth,isUserBoughtProduct}
