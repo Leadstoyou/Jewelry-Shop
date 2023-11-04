@@ -30,6 +30,7 @@ export default class Exception extends Error{
     static FEEDBACK_SUCCESS = "Get feedback successfully"
     static USER_DOESNT_NOT_BUY_PRODUCT = "User does not buy that product"
     static CREATE_FEEBACK_FAILED = "Create feeback failed"
+    static USER_MUST_LOGIN_TO_CONTINUE = "User must login to continue"
     constructor(message,validationErrors ={}) {
         super(message)
         console.log("File Exception.js:",message)
