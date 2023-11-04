@@ -6,7 +6,13 @@ const createFeedback = async (req, res) => {
   try {
     const { productId, star, review } = req.body;
     const userId = req?.user?.userId;
-    if (!userId || !productId || !star || !review) {
+    if (!userId) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json({
+        status: "ERROR",
+        message: Exception.USER_MUST_LOGIN_TO_CONTINUE,
+      });
+    }
+    if (!productId || !star || !review) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: Exception.INPUT_DATA_ERROR,
@@ -36,7 +42,7 @@ const createFeedback = async (req, res) => {
       .json({ status: "ERROR", message: exception.message });
   }
 };
-const getFeedbackByProductId = async(req, res) => {
+const getFeedbackByProductId = async (req, res) => {
   try {
     const { productId } = req.params;
     if (!productId) {
@@ -45,7 +51,9 @@ const getFeedbackByProductId = async(req, res) => {
         message: Exception.INPUT_DATA_ERROR,
       });
     }
-    const feedbacks  =await feedbackRepository.getFeedbackByProductId(productId);
+    const feedbacks = await feedbackRepository.getFeedbackByProductId(
+      productId
+    );
     if (!feedbacks.success) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
@@ -63,17 +71,20 @@ const getFeedbackByProductId = async(req, res) => {
       .json({ status: "ERROR", message: exception.message });
   }
 };
-const updateFeedback =async  (req, res) => {
+const updateFeedback = async (req, res) => {
   try {
     const { feedbackId } = req.params;
-    const { star,review } = req.body;
+    const { star, review } = req.body;
     if (!feedbackId) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
         message: Exception.INPUT_DATA_ERROR,
       });
     }
-    const feedback = await feedbackRepository.updateFeedback(feedbackId,{ star,review });
+    const feedback = await feedbackRepository.updateFeedback(feedbackId, {
+      star,
+      review,
+    });
     if (!feedback.success) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         status: "ERROR",
@@ -117,5 +128,10 @@ const deleteFeedback = async (req, res) => {
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
       .json({ status: "ERROR", message: exception.message });
   }
-}
-export default { createFeedback, getFeedbackByProductId ,updateFeedback,deleteFeedback};
+};
+export default {
+  createFeedback,
+  getFeedbackByProductId,
+  updateFeedback,
+  deleteFeedback,
+};
