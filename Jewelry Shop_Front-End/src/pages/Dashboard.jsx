@@ -9,6 +9,7 @@ import ManageStaff from '../components/dashboard/staff/ManageStaff.jsx'
 import DiamondIcon from '@mui/icons-material/Diamond';
 import HomeIcon from '@mui/icons-material/Home';
 import { useNavigate } from "react-router-dom";
+import Statistics from "./Statistics.jsx";
   
 const Container = styled.div`
   height: 1000px;
@@ -98,6 +99,9 @@ function Dashboard() {
             </ItemIn>
             <ItemIn onClick={() => renderComponent(<ManageStaff />)}>
               Manage Staff
+            </ItemIn>
+            <ItemIn onClick={() => renderComponent(<Statistics />)}>
+              Statistics
             </ItemIn>
           </DashboardItem>
         </Offcanvas.Body>

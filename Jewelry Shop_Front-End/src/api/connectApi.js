@@ -399,6 +399,64 @@ const Logout = async () => {
   }
 };
 
+//order in month
+const orderInMonthAPI = async (
+  month,
+  orderInMonth,
+  setOrderInMonth,
+  setLoading
+) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:9999/api/v1/order/allOrdersInMonth/${month}`
+    );
+
+    if (response.status === 200) {
+      orderInMonth.push({
+        month: response.data.month,
+        totalOrdersInMonth: response.data["Total Orders In Month"],
+      });
+      setOrderInMonth([...orderInMonth]);
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
+    } else {
+      console.log("Error fetching order");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//amount in month
+const amountInMonthAPI = async (
+  month,
+  amountInMonth,
+  setAmountInMonth,
+  setLoading
+) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:9999/api/v1/order/allAmountInMonth/${month}`
+    );
+
+    if (response.status === 200) {
+      amountInMonth.push({
+        month: response.data.month, // Assuming 'month' and 'Total Orders In Month' are properties in the response data
+        totalOrdersInMonth: response.data["Total Amount"],
+      });
+      setAmountInMonth([...amountInMonth]);
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
+    } else {
+      console.log("Error fetching order");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export {
   getAllProducts,
   addProduct,
@@ -414,4 +472,6 @@ export {
   addOrder,
   viewOrder,
   makeAnNewOrder,
+  amountInMonthAPI,
+  orderInMonthAPI,
 };
