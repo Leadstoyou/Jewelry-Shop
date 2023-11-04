@@ -253,7 +253,31 @@ const addOrder = async (toast, setOrder) => {
     toast?.error("Failed to fetch cart data");
   }
 };
-
+const makeAnNewOrder = async () => {
+  try {
+    const orderStatus = true;
+    const response = await axios.post(
+      "http://localhost:9999/api/v1/order/checkouts",
+      { orderStatus },
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true, 
+      }
+    );
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      return 0;
+    }
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: connectApi.js:275 ~ makeAnNewOrder ~ error:",
+      error
+    );
+  }
+};
 //view order
 const viewOrder = async (toast, setOrderByUser) => {
   try {
@@ -278,16 +302,6 @@ const viewOrder = async (toast, setOrderByUser) => {
 };
 
 //check login in cookies
-function getCookieValue(cookieName) {
-  const cookies = document.cookie.split("; ");
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i].split("=");
-    if (cookie[0] === cookieName) {
-      return decodeURIComponent(cookie[1]);
-    }
-  }
-  return null;
-}
 
 //update product in recycle
 const updateInRecycler = async (notify, success, setUpdateData, idProduct) => {
@@ -457,6 +471,7 @@ export {
   Logout,
   addOrder,
   viewOrder,
+  makeAnNewOrder,
   amountInMonthAPI,
   orderInMonthAPI,
 };

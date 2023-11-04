@@ -21,19 +21,17 @@ import { viewCartAPI } from "./api/connectApi.js";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import WatchOrder from "./pages/WatchOrder.jsx";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "./redux/Login.jsx";
 import { getNumber } from "./redux/GetNumber.jsx";
 import RiseLoader from "react-spinners/RiseLoader";
 import { fetchDataAndDispatch } from "./services/genUser.js";
-import axios from "axios";
-import NewPass from "./pages/NewPassword.jsx";
-import Success from "./components/error/Success.jsx";
+import NewPass from "./pages/NewPassword.jsx"
+import ThankYou from "./pages/ThankYou.jsx";
+import Success from "./components/error/Success.jsx"
 const Container = styled.div``;
 export const cartValue = createContext();
 function App() {
   const dispatch = useDispatch();
   const [txt, setTxt] = useState();
-
   var number = 1;
 
   const [cartView, setViewCart] = useState();
@@ -93,9 +91,8 @@ function App() {
         <BrowserRouter basename="/Jewelry-Shop">
           <Routes>
             <Route path="/" element={<Homepage cartView={cartView} />} />
-
             <Route path="/search/:searchName" element={<SearchPage />} />
-
+            <Route path="/thank-you" element={<ThankYou/>}/>
             <Route path="/collections/:category" element={<Collections />} />
             <Route path="/product/:id" element={<Products />} />
             <Route path="/cart" element={<CartPage />} />

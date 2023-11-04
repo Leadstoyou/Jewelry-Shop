@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { toast } from "react-toastify";
@@ -287,11 +287,10 @@ const ShoppingCart = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state?.loginController?.value);
 
-  console.log(user);
   const [isAgreedToTerms, setIsAgreedToTerms] = useState(false);
-  const [exportBill, setExportBill] = useState(false);
-  const [giftNotes, setGiftNotes] = useState("");
-  const [hoveredDescription, setHoveredDescription] = useState("");
+  // const [exportBill, setExportBill] = useState(false);
+  // const [giftNotes, setGiftNotes] = useState("");
+  // const [hoveredDescription, setHoveredDescription] = useState("");
   const [order, setOrder] = useState();
   //call API view cart
   const [cartData, setCartData] = useState();
@@ -313,11 +312,9 @@ const ShoppingCart = () => {
     dispatch(getNumber(cartData?.productList?.length));
   }, [cartData]);
 
-  //const cartUpdate = await cartRepository.updateProductInCart(cartToken, productId, quantity, price);
   const handleUpdateQuantity = async (productId, newQuantity, price) => {
     try {
       if (newQuantity > 10) {
-        // toast.error("Please enter quantity of one product is less than 10 !!!");
         document.getElementById(`${productId}`).value = 10;
         const number = 10;
         await updateCart(productId, number, price, setCartUpdate, toast);
@@ -341,16 +338,10 @@ const ShoppingCart = () => {
   const handleRemoveProduct = async (product, toast) => {
     try {
       await removeFromCart(product, setDeleteCart, toast);
-      // Show success notification
     } catch (error) {
       console.log(error);
     }
   };
-
-  console.log("data cart");
-  console.log(cartData);
-  console.log("data cart update");
-  console.log(cartUpdate);
 
   const navigate = useNavigate();
   const handlePay = () => {
@@ -358,17 +349,13 @@ const ShoppingCart = () => {
       toast.error("Please agree to Terms to checkout !!!");
     } else if (isAgreedToTerms === true) {
       if (user) {
-        console.log("success");
-        addOrder(toast, setOrder);
-        dispatch(getNumber(0));
+        navigate('/checkouts');
+        // addOrder(toast, setOrder);
+        // dispatch(getNumber(0));
       } else if (!user) {
         toast?.error("You must login to check out");
       }
     }
-  };
-
-  const handleFormSubmit = (e) => {
-    console.log(e);
   };
 
   const viewedProducts = [

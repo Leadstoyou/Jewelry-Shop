@@ -1,12 +1,9 @@
 import { User } from "../models/indexModel.js";
 import Exception from "../constant/Exception.js";
-import ConfigConstants from "../constant/ConfigConstants.js";
 import SuccessConstants from "../constant/SuccessConstants.js";
 import bcrypt from "bcrypt";
 import {
   jwtService,
-  cloudinaryService,
-  sendEmailService,
 } from "../services/indexService.js";
 import jwt from "jsonwebtoken";
 
@@ -483,7 +480,6 @@ const userUpdateProfileRepository = async ({
   userAge,
   userAvatar,
 }) => {
-  let userAvtUrl = null;
   try {
     const existingUser = await User.findById(userId);
     if (!existingUser) {
@@ -492,14 +488,6 @@ const userUpdateProfileRepository = async ({
         message: Exception.CANNOT_FIND_USER,
       };
     }
-
-    if (userAvatar) {
-      userAvtUrl = await cloudinaryService.uploadProductImageToCloudinary(
-        userAvatar,
-        ConfigConstants.CLOUDINARY_USER_AVATAR_IMG
-      );
-    }
-
     const updateFields = {
       ...(userName && { userName }),
       ...(userPhoneNumber && { userPhoneNumber }),
@@ -507,9 +495,8 @@ const userUpdateProfileRepository = async ({
         ["Male", "Female"].includes(userGender) && { userGender }),
       ...(userAddress && { userAddress }),
       ...(userAge > 0 && { userAge }),
-      ...(userAvtUrl && { userAvatar: userAvtUrl }),
+      ...(userAvatar && { userAvatar }),
     };
-
     const updatedUser = await User.findByIdAndUpdate(userId, updateFields, {
       new: true,
     }).exec();
@@ -528,9 +515,6 @@ const userUpdateProfileRepository = async ({
       },
     };
   } catch (exception) {
-    if (userAvtUrl) {
-      cloudinaryService.deleteImageFromCloudinary(userAvtUrl);
-    }
     return {
       success: false,
       message: exception.message,
