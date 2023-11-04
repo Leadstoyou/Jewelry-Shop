@@ -7,7 +7,7 @@ import Badge from "@mui/material/Badge";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import InventoryIcon from '@mui/icons-material/Inventory';
+import InventoryIcon from "@mui/icons-material/Inventory";
 import videoFile from "../assets/video.mp4"; // Import the video file using ES6 module syntax
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,8 +17,9 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { getNumber } from "../redux/GetNumber.jsx";
 import { cartValue } from "../App";
-import { Logout } from '../api/connectApi.js'
+import { Logout } from "../api/connectApi.js";
 const Container = styled.div`
+  font-family: "Jost", sans-serif;
   background-color: #d5d3d3;
   position: relative;
   height: 70px;
@@ -101,6 +102,18 @@ const Icon = styled.span`
     opacity: 0.5;
   }
 `;
+
+const Span = styled.div`
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: start;
+  background-color: white;
+  &:hover {
+    background-color: #c2c1c1;
+  }
+`;
+
 const Nav = styled.div`
   position: fixed;
   top: 0;
@@ -124,14 +137,13 @@ const Button = styled.button`
 `;
 
 const Navbar = (props) => {
-  const { changeInitial , txt , setTxt } = useContext(cartValue);
+  const { changeInitial, txt, setTxt } = useContext(cartValue);
   const dispatch = useDispatch();
   const numberCart = useSelector((state) => state?.getNumber?.value);
   const user = useSelector((state) => state?.loginController);
   const [showContent, setShowContent] = useState(false);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-
 
   const toggleContent = () => {
     setShowContent(!showContent);
@@ -140,7 +152,7 @@ const Navbar = (props) => {
     toggleContent();
     changeInitial();
     Logout();
-    
+
     dispatch(getNumber(0));
     navigate("/");
   };
@@ -156,7 +168,6 @@ const Navbar = (props) => {
       theme: "colored",
     });
   };
-
 
   // Function to handle Enter key press
   const handleKeyPress = (event) => {
@@ -280,21 +291,20 @@ const Navbar = (props) => {
                           width: "150px",
                         }}
                       >
-                        <span onClick={handleProfile}>
-                          <AccountBoxIcon />
+                        <Span onClick={handleProfile}>
+                          <AccountBoxIcon style={{ color: "blue" }} />
                           Profile
-                        </span>
+                        </Span>
                         <hr />
-                        <span onClick={()=>navigate('/order')}>
-                          <InventoryIcon />
+                        <Span onClick={() => navigate("/order")}>
+                          <InventoryIcon style={{ color: "green" }} />
                           Order
-                        </span>
+                        </Span>
                         <hr />
-                        <span onClick={handleLogout}>
-                          <LogoutIcon />
+                        <Span onClick={handleLogout}>
+                          <LogoutIcon style={{ color: "red" }} />
                           Log out
-                        </span>
-                        
+                        </Span>
                       </div>
                     )}
                   </div>

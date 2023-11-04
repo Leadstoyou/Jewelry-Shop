@@ -1,6 +1,4 @@
-body{
-    background-color: rgb(210, 207, 207);
-}
+
 .btnOrderDetails {
     display: inline-block;
     border-radius: 4px;
@@ -2439,4 +2437,5 @@ position: relative;*/
 .order-summary-section.order-summary-section-total-lines.payment-lines[data-order-summary-section="payment-lines"] {
     padding-top: 1em !important;
 }
+
 
