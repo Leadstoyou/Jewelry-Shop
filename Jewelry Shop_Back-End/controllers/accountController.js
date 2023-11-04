@@ -1,7 +1,7 @@
 import { validationResult, check } from "express-validator";
 import { userRepository } from "../repositories/indexRepository.js";
 import HttpStatusCode from "../constant/HttpStatusCode.js";
-import accountService from "../services/accountService.js";
+import {accountService} from "../services/indexService.js";
 
 const userLoginController = async (req, res) => {
   const errors = validationResult(req);
