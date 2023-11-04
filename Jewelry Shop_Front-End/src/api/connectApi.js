@@ -229,7 +229,7 @@ const viewCartAPI = async (cartToken, setViewCart) => {
 };
 
 //add order
-const addOrder = async (toast,setOrder) => {
+const addOrder = async (toast, setOrder) => {
   try {
     const orderStatus = true;
     const response = await axios.post(
@@ -244,7 +244,7 @@ const addOrder = async (toast,setOrder) => {
     );
     console.log("API response:", response.data);
     if (response.status === 200) {
-      setOrder(response.data)
+      setOrder(response.data);
       toast?.success("Checkout succsessfullly !!!");
     } else {
       toast?.error("Failed to fetch cart data");
@@ -255,7 +255,7 @@ const addOrder = async (toast,setOrder) => {
 };
 
 //view order
-const viewOrder = async (toast,setOrderByUser) => {
+const viewOrder = async (toast, setOrderByUser) => {
   try {
     const response = await axios.get(
       "http://localhost:9999/api/v1/order/view",
@@ -268,8 +268,7 @@ const viewOrder = async (toast,setOrderByUser) => {
     );
     console.log("Hiii:", response.data);
     if (response.status === 200) {
-      
-       setOrderByUser(response.data)
+      setOrderByUser(response.data);
     } else {
       toast?.error("Failed to fetch cart data");
     }
@@ -277,7 +276,6 @@ const viewOrder = async (toast,setOrderByUser) => {
     toast?.error("Failed to fetch cart data");
   }
 };
-
 
 //check login in cookies
 function getCookieValue(cookieName) {
@@ -387,6 +385,64 @@ const Logout = async () => {
   }
 };
 
+//order in month
+const orderInMonthAPI = async (
+  month,
+  orderInMonth,
+  setOrderInMonth,
+  setLoading
+) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:9999/api/v1/order/allOrdersInMonth/${month}`
+    );
+
+    if (response.status === 200) {
+      orderInMonth.push({
+        month: response.data.month,
+        totalOrdersInMonth: response.data["Total Orders In Month"],
+      });
+      setOrderInMonth([...orderInMonth]);
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
+    } else {
+      console.log("Error fetching order");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//amount in month
+const amountInMonthAPI = async (
+  month,
+  amountInMonth,
+  setAmountInMonth,
+  setLoading
+) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:9999/api/v1/order/allAmountInMonth/${month}`
+    );
+
+    if (response.status === 200) {
+      amountInMonth.push({
+        month: response.data.month, // Assuming 'month' and 'Total Orders In Month' are properties in the response data
+        totalOrdersInMonth: response.data["Total Amount"],
+      });
+      setAmountInMonth([...amountInMonth]);
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
+    } else {
+      console.log("Error fetching order");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export {
   getAllProducts,
   addProduct,
@@ -400,5 +456,7 @@ export {
   updateCart,
   Logout,
   addOrder,
-  viewOrder
+  viewOrder,
+  amountInMonthAPI,
+  orderInMonthAPI,
 };
