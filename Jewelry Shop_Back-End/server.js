@@ -5,7 +5,8 @@ import {
   cartRouter,
   productRouter,
   userRouter,
-  accountRouter
+  accountRouter,
+  feedbackRouter
 } from "./routers/indexRouter.js";
 import connect from "./database/database.js";
 import dotenv from "dotenv";
@@ -40,6 +41,7 @@ v1Router.use("/products", productRouter);
 v1Router.use("/cart", cartRouter);
 v1Router.use("/order", orderRouter);
 v1Router.use("/payment", paymentRouter);
+v1Router.use("/feedback", feedbackRouter);
 v1Router.use(routeUnknown);
 app.use("/api/v1", v1Router);
 

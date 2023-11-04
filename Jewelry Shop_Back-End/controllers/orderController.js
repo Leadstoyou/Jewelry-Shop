@@ -72,9 +72,9 @@ const updateOrderStatus = async (req, res) => {
       .json({ error: "Internal Server Error" });
   }
 };
+//Dattt
 const viewOrder = async (req, res) => {
   try {
-    console.log(123, req.user);
     const userId = req?.user?.userId;
     const { cart_token } = req?.cookies;
     const cart = await cartRepository.getCartByToken(cart_token);
@@ -88,7 +88,7 @@ const viewOrder = async (req, res) => {
       .json({ message: "Internal server error" });
   }
 };
-
+//Dattt
 const getAmountInMonth = async (req, res) => {
   try {
     const { month } = req.params;
