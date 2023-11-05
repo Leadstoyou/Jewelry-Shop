@@ -30,15 +30,13 @@ const CollectionAPI = async (
   maxPriceValue
 ) => {
   try {
-
-    let maxPrice , minPrice;
-    if(maxPriceValue){
-      maxPrice = JSON.parse(maxPriceValue)
-      minPrice = JSON.parse(0)
-    }else if(price){
-      maxPrice = JSON.parse(price)?.maxPrice 
-      minPrice = JSON.parse(price)?.minPrice
-
+    let maxPrice, minPrice;
+    if (maxPriceValue) {
+      maxPrice = JSON.parse(maxPriceValue);
+      minPrice = JSON.parse(0);
+    } else if (price) {
+      maxPrice = JSON.parse(price)?.maxPrice;
+      minPrice = JSON.parse(price)?.minPrice;
     }
     console.log("ldmas", category);
     const categories = ["Dây Chuyền", "Vòng tay", "Hoa Tai", "Charm", "Nhẫn"];
@@ -131,7 +129,7 @@ const CollectionAPISearch = async (
     setTotalSize(totalPro);
     setFoundProducts(data);
     setTimeout(() => {
-      setSpinsearch(false)
+      setSpinsearch(false);
     }, 2000);
   } catch (error) {
     if (error.response && error.response.status === 401) {
@@ -302,6 +300,25 @@ const CollectionFilterCategory = async (
     );
   }
 };
+const viewOrderDetail = async () => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_ORDER}/viewOrder`,
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true,
+      }
+    );
+    return response;
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: productAPI.js:214 ~ viewOrderDetail ~ error:",
+      error
+    );
+  }
+};
 
 export {
   CollectionAPI,
@@ -310,4 +327,5 @@ export {
   CollectionFilterSearch,
   CollectionFilterCategory,
   CollectionFilterSearchAndPagination,
+  viewOrderDetail,
 };

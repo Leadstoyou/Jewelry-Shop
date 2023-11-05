@@ -76,12 +76,12 @@ const checkUser = (req, res, next) => {
           next();
           return;
         }
-
         req.user = tokenDataDecode;
         next();
       }
     );
   } else {
+    console.log('not have auth middleware')
     next();
   }
 };

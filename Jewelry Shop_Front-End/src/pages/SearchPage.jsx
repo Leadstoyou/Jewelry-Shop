@@ -6,7 +6,6 @@ import "aos/dist/aos.css";
 import SearchpageBody from "../components/searchpage/SearchpageBody";
 import { useContext, useEffect, useState } from "react";
 import Pagination from "react-bootstrap/Pagination";
-import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CollectionAPISearch } from "../api/productAPI";
@@ -175,8 +174,9 @@ function SearchPage() {
             <PageControl>
               <Pagination>
                 <Pagination.Prev onClick={handlePrev} />
-                {Allpage.map((page) => (
+                {Allpage.map((page,index) => (
                   <Pagination.Item
+                  key={index}
                     active={page === activePage}
                     onClick={() => {
                       setActivePage(page);
