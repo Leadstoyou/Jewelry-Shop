@@ -1,6 +1,6 @@
 import HttpStatusCode from "../constant/HttpStatusCode.js";
 import jwt from "jsonwebtoken";
-import { userController } from "../controllers/indexController.js";
+import { accountController } from "../controllers/indexController.js";
 
 const checkToken = (req, res, next) => {
   if (req?.headers?.authorization?.startsWith("Bearer")) {
@@ -16,7 +16,7 @@ const checkToken = (req, res, next) => {
           });
         } else if (err instanceof jwt.TokenExpiredError) {
           const refreshAccessToken =
-            await userController.refreshAccessTokenController(req, res, next);
+            await accountController.refreshAccessTokenController(req, res, next);
           if (typeof refreshAccessToken === "string") {
             console.log("Refresh success!");
             req.headers.authorization = `Bearer ${refreshAccessToken}`;
