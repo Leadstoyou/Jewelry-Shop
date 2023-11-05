@@ -96,12 +96,14 @@ const Products = () => {
 
   const { id } = useParams();
 
+  const [idPro,setIdPro] = useState(id)
+
   useEffect(() => {
     setLoading(true);
     async function fetchData() {
       try {
         const response = await axios.get(
-          `http://localhost:9999/api/v1/products/get/${id}`
+          `http://localhost:9999/api/v1/products/get/${idPro}`
         );
         const data = response.data.data;
         setShowCartPopup(false);
@@ -113,13 +115,13 @@ const Products = () => {
       }
     }
     fetchData();
-  }, []);
+  }, [idPro]);
 
   useEffect(() => {
     if (showCartPopup === false) {
       setSpin(true);
     }
-  },[showCartPopup]);
+  }, [showCartPopup]);
 
   return (
     <>
@@ -258,7 +260,7 @@ const Products = () => {
                 <span style={{ opacity: "0.5" }}> {product.productName} </span>
               </p>
             </Ptag>
-            <ProductBody product={product} setSpin={setSpin} />
+            <ProductBody idPro={idPro} setIdPro={setIdPro}  product={product} setSpin={setSpin} />
           </Parent>
           <Footer />
         </Container>

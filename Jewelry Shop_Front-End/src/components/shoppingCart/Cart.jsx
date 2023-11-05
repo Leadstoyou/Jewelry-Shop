@@ -1,7 +1,8 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { getNumber } from "../../redux/GetNumber.jsx";
 import { useSelector } from "react-redux";
 
@@ -43,7 +44,7 @@ const RightPanel = styled.div`
 const Title = styled.h2`
   text-align: left;
   color: #333;
-  font-size:30px;
+  font-size: 30px;
   font-weight: bold;
 `;
 
@@ -180,7 +181,7 @@ const ContinueShoppingLink = styled.a`
   font-weight: bolder;
   cursor: pointer;
   text-decoration: underline;
-  &:hover{
+  &:hover {
     color: #f86767;
   }
 `;
@@ -298,6 +299,18 @@ const ShoppingCart = () => {
   //Lấy product data
   const [cartUpdate, setCartUpdate] = useState();
   const [deleteCart, setDeleteCart] = useState();
+  const notify = (text) => {
+    toast.error(text, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -346,10 +359,12 @@ const ShoppingCart = () => {
   const navigate = useNavigate();
   const handlePay = () => {
     if (isAgreedToTerms === false) {
-      toast.error("Please agree to Terms to checkout !!!");
+      notify("Please agree to Terms to checkout !!!");
+    } else if (cartData?.total > 50000000) {
+      notify("Please buy with total less than 50.000.000đ  !!!");
     } else if (isAgreedToTerms === true) {
       if (user) {
-        navigate('/checkouts');
+        navigate("/checkouts");
         // addOrder(toast, setOrder);
         // dispatch(getNumber(0));
       } else if (!user) {
@@ -358,63 +373,11 @@ const ShoppingCart = () => {
     }
   };
 
-  const viewedProducts = [
-    {
-      id: 7,
-      description: "Description for Viewed Product 1",
-      price: 25,
-      image:
-        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-    },
-    {
-      id: 8,
-      description: "Description for Viewed Product 2",
-      price: 35,
-      image:
-        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-    },
-    {
-      id: 9,
-      description: "Description for Viewed Product 2",
-      price: 35,
-      image:
-        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-    },
-    {
-      id: 10,
-      description: "Description for Viewed Product 2",
-      price: 35,
-      image:
-        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-    },
-    {
-      id: 11,
-      description: "Description for Viewed Product 2",
-      price: 35,
-      image:
-        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-    },
-    {
-      id: 10,
-      description: "Description for Viewed Product 2",
-      price: 35,
-      image:
-        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-    },
-    {
-      id: 10,
-      description: "Description for Viewed Product 2",
-      price: 35,
-      image:
-        "https://product.hstatic.net/200000103143/product/pngtrpnt_782506c01_rgb_bfb31d4989ec4eb28df1370676484672_master.png",
-    },
-  ];
-
   if (!cartData || cartData.productList.length === 0) {
     return (
       <EmptyCartContainer>
         <Title>Your Cart is Empty</Title>
-        <ContinueShoppingLink onClick={()=>navigate('/')}>
+        <ContinueShoppingLink onClick={() => navigate("/")}>
           Click here to continue shopping
         </ContinueShoppingLink>
       </EmptyCartContainer>
@@ -493,7 +456,7 @@ const ShoppingCart = () => {
               I agree to the Terms of Service
             </Label>
           </CheckboxContainer>
-          <Button onClick={handlePay}  type="submit">
+          <Button onClick={handlePay} type="submit">
             THANH TOÁN
           </Button>
           <ImageUnderButton
@@ -549,21 +512,19 @@ const ShoppingCart = () => {
           </PolicyRow>
         </div>
       </PoliciesContainer>
-      <ScrollableProducts>
-        <ViewedProductsContainer>
-          {viewedProducts.map((product) => (
-            <ViewedProduct key={product.id}>
-              <ViewedProductImage src={product.image} />
-              <ViewedProductInfo>
-                <ViewedProductDescription>
-                  {product.description}
-                </ViewedProductDescription>
-                <ViewedProductPrice>${product.price}</ViewedProductPrice>
-              </ViewedProductInfo>
-            </ViewedProduct>
-          ))}
-        </ViewedProductsContainer>
-      </ScrollableProducts>
+      <ToastContainer
+        style={{ height: "500px" }}
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 };

@@ -12,6 +12,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
 import jewelry from "../assets/jewelry.mp4";
 import Statistics from "./Statistics.jsx";
+import { useSelector } from "react-redux";
 
 const Container = styled.div`
   font-family: "Jost", sans-serif;
@@ -74,6 +75,7 @@ const DashboardItem = styled.div`
 
 function Dashboard() {
   const navigate = useNavigate();
+  const user = useSelector((state) => state?.loginController);
   const [show, setShow] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState(null);
 
@@ -130,12 +132,16 @@ function Dashboard() {
             <ItemIn onClick={() => renderComponent(<ManageProduct />)}>
               Manage Product
             </ItemIn>
-            <ItemIn onClick={() => renderComponent(<ManageStaff />)}>
-              Manage Staff
-            </ItemIn>
-            <ItemIn onClick={() => renderComponent(<Statistics />)}>
-              Statistics
-            </ItemIn>
+            {user?.value?.userRole === 0 && (
+              <>
+                <ItemIn onClick={() => renderComponent(<ManageStaff />)}>
+                  Manage Staff
+                </ItemIn>
+                <ItemIn onClick={() => renderComponent(<Statistics />)}>
+                  Statistics
+                </ItemIn>
+              </>
+            )}
           </DashboardItem>
         </Offcanvas.Body>
       </Offcanvas>

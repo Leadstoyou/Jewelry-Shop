@@ -2,6 +2,7 @@ import styled from "styled-components";
 import imgP from "../assets/product.jpg";
 import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   position: relative;
@@ -85,17 +86,19 @@ const Front = styled.div`
   }
 `;
 
-const Product = ({ props }) => {
+const Product = ( props ) => {
+  const navigate = useNavigate()
+  const {product} = props;
   return (
-    <Container>
+    <Container onClick={()=>navigate(`/product/${product._id}`)}>
       <RootElement>
         <BackgroundElement>
           <ImageController>
-            <Image src={imgP} />
+            <Image src={product?.productImage} />
           </ImageController>
           <TextController>
-            <Title>{props.product_name}</Title>
-            <Price>{props.price}đ</Price>
+            <Title>{product?.productName?.slice(0,14)}...</Title>
+            <Price>{product?.productPrice.toLocaleString('vn-VI')}đ</Price>
           </TextController>
         </BackgroundElement>
         <Front>
