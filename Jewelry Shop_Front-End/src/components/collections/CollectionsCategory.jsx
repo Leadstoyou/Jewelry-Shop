@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled , { keyframes } from "styled-components";
 import newest from "../../assets/new.jpg";
 import love from "../../assets/love.jpg";
 import Pagination from "react-bootstrap/Pagination";
@@ -10,6 +10,7 @@ import Aos from "aos";
 import "aos/dist/aos.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DiamondIcon from "@mui/icons-material/Diamond";
 const Container = styled.div``;
 const Up = styled.div`
   background-color: #c1c1c1;
@@ -24,15 +25,15 @@ const Text = styled.div`
 `;
 const Bottom = styled.div`
   margin-top: 1%;
-  margin-left: 6vw;
-  display: flex;
-  align-items: center;
-  justify-content: start;
+  margin-left: 2vw;
+  margin-right: 2vw;
+  overflow : hidden ;
+  width: 100%;
 `;
 const Item = styled.div`
   display: flex;
   flex-direction: column;
-
+  width: 100%;
   margin-right: 20px;
 `;
 const ImageController = styled.div`
@@ -89,6 +90,21 @@ const PagingController = styled.div`
   align-items: center;
   justify-content: center;
 `;
+
+const spinAndMove = keyframes`
+  0%, 100% {
+    transform: translateX(-60%) rotate(0deg);
+  }
+  50% {
+    transform: translateX(60%) rotate(360deg);
+  }
+`;
+
+
+const AnimatedDiamondIcon = styled(DiamondIcon)`
+  animation: ${spinAndMove} 20s linear infinite;
+`;
+
 const CollectionsCategory = (props) => {
   const {
     maxPrice,
@@ -151,17 +167,10 @@ const CollectionsCategory = (props) => {
         </Text>
       </Up>
       <Bottom data-aos="fade-up">
-        <Item
-          onClick={() => {
-            navigate("/collections");
-          }}
-        >
-          <ImageController>
-            <Image src={newest} />
-          </ImageController>
-          <TextController>
-            <TextNew>Hàng mới về</TextNew>
-          </TextController>
+        <Item>
+          <span>
+          <AnimatedDiamondIcon style={{ color: "#58b5e6", fontSize: "70px" , width:'100%' }} />
+          </span>
         </Item>
       </Bottom>
       <hr data-aos="fade-up" />
@@ -217,61 +226,61 @@ const CollectionsCategory = (props) => {
             ))}
           </DropdownOne>
           {!maxPrice && (
-          <DropdownOne
-            onChange={(e) =>
-              handleSelected(color, material, e.target.value, sort)
-            }
-          >
-            <TextInDropdown
-              selected
-              value={JSON.stringify({
-                minPrice: 0,
-                maxPrice: 100000000,
-              })}
+            <DropdownOne
+              onChange={(e) =>
+                handleSelected(color, material, e.target.value, sort)
+              }
             >
-              Giá
-            </TextInDropdown>
-            <TextInDropdown
-              value={JSON.stringify({
-                minPrice: 0,
-                maxPrice: 1000000,
-              })}
-            >
-              0 -- 1.0000.000đ
-            </TextInDropdown>
-            <TextInDropdown
-              value={JSON.stringify({
-                minPrice: 1000001,
-                maxPrice: 2000000,
-              })}
-            >
-              1.000.001 -- 2.0000.000đ
-            </TextInDropdown>
-            <TextInDropdown
-              value={JSON.stringify({
-                minPrice: 2000001,
-                maxPrice: 3000000,
-              })}
-            >
-              2.000.001 -- 3.0000.000đ
-            </TextInDropdown>
-            <TextInDropdown
-              value={JSON.stringify({
-                minPrice: 3000001,
-                maxPrice: 4000000,
-              })}
-            >
-              3.000.001 -- 4.0000.000đ
-            </TextInDropdown>
-            <TextInDropdown
-              value={JSON.stringify({
-                minPrice: 4000001,
-                maxPrice: 100000000000,
-              })}
-            >
-              Trên 4.000.000 đ
-            </TextInDropdown>
-          </DropdownOne>
+              <TextInDropdown
+                selected
+                value={JSON.stringify({
+                  minPrice: 0,
+                  maxPrice: 100000000,
+                })}
+              >
+                Giá
+              </TextInDropdown>
+              <TextInDropdown
+                value={JSON.stringify({
+                  minPrice: 0,
+                  maxPrice: 1000000,
+                })}
+              >
+                0 -- 1.0000.000đ
+              </TextInDropdown>
+              <TextInDropdown
+                value={JSON.stringify({
+                  minPrice: 1000001,
+                  maxPrice: 2000000,
+                })}
+              >
+                1.000.001 -- 2.0000.000đ
+              </TextInDropdown>
+              <TextInDropdown
+                value={JSON.stringify({
+                  minPrice: 2000001,
+                  maxPrice: 3000000,
+                })}
+              >
+                2.000.001 -- 3.0000.000đ
+              </TextInDropdown>
+              <TextInDropdown
+                value={JSON.stringify({
+                  minPrice: 3000001,
+                  maxPrice: 4000000,
+                })}
+              >
+                3.000.001 -- 4.0000.000đ
+              </TextInDropdown>
+              <TextInDropdown
+                value={JSON.stringify({
+                  minPrice: 4000001,
+                  maxPrice: 100000000000,
+                })}
+              >
+                Trên 4.000.000 đ
+              </TextInDropdown>
+            </DropdownOne>
           )}
         </ItemOne>
         <ItemOne>

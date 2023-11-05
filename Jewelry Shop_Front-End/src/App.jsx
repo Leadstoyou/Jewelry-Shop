@@ -71,7 +71,7 @@ function App() {
       console.log("After fetchData");
     }
   }, [initialRender.current]);
-  // document.cookie = `cart_token=${cartView?.cart_token}`;
+
   console.log("cart view");
   console.log(cartView);
   useEffect(() => {
@@ -97,24 +97,37 @@ function App() {
       >
         <BrowserRouter basename="/Jewelry-Shop">
           <Routes>
+            {user?.value?.userRole === 0 && (
+              <Route path="/order" element={<WatchOrder />} />
+            )}
+            {user?.value?.userRole === 0 || user?.value?.userRole === 1 ? (
+              <>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/listdelete" element={<ListDeleteProduct />} />
+              </>
+            ) : null}
+
+            {user?.value?.userRole === 0 ||
+            user?.value?.userRole === 1 ||
+            user?.value?.userRole === 2 ? (
+              <>
+                <Route path="/checkouts" element={<Checkouts />} />
+                <Route path="/success/:id" element={<Success />} />
+                <Route path="/thank-you" element={<ThankYou />} />
+              </>
+            ) : null}
             <Route path="/" element={<Homepage cartView={cartView} />} />
             <Route path="/search/:searchName" element={<SearchPage />} />
-            <Route path="/thank-you" element={<ThankYou />} />
             <Route path="/collections/:category" element={<Collections />} />
             <Route path="/product/:id" element={<Products />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/checkouts" element={<Checkouts />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/listdelete" element={<ListDeleteProduct />} />
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/forgot" element={<Forgot />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/newpass" element={<NewPass />} />
-            <Route path="/success/:id" element={<Success />} />
-            <Route path="/order" element={<WatchOrder />} />
           </Routes>
         </BrowserRouter>
       </cartValue.Provider>

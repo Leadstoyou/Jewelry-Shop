@@ -6,9 +6,10 @@ import "aos/dist/aos.css";
 import ArrowLeftOutlined from "@mui/icons-material/ArrowLeftOutlined";
 import ArrowRightOutlined from "@mui/icons-material/ArrowRightOutlined";
 import { useState, useRef, useEffect } from "react";
+import { getAllProducts } from "../services/connectApi.js";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 const Container = styled.div`
-  margin-top: 50px;
+  margin-top: 80px;
   position: relative;
   overflow: hidden;
 `;
@@ -56,6 +57,7 @@ const Wrapper = styled.div`
 const ListProduct = () => {
   const [opa, setOpa] = useState(0);
   const [translateX, setTranslateX] = useState(0);
+  const [allproducts, setAllproducts] = useState()
   const containerRef = useRef(null);
 
   const handleMouseEnter = () => {
@@ -65,6 +67,14 @@ const ListProduct = () => {
   const handleMouseLeave = () => {
     setOpa(0);
   };
+
+  useEffect(()=>{
+      const fetchData = async ()=>{
+        await getAllProducts(setAllproducts)
+      }
+      fetchData()
+  },[])
+ 
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -98,12 +108,12 @@ const ListProduct = () => {
       ref={containerRef}
     >
       <Title>
-        <Text>Top sản phẩm bán chạy</Text>
+        <Text>Top sản phẩm <span style={{color:'red'}}>HOT</span></Text>
       </Title>
       <Wrapper translateX={translateX}>
         <ListItem>
-          {ProductList.map((product) => (
-            <Product key={product.id} props={product} />
+          {allproducts?.map((product) => (
+            <Product key={product?._id} product={product} />
           ))}
         </ListItem>
       </Wrapper>

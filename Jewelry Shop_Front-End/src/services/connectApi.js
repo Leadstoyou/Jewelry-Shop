@@ -263,7 +263,7 @@ const makeAnNewOrder = async () => {
         headers: {
           Authorization: `Bearer ${getAccessTokenFromCookie()}`,
         },
-        withCredentials: true, 
+        withCredentials: true,
       }
     );
     if (response.status === 200) {
@@ -457,6 +457,111 @@ const amountInMonthAPI = async (
   }
 };
 
+//add comment
+const addComment = async (data, setAddData, toast) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:9999/api/v1/feedback/create",
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true,
+      }
+    );
+
+    setAddData("Add comment successfully !!!");
+    toast?.success("Add comment successfully !!!");
+    console.log(response);
+  } catch (error) {
+    if (error?.response?.data?.message) {
+      toast?.error(error?.response?.data?.message);
+    } else {
+      toast?.error("Please input full fill in comment !!!");
+    }
+  }
+};
+
+//view comment by id
+const viewComment = async (productId, setCommentsList) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:9999/api/v1/feedback/${productId}`
+    );
+    if (response.status === 200) {
+      console.log("View success");
+      setCommentsList(response.data.data);
+    } else {
+      console.log("Not has comment in this product ");
+    }
+  } catch (error) {
+    console.log("Internal error ");
+  }
+};
+
+//update comment
+const updateCommentAPI = async (fId, setUpdateData, data, toast) => {
+  try {
+    const response = await axios.put(
+      `http://localhost:9999/api/v1/feedback/update/${fId}`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true, // Use the headers object you've constructed
+      }
+    );
+    if (response.status === 200) {
+      setUpdateData("success update");
+      toast?.success("Update comment successfully !!!");
+    } else {
+      toast?.error("Please input full fill in update comment !!!");
+    }
+  } catch (error) {
+    toast?.error("Please input full fill in update comment !!!");
+  }
+};
+
+//delete comment
+const deleteComment = async (fId, setDeleteData, toast) => {
+  try {
+    const response = await axios.delete(
+      `http://localhost:9999/api/v1/feedback/delete/${fId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true, // Use the headers object you've constructed
+      }
+    );
+    if (response.status === 200) {
+      setDeleteData("success");
+      toast?.success("Delete comment successfully !!!");
+    } else {
+      toast?.error("Error when delete comment");
+    }
+  } catch (error) {
+    toast?.error("Error when delete comment");
+  }
+};
+
+const getAllOrder = async (setAllOrder,setTotalpage,limitPage,pageActive)=>{
+  try {
+    const response = await axios.get(`http://localhost:9999/api/v1/order/getAll?page=${pageActive}&limit=${limitPage}`)
+    if(response.status === 200){
+      setAllOrder(response.data)
+      setTotalpage(response.data.totalPage)
+    }else{
+      console.log("Get all order failed: " + response.status);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
 export {
   getAllProducts,
   addProduct,
@@ -474,4 +579,9 @@ export {
   makeAnNewOrder,
   amountInMonthAPI,
   orderInMonthAPI,
+  addComment,
+  viewComment,
+  updateCommentAPI,
+  deleteComment,
+  getAllOrder
 };

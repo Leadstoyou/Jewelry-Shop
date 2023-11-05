@@ -5,12 +5,31 @@ import Footer from "../components/Footer";
 import { viewOrder } from "../services/connectApi.js";
 import { toast } from "react-toastify";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   font-family: "Jost", sans-serif;
   margin-top: 9%;
   margin-bottom: 5%;
+`;
+
+const BackToTopButton = styled.button`
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #0056b3;
+  }
 `;
 
 const Header = styled.div`
@@ -95,6 +114,7 @@ const ViewMoreInOrder = styled.button`
 `;
 
 const WatchOrder = () => {
+  const [backToTopVisible, setBackToTopVisible] = useState(false);
   const [numberProduct, setNumberProduct] = useState(3);
   const [numberOrder, setNumberOrder] = useState(2);
   const [allOrder, setOrderByUser] = useState();
@@ -103,13 +123,26 @@ const WatchOrder = () => {
     viewOrder(toast, setOrderByUser);
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.pageYOffset > 500) {
+        setBackToTopVisible(true);
+      } else {
+        setBackToTopVisible(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const totalQuantityOfAllOrder = allOrder?.map((order, index) => {
-    const totalPriceOfOrder = order?.productList?.reduce(
-      (total, product) => {
-        return total + product.quantity;
-      },
-      0
-    );
+    const totalPriceOfOrder = order?.productList?.reduce((total, product) => {
+      return total + product.quantity;
+    }, 0);
     return totalPriceOfOrder;
   }, 0);
 
@@ -134,6 +167,13 @@ const WatchOrder = () => {
   };
   const handleClickLessOrder = () => {
     setNumberOrder(numberOrder - 2);
+  };
+
+  const handleBackToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -247,14 +287,12 @@ const WatchOrder = () => {
                     textAlign: "center",
                     padding: "10px",
                     backgroundColor: "#bcf1bc",
-                    display:'flex',
-                    alignContent:'center',
-                    justifyContent:'space-between',
+                    display: "flex",
+                    alignContent: "center",
+                    justifyContent: "space-between",
                   }}
                 >
-                  <h6>
-                    {totalQuantityOfAllOrder[index]} sản phẩm
-                  </h6>
+                  <h6>{totalQuantityOfAllOrder[index]} sản phẩm</h6>
                   <h3>
                     Total:{" "}
                     {parseInt(order?.totalAmount)?.toLocaleString("vi-VN")}đ
@@ -282,6 +320,15 @@ const WatchOrder = () => {
             )}
           </div>
         </div>
+        <BackToTopButton
+          onClick={handleBackToTop}
+          style={{ display: backToTopVisible ? "block" : "none" }}
+        >
+          <span>
+            <ArrowUpwardIcon />
+          </span>
+          &nbsp; Back to Top
+        </BackToTopButton>
       </Container>
 
       <Footer />

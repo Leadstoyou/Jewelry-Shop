@@ -126,7 +126,7 @@ const Checkouts = () => {
                               </td>
                               <td className="product-price table-element-last-child">
                                 <span className="order-summary-emphasis">
-                                {product.price}
+                                {product?.price?.toLocaleString('vn-VI')}&nbsp;đ
                                 </span>
                               </td>
                             </tr>
@@ -158,7 +158,7 @@ const Checkouts = () => {
                               className="order-summary-emphasis"
                               data-checkout-subtotal-price-target={responseData?.cart?.total}
                             >
-                              {responseData?.cart?.total}
+                              {responseData?.cart?.total?.toLocaleString('vn-VI')}&nbsp;đ
                             </span>
                           </td>
                         </tr>
@@ -187,7 +187,7 @@ const Checkouts = () => {
                               className="payment-due-price"
                               data-checkout-payment-due-target={responseData?.cart?.total}
                             >
-                              {responseData?.cart?.total}
+                              {responseData?.cart?.total?.toLocaleString('vn-VI')}&nbsp;đ
                             </span>
                           </td>
                         </tr>
