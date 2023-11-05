@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { makeAnNewOrder } from "../api/connectApi";
+import { makeAnNewOrder } from "../services/connectApi";
 
 const ThankYou = () => {
   useEffect(() => {

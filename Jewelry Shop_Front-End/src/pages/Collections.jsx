@@ -9,8 +9,8 @@ import CollectionsCategory from "../components/collections/CollectionsCategory";
 import { useLocation, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { CollectionAPI } from "../api/productAPI";
-import { CollectionFilterCategory } from "../api/productAPI";
+import { CollectionAPI } from "../services/productAPI";
+import { CollectionFilterCategory } from "../services/productAPI";
 const Spinner = styled.div`
   height: 100%;
   flex-direction: column;

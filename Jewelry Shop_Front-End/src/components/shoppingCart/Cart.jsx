@@ -10,7 +10,7 @@ import {
   removeFromCart,
   updateCart,
   addOrder,
-} from "../../api/connectApi.js";
+} from "../../services/connectApi.js";
 import { useDispatch } from "react-redux";
 const Container = styled.div`
   display: flex;

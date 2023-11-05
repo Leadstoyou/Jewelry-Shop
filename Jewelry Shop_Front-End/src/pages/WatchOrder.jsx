@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { viewOrder } from "../api/connectApi.js";
+import { viewOrder } from "../services/connectApi.js";
 import { toast } from "react-toastify";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import { useNavigate } from "react-router-dom";
