@@ -65,7 +65,7 @@ const ViewDetail = (props) => {
             <div className="information_detail1">
               <div className="column" style={{ marginRight: "20px" }}>
                 <h5>Tên</h5>
-                <input className="Name" type="text" value={user.userName} disabled />
+                <input className="Name" type="text" value={user.userName}  />
               </div>
               <div className="column">
                 <h5>Số điện thoại</h5>
@@ -73,7 +73,7 @@ const ViewDetail = (props) => {
                   className="phoneNumber"
                   type="text"
                   value={user.userPhoneNumber}
-                  disabled
+                  style={{width:"220px"}} 
                 />
               </div>
             </div>
@@ -81,7 +81,7 @@ const ViewDetail = (props) => {
             <div className="information_detail1">
               <div className="column" style={{ marginRight: "20px" }}>
                 <h5>Tuổi</h5>
-                <input className="age" type="text" value={user.userAge} disabled />
+                <input className="age" type="text" value={user.userAge}  />
               </div>
               <div className="column">
                 <h5>Địa chỉ</h5>
@@ -89,18 +89,18 @@ const ViewDetail = (props) => {
                   className="address"
                   type="text"
                   value={user.userAddress}
-                  disabled
+                  style={{width:"220px"}} 
                 />
               </div>
             </div>
             <div className="information_detail1">
               <div className="column" style={{ marginRight: "20px" }}>
                 <h5>Giới tính</h5>
-                <input className="Name" type="text" value={user.userGender} disabled />
+                <input className="Name"  type="text" value={user.userGender}  />
               </div>
               <div className="column">
                 <h5>Email</h5>
-                <input className="Email" type="text" value={user.userEmail} disabled />
+                <input className="Email"  style={{width:"220px"}} type="text" value={user.userEmail}  />
               </div>
             </div>
           </div>
