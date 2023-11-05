@@ -8,7 +8,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { createContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { viewCartAPI } from "../api/connectApi.js";
+import { viewCartAPI } from "../services/connectApi.js";
 import { cartValue } from "../App.jsx";
 import { CircularProgress } from "@mui/material";
 import Box from "@mui/material/Box";

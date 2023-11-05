@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { BarChart } from "@mui/x-charts";
-import { orderInMonthAPI } from "../api/connectApi.js";
-import { amountInMonthAPI } from "../api/connectApi.js";
+import { orderInMonthAPI } from "../services/connectApi.js";
+import { amountInMonthAPI } from "../services/connectApi.js";
 import RiseLoader from "react-spinners/RiseLoader";
 
 const Container = styled.div`

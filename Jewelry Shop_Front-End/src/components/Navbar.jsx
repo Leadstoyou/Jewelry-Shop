@@ -17,7 +17,7 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { getNumber } from "../redux/GetNumber.jsx";
 import { cartValue } from "../App";
-import { Logout } from "../api/connectApi.js";
+import { Logout } from "../services/connectApi.js";
 const Container = styled.div`
   font-family: "Jost", sans-serif;
   background-color: #d5d3d3;
