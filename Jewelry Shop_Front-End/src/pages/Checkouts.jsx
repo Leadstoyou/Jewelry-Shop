@@ -3,7 +3,7 @@ import "../style/OrderDetail.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
-import { viewOrderDetail } from "../api/productAPI";
+import { viewOrderDetail } from "../services/productAPI";
 
 const Checkouts = () => {
   const [inputNameValue, setInputNameValue] = useState("");

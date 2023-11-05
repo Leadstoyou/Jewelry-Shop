@@ -8,8 +8,8 @@ import { useContext, useEffect, useState } from "react";
 import Pagination from "react-bootstrap/Pagination";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { CollectionAPISearch } from "../api/productAPI";
-import { CollectionFilterSearch } from "../api/productAPI";
+import { CollectionAPISearch } from "../services/productAPI";
+import { CollectionFilterSearch } from "../services/productAPI";
 import { cartValue } from "../App";
 const Container = styled.div`
   font-family: "Jost", sans-serif;

@@ -10,7 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createContext } from "react";
 import { UpdateControl } from "./ManageProduct.jsx";
-import { updateProduct } from "../../../api/connectApi.js";
+import { updateProduct } from "../../../services/connectApi.js";
 import MyVerticallyCenteredModal from "./UpdateDiscount";
 
 const ButtonClose = styled.button`

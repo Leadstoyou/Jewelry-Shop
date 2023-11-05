@@ -17,54 +17,61 @@ import NotFound from "./components/error/NotFound";
 import HistoryPage from "./pages/History";
 import ListDeleteProduct from "./components/dashboard/product/ListDeleteProduct";
 import Checkouts from "./pages/Checkouts";
-import { viewCartAPI } from "./api/connectApi.js";
+import { viewCartAPI } from "./services/connectApi.js";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import WatchOrder from "./pages/WatchOrder.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { getNumber } from "./redux/GetNumber.jsx";
 import RiseLoader from "react-spinners/RiseLoader";
 import { fetchDataAndDispatch } from "./services/genUser.js";
-import NewPass from "./pages/NewPassword.jsx"
+import NewPass from "./pages/NewPassword.jsx";
 import ThankYou from "./pages/ThankYou.jsx";
-import Success from "./components/error/Success.jsx"
+import Success from "./components/error/Success.jsx";
 const Container = styled.div``;
 export const cartValue = createContext();
 function App() {
   const dispatch = useDispatch();
   const [txt, setTxt] = useState();
+  const [cookieChangeTrigger, setCookieChangeTrigger] = useState(0);
+  const checkForCookieChanges = useCallback(() => {
+    const currentCookies = document.cookie;
+    if (currentCookies !== cookieChangeTrigger) {
+      setCookieChangeTrigger(currentCookies);
+    }
+  }, [cookieChangeTrigger]);
+  useEffect(() => {
+    const interval = setInterval(checkForCookieChanges, 1000);
+    return () => clearInterval(interval);
+  }, [checkForCookieChanges]);
+  useEffect(() => {
+    fetchDataAndDispatch(dispatch);
+  }, [cookieChangeTrigger]);
   var number = 1;
-
   const [cartView, setViewCart] = useState();
   const [cartData, setCartData] = useState();
   const [showCartPopup, setShowCartPopup] = useState(false);
   console.log(cartData);
-
   const user = useSelector((state) => state?.loginController);
   console.log(user);
-
   const initialRender = useRef(true);
   const changeInitial = () => {
     initialRender.current = true;
   };
-
   console.log(initialRender.current);
   useEffect(() => {
     if (initialRender.current) {
       initialRender.current = false;
-
       console.log("cartData:", cartData);
-
       const fetchData = async () => {
         await viewCartAPI("hi", setViewCart);
-
         number = 1;
       };
-
       console.log("Before fetchData");
       fetchData();
       console.log("After fetchData");
     }
   }, [initialRender.current]);
+  // document.cookie = `cart_token=${cartView?.cart_token}`;
   console.log("cart view");
   console.log(cartView);
   useEffect(() => {
@@ -92,7 +99,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Homepage cartView={cartView} />} />
             <Route path="/search/:searchName" element={<SearchPage />} />
-            <Route path="/thank-you" element={<ThankYou/>}/>
+            <Route path="/thank-you" element={<ThankYou />} />
             <Route path="/collections/:category" element={<Collections />} />
             <Route path="/product/:id" element={<Products />} />
             <Route path="/cart" element={<CartPage />} />
@@ -114,5 +121,4 @@ function App() {
     </Container>
   );
 }
-
 export default App;

@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../redux/Login.jsx";
 import { getNumber } from "../redux/GetNumber.jsx";
 import { cartValue } from "../App.jsx";
-import { viewCartAPI } from "../api/connectApi";
+import { viewCartAPI } from "../services/connectApi.js";
 const Logins = () => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
