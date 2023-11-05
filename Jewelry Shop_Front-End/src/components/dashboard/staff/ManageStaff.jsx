@@ -32,6 +32,7 @@ const ManageStaff = () => {
   const [activePage, setActivePage] = useState(1);
   const [calledApi, setCalledApi] = useState(false);
   const [totalPage, setTotalPage] = useState(10);
+  const [total, setTotal] = useState("");
   const [userIds, setUserIds] = useState(null);
 
   const size = 10;
@@ -39,36 +40,49 @@ const ManageStaff = () => {
 //Connect api to take all user
   const connectAPI = (search, filterRole, filterAction, activePage) => {
 
-    let searchString, statusAction, roleAction 
-    if(search ){
-      searchString = `search=${search}`
-    }
-    if(filterAction){
-      statusAction = `status=${filterAction}`
-    }
-    if(filterRole){
-      roleAction = `role=${filterRole}`
-    }
-    if(totalPage <= 10){
-      activePage = 1
-    }
-    axios
-      .get(
-        `http://localhost:9999/api/v1/users/search?${searchString}&${roleAction}&${statusAction}&size=${size}&page=${activePage}`,
-        axiosConfig
-      )
-      .then((response) => {
-        if (response.status === 200) {
+
+      let params = {
+        size: size,
+        page: activePage,
+      };
+      
+      if (search) {
+        params['search'] = search;
+      }
+      
+      if (filterAction) {
+        params['status'] = filterAction;
+      }
+      
+      if (filterRole) {
+        params['role'] = filterRole;
+      }
+     
+      
+      const queryString = new URLSearchParams(params).toString();
+      
+      axios
+        .get(
+          `http://localhost:9999/api/v1/users/search?${queryString}`,
+          axiosConfig
+        )
+        .then((response) => {
+         if (response.status === 200) {
           const userDataArray = response.data.data.data;
           setUserData(userDataArray);
-          setTotalPage(Math.ceil((response.data.data.total)/size));
+          const total = response.data.data.total; // Check the actual structure in the response
+          console.log(total);
+          setTotal(total);
+          setTotalPage(Math.ceil(total / size));
         } else {
           console.log("Request was not successful");
         }
-      })
-      .catch((error) => {
-        console.error("An error occurred:", error);
-      });
+        })
+        .catch((error) => {
+          console.error("An error occurred:", error);
+        });
+
+      
   };
   
 
@@ -126,14 +140,13 @@ const ManageStaff = () => {
    console.log(newRole);
     if (window.confirm("Do you want to change your role")) {
           changeRole(userId, newRole).then(() => {
-            console.log("change success");
             connectAPI(search, filterRole, filterAction, activePage);
     
           })
           .catch((error) => {
             console.error(error);
           });
-          alert(`change role successfully`);
+          alert(`Clhange Role Successfully`);
         }
   };
 
@@ -166,7 +179,7 @@ const handleChange = async (action, userId) => {
   console.log(action); // New status
   if (changeStatus(userId, action)) {
     connectAPI(search, filterRole, filterAction, activePage);
-    alert("Status updated");
+    alert("Status change successful");
   }
 };
 
@@ -179,6 +192,7 @@ setBlock(block);
     if ( changeAdmin(userId, block)) {
       console.log(block);
     connectAPI(search, filterRole, filterAction, activePage);
+    alert("Block account successfully updated");
     }
   } catch (error) {
     console.error("An error occurred:", error);
@@ -189,6 +203,13 @@ setBlock(block);
   setModalShow(true)
   setUserIds(userIds);
  }
+
+ const handleFilterRole = (e) => {
+  const role = e.target.value;
+  setFilterRole(role);
+  connectAPI(search, role, filterAction, activePage);
+}
+
   useEffect(() => {
     if (!calledApi) {
       connectAPI(search, filterRole, filterAction, activePage);
@@ -242,10 +263,7 @@ setBlock(block);
         <select
           className="select-data"
           value={filterRole}
-          onChange={(e) => {
-            setFilterRole(e.target.value);
-            connectAPI(search, e.target.value, filterAction, activePage);
-          }}
+           onChange={handleFilterRole}
         >
           <option value="">All</option>
           <option value="1">Staff</option>
