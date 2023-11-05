@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { CircularProgress } from "@mui/material";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getNumber } from "../../redux/GetNumber.jsx";
@@ -284,7 +285,8 @@ const EmptyCartContainer = styled.div`
   height: 50vh; /* You can adjust the height based on your layout */
 `;
 
-const ShoppingCart = () => {
+const ShoppingCart = (props) => {
+  const { spin, setSpin } = props;
   const dispatch = useDispatch();
   const user = useSelector((state) => state?.loginController?.value);
 
@@ -330,17 +332,17 @@ const ShoppingCart = () => {
       if (newQuantity > 10) {
         document.getElementById(`${productId}`).value = 10;
         const number = 10;
-        await updateCart(productId, number, price, setCartUpdate, toast);
+        await updateCart(productId, number, price, setCartUpdate, toast , setSpin);
 
         return;
       } else if (newQuantity <= 0) {
         document.getElementById(`${productId}`).value = 1;
         const numberO = 1;
-        await updateCart(productId, numberO, price, setCartUpdate, toast);
+        await updateCart(productId, numberO, price, setCartUpdate, toast , setSpin);
 
         return;
       } else {
-        await updateCart(productId, newQuantity, price, setCartUpdate, toast);
+        await updateCart(productId, newQuantity, price, setCartUpdate, toast , setSpin);
         return;
       }
     } catch (error) {
@@ -444,7 +446,14 @@ const ShoppingCart = () => {
           ))}
 
         <RightPanel>
-          <Title>Total: {cartData?.total?.toLocaleString("vn-VI")}đ</Title>
+          <Title>Total: {spin ? (
+              <span style={{marginLeft:'20px'}}>
+                <CircularProgress size={30} />
+              </span>
+          ) : (
+            <span>{cartData?.total?.toLocaleString("vn-VI")}đ</span>
+          )}
+          </Title>
           <CheckboxContainer>
             <input
               type="checkbox"

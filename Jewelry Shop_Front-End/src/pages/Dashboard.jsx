@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Button from "react-bootstrap/Button";
-
+import RiseLoader from "react-spinners/RiseLoader";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import styled from "styled-components";
 import Menu from "@mui/icons-material/Menu";
@@ -74,10 +74,18 @@ const DashboardItem = styled.div`
 `;
 
 function Dashboard() {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const user = useSelector((state) => state?.loginController);
   const [show, setShow] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState(null);
+
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
 
   const handleClose = () => {
     setShow(false);
@@ -92,6 +100,20 @@ function Dashboard() {
   };
 
   return (
+    <>
+    {loading ? (
+      <Container
+        style={{
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <RiseLoader color={"#575855"} size={30} loading={loading} />
+      </Container>
+    ) : (
     <Container>
       <ControlHome onClick={() => navigate("/")}>
         <button
@@ -168,7 +190,9 @@ function Dashboard() {
         {selectedComponent}
       </InsideDashboard>
     </Container>
-  );
+  )}
+  </>
+);
 }
 
 export default Dashboard;
