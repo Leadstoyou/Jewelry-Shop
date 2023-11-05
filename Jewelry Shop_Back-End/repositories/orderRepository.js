@@ -52,14 +52,21 @@ const createOrder = async (userId, orderStatus) => {
       throw error;
     }
   };
-  const getAllOrder = async () => {
-    try {
-      const orders = await Order.find().exec();
-      return orders;
-    } catch (error) {
-      throw error;
-    }
-  };
+  const getAllOrder = async (skip, limit) => {
+      try {
+        const orders = await Order.find()
+          .skip(skip)
+          .limit(limit)
+          .sort({ createdAt: -1 });
+  
+        const total = await Order.countDocuments();
+  
+        return orders;
+      } catch (error) {
+        throw error;
+      }
+    };
+  
   const updateOrderStatus = async (orderId, orderStatus) => {
     try {
       const updatedOrder = await Order.findByIdAndUpdate(
