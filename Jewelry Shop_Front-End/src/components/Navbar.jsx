@@ -5,8 +5,9 @@ import PersonIcon from "@mui/icons-material/Person";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Badge from "@mui/material/Badge";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import InventoryIcon from "@mui/icons-material/Inventory";
 import videoFile from "../assets/video.mp4"; // Import the video file using ES6 module syntax
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -16,7 +17,9 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { getNumber } from "../redux/GetNumber.jsx";
 import { cartValue } from "../App";
+import { Logout } from "../api/connectApi.js";
 const Container = styled.div`
+  font-family: "Jost", sans-serif;
   background-color: #d5d3d3;
   position: relative;
   height: 70px;
@@ -99,6 +102,18 @@ const Icon = styled.span`
     opacity: 0.5;
   }
 `;
+
+const Span = styled.div`
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: start;
+  background-color: white;
+  &:hover {
+    background-color: #c2c1c1;
+  }
+`;
+
 const Nav = styled.div`
   position: fixed;
   top: 0;
@@ -122,11 +137,13 @@ const Button = styled.button`
 `;
 
 const Navbar = (props) => {
-  const { changeInitial } = useContext(cartValue);
+  const { changeInitial, txt, setTxt } = useContext(cartValue);
   const dispatch = useDispatch();
   const numberCart = useSelector((state) => state?.getNumber?.value);
   const user = useSelector((state) => state?.loginController);
   const [showContent, setShowContent] = useState(false);
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const toggleContent = () => {
     setShowContent(!showContent);
@@ -134,13 +151,8 @@ const Navbar = (props) => {
   const handleLogout = () => {
     toggleContent();
     changeInitial();
+    Logout();
 
-    document.cookie =
-      "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie =
-      "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    // document.cookie =
-    //   "cart_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     dispatch(getNumber(0));
     navigate("/");
   };
@@ -156,9 +168,6 @@ const Navbar = (props) => {
       theme: "colored",
     });
   };
-  const navigate = useNavigate();
-  // const [searchText , setSearchText] = useState("")
-  const [searchQuery, setSearchQuery] = useState("");
 
   // Function to handle Enter key press
   const handleKeyPress = (event) => {
@@ -274,23 +283,28 @@ const Navbar = (props) => {
                         style={{
                           position: "absolute",
                           top: "100%", // Content will appear directly below the image
-                          left: 0, // Adjust the left position if needed
+                          right: 0, // Adjust the left position if needed
                           backgroundColor: "white",
                           border: "1px solid #ccc",
                           padding: "10px",
                           boxShadow: "0 0 5px rgba(0, 0, 0, 0.2)",
-                          width: "100px",
+                          width: "150px",
                         }}
                       >
-                        <span onClick={handleProfile}>
-                          <AccountBoxIcon />
+                        <Span onClick={handleProfile}>
+                          <AccountBoxIcon style={{ color: "blue" }} />
                           Profile
-                        </span>
+                        </Span>
                         <hr />
-                        <span onClick={handleLogout}>
-                          <LogoutIcon />
+                        <Span onClick={() => navigate("/order")}>
+                          <InventoryIcon style={{ color: "green" }} />
+                          Order
+                        </Span>
+                        <hr />
+                        <Span onClick={handleLogout}>
+                          <LogoutIcon style={{ color: "red" }} />
                           Log out
-                        </span>
+                        </Span>
                       </div>
                     )}
                   </div>

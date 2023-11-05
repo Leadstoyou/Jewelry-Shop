@@ -1,30 +1,44 @@
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Button from "react-bootstrap/Button";
+
 import Offcanvas from "react-bootstrap/Offcanvas";
 import styled from "styled-components";
 import Menu from "@mui/icons-material/Menu";
-import ManageProduct from '../components/dashboard/product/ManageProduct.jsx'
-import ManageStaff from '../components/dashboard/staff/ManageStaff.jsx'
-import DiamondIcon from '@mui/icons-material/Diamond';
-import HomeIcon from '@mui/icons-material/Home';
+import ManageProduct from "../components/dashboard/product/ManageProduct.jsx";
+import ManageStaff from "../components/dashboard/staff/ManageStaff.jsx";
+import DiamondIcon from "@mui/icons-material/Diamond";
+import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
-  
+import jewelry from "../assets/jewelry.mp4";
+import Statistics from "./Statistics.jsx";
+
 const Container = styled.div`
-  height: 1000px;
+  font-family: "Jost", sans-serif;
+  height: 100vh;
   position: relative;
+`;
+
+const VideoUpdate = styled.video`
+  width: 100%;
+  position: absolute;
+  object-fit: cover;
+  top: 0;
+  left: 0;
+  opacity: 1;
+  z-index: -1;
 `;
 const ControlHome = styled.div`
   position: absolute;
   top: 0%;
   left: 5%;
-
-`
+`;
 const SidebarContainer = styled.div`
   position: fixed;
   height: 100vh;
   width: 4%;
   background-color: #a4a1a1;
+  z-index: 1;
 `;
 const ButtonController = styled.button`
   border: none;
@@ -41,7 +55,7 @@ const InsideDashboard = styled.div`
 `;
 const ItemIn = styled.div`
   cursor: pointer;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   width: 100%;
   height: 100%;
   &:hover {
@@ -49,6 +63,7 @@ const ItemIn = styled.div`
     border-radius: 3px;
   }
 `;
+
 const Title = styled.h1``;
 const DashboardItem = styled.div`
   display: flex;
@@ -58,7 +73,7 @@ const DashboardItem = styled.div`
 `;
 
 function Dashboard() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState(null);
 
@@ -70,14 +85,29 @@ function Dashboard() {
   const handleShow = () => setShow(true);
 
   const renderComponent = (component) => {
-    handleClose()
+    handleClose();
     setSelectedComponent(component);
-
   };
 
   return (
     <Container>
-      <ControlHome onClick={()=>navigate('/')}><button style={{backgroundColor:'#c6c2c2',border:'none '}}><HomeIcon/>Back to home</button></ControlHome>
+      <ControlHome onClick={() => navigate("/")}>
+        <button
+          style={{
+            backgroundColor: "#c6c2c2",
+            border: "none ",
+            display: "flex",
+            alignContent: "center",
+            justifyContent: "center",
+            gap: "5px",
+          }}
+        >
+          <span>
+            <HomeIcon />
+          </span>
+          <span style={{ marginTop: "2px" }}>Back to home</span>
+        </button>
+      </ControlHome>
       <SidebarContainer>
         <ButtonController variant="primary" onClick={handleShow}>
           <Menu style={{ color: "white" }} />
@@ -89,7 +119,11 @@ function Dashboard() {
           style={{ backgroundColor: "grey", color: "white" }}
           closeButton
         >
-          <Offcanvas.Title><DiamondIcon />Jewelry<DiamondIcon /></Offcanvas.Title>
+          <Offcanvas.Title>
+            <DiamondIcon />
+            Jewelry
+            <DiamondIcon />
+          </Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
           <DashboardItem>
@@ -99,11 +133,32 @@ function Dashboard() {
             <ItemIn onClick={() => renderComponent(<ManageStaff />)}>
               Manage Staff
             </ItemIn>
+            <ItemIn onClick={() => renderComponent(<Statistics />)}>
+              Statistics
+            </ItemIn>
           </DashboardItem>
         </Offcanvas.Body>
       </Offcanvas>
       <InsideDashboard>
-        {!selectedComponent && <h1 style={{ padding: "1%" }}>Dashboard</h1>}
+        {!selectedComponent && (
+          <>
+            <VideoUpdate muted autoPlay loop>
+              <source src={jewelry} />
+            </VideoUpdate>
+            <div
+              style={{
+                position: "absolute",
+                bottom: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)", // Center both horizontally and vertically
+              }}
+            >
+              <h1 style={{ color: "white", fontSize: "50px" }}>
+                Welcome Back To Dashboard
+              </h1>
+            </div>
+          </>
+        )}
         {selectedComponent}
       </InsideDashboard>
     </Container>

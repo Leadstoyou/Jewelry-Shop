@@ -3,4 +3,5 @@ import productRouter from "./productRouter.js";
 import cartRouter from "./cartRouter.js"
 import orderRouter from "./orderRouter.js"
 import accountRouter from "./accountRouter.js"
-export {orderRouter, cartRouter, userRouter, productRouter,accountRouter };
+import feedbackRouter from "./feedbackRouter.js"
+export {orderRouter, cartRouter, userRouter, productRouter,accountRouter,feedbackRouter };

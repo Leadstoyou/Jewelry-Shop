@@ -6,7 +6,6 @@ const viewCart = async (req, res,next) => {
     try {
       const cartToken = req.cookies.cart_token;
       const userId = req?.user?.userId;
-      console.log("lmro",req.user);
       let cart = null;
 
       if (userId) {
@@ -54,7 +53,6 @@ const viewCart = async (req, res,next) => {
 
       // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng hay chưa
       let cart = null;
-      console.log(userId)
       if(userId){
         cart = await cartRepository.getCartByUser(userId)
       }

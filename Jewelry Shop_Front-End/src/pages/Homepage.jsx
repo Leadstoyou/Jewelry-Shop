@@ -23,6 +23,7 @@ const Container = styled.div`
 `;
 
 function Homepage(props) {
+  const { txt,setTxt } = props;
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(true);
@@ -46,7 +47,7 @@ function Homepage(props) {
         </Container>
       ) : (
         <Container>
-          <Navbar />
+          <Navbar  />
           <Categories />
           <Slider />
           <ElementOne />

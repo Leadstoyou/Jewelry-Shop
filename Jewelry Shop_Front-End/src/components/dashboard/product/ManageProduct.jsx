@@ -16,11 +16,13 @@ import { addProduct } from "../../../api/connectApi.js";
 import { deleteProduct } from "../../../api/connectApi.js";
 import Pagination from "react-bootstrap/Pagination";
 import axios from "axios";
+import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
-import HomeIcon from '@mui/icons-material/Home';
+import HomeIcon from "@mui/icons-material/Home";
+import { CollectionFilterSearchAndPagination } from "../../../api/productAPI.js";
 const Container = styled.div``;
 const Function = styled.div`
-  background-color: #dba1a1;
+  background-color: #c5c2c2;
   position: relative;
   top: 0;
   right: -4.5%;
@@ -31,17 +33,16 @@ const ControlHome = styled.div`
   position: absolute;
   top: 0%;
   left: 5%;
-
-`
+`;
 const Button = styled.button`
   padding: 10px;
   color: white;
-  background-color: rgb(80, 80, 243);
+  background-color: rgb(21, 21, 238);
   border-radius: 10px;
   border-color: transparent;
   outline: none;
   &:hover {
-    background-color: rgb(57, 57, 246);
+    background-color: rgb(113, 113, 254);
   }
 `;
 const ButtonClose = styled.button`
@@ -57,12 +58,12 @@ const ButtonClose = styled.button`
 
 const ButtonSave = styled.button`
   padding: 10px;
-  background-color: rgb(105, 239, 105);
+  background-color: rgb(21, 237, 21);
   border-radius: 10px;
   border-color: transparent;
   outline: none;
   &:hover {
-    background-color: rgb(55, 241, 55);
+    background-color: rgb(157, 238, 157);
   }
 `;
 
@@ -73,7 +74,6 @@ const Control = styled.div`
 `;
 const Label = styled.label``;
 const Input = styled.input`
-  border: none;
   outline: none;
 `;
 const DiscountControl = styled.div`
@@ -128,24 +128,60 @@ const ButtonListDelete = styled.button`
   margin-top: 10px;
   padding: 10px;
   color: white;
-  background-color: #f74444;
+  background-color: #f22a2a;
   border-radius: 10px;
   border-color: transparent;
   outline: none;
   &:hover {
-    background-color: #f42c2c;
+    background-color: #f98a8a;
   }
 `;
 const BtnControl = styled.div`
+  width: 100%;
   display: flex;
-  flex-direction: column;
+
   /* align-items: center; */
-  justify-content: center;
+  justify-content: space-between;
 `;
+
+const Update = styled.button`
+  margin-right: 5px;
+  border: none;
+  outline: none;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: green;
+  color: white;
+  cursor: pointer;
+  &:hover {
+    background-color: #76f876;
+  }
+`;
+
+const Delete = styled.button`
+  margin-right: 5px;
+  border: none;
+  outline: none;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: red;
+  color: white;
+  cursor: pointer;
+  &:hover {
+    background-color: #f24a4a56;
+  }
+`;
+
+const InputSearch = styled.input`
+  outline: none;
+  border: none;
+`;
+
 //manage form
 export const UpdateControl = createContext();
 const ManageProduct = () => {
   const navigate = useNavigate();
+  const [searchText, setSearchText] = useState(null);
   const [idDelete, setIdDelete] = useState(null);
   const [updateData, setUpdateData] = useState(null);
   const [updateProduct, setUpdateProduct] = useState(null);
@@ -154,6 +190,7 @@ const ManageProduct = () => {
   const [addData, setAddData] = useState({});
   const [existErr, setExist] = useState(false);
   const [modalShow, setModalShow] = useState(false);
+
   const notify = (text) => {
     toast.error(text, {
       position: "top-right",
@@ -290,46 +327,102 @@ const ManageProduct = () => {
 
   //get data
   //allProduct, setAllproduct
+  let Allpage = [];
   const [activePage, setActivePage] = useState(1);
   const limitP = 5;
   const [totalPage, setTotalpage] = useState(0);
+  console.log("active page: " + activePage);
   useEffect(() => {
-    getAllProducts(setAllproduct, setTotalpage, notify, limitP, activePage);
-  }, [addData, updateData, updateProduct, idDelete, activePage, totalPage]);
+    if (searchText !== "") {
+      Allpage = [];
+      CollectionFilterSearchAndPagination(
+        setAllproduct,
+        searchText,
+        limitP,
+        setTotalpage,
+        activePage
+      );
+    }
+  }, [searchText, addData, updateData, updateProduct, idDelete, activePage]);
+
+  useEffect(() => {
+    if (searchText === "") {
+      Allpage = [];
+      getAllProducts(setAllproduct, setTotalpage, notify, limitP, activePage);
+    }
+  }, [searchText, addData, updateData, updateProduct, idDelete, activePage]);
 
   useEffect(() => {
     console.log(allProduct);
     console.log(totalPage);
+    if (!allProduct && activePage > 1) {
+      setActivePage(activePage - 1);
+    }
   }, [allProduct]);
 
+  useEffect(() => {
+    console.log(allProduct);
+    console.log(totalPage);
+    if (!allProduct && activePage > 1) {
+      setActivePage(activePage - 1);
+    }
+  }, [allProduct]);
+
+  useEffect(() => {
+    setActivePage(1);
+  }, [searchText]);
+
   const categories = ["Dây Chuyền", "Vòng tay", "Hoa Tai", "Charm", "Nhẫn"];
-  const Allpage = [];
+
   for (let i = 1; i <= totalPage; i++) {
     Allpage.push(i);
   }
   console.log(Allpage);
   const handlePrev = () => {
-    if (activePage > 1) {
-      setActivePage(activePage - 1);
-    }
+    setActivePage((prevPage) => {
+      if (prevPage > 1) {
+        return prevPage - 1;
+      }
+      return prevPage;
+    });
   };
+
   const handleNext = () => {
-    if (activePage < totalPage) {
-      setActivePage(activePage + 1);
-    }
+    setActivePage((prevPage) => {
+      if (prevPage < totalPage) {
+        return prevPage + 1;
+      }
+      return prevPage;
+    });
   };
+
   return (
     <Container>
-      <ControlHome onClick={()=>navigate('/')}><button style={{backgroundColor:'#c6c2c2',border:'none '}}><HomeIcon/>Back to home</button></ControlHome>
+      <ControlHome onClick={() => navigate("/")}>
+        <button style={{ backgroundColor: "#c6c2c2", border: "none " }}>
+          <HomeIcon />
+          Back to home
+        </button>
+      </ControlHome>
       <h1 style={{ padding: "1%" }}>Manage products</h1>
       <Function>
         <ControlAdd>
           <AddController.Provider value={{ addData, setAddData }}>
             <BtnControl>
-              <Button onClick={handleShow}>Add Product</Button>
-              <ButtonListDelete onClick={() => navigate("/listdelete")}>
-                List product you have just deleted
-              </ButtonListDelete>
+              <div>
+                <div style={{ backgroundColor: "white", marginTop: "20%" }}>
+                  <SearchIcon />
+                  <InputSearch
+                    onChange={(e) => setSearchText(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <Button onClick={handleShow}>Add Product</Button>
+                <ButtonListDelete onClick={() => navigate("/listdelete")}>
+                  List product you have just deleted
+                </ButtonListDelete>
+              </div>
             </BtnControl>
             {/* modal add  */}
             <Modal
@@ -339,15 +432,14 @@ const ManageProduct = () => {
             >
               <Modal.Body
                 style={{
-                  backgroundImage: `url(${background})`,
-                  backgroundSize: "cover",
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "center",
+                  color: "black",
                   borderRadius: "1%",
                 }}
               >
                 <Modal.Title>
-                  <h2 style={{ marginBottom: "8%" }}>Add new product</h2>
+                  <h2 style={{ marginBottom: "8%", textAlign: "center" }}>
+                    Add new product
+                  </h2>
                 </Modal.Title>
                 <form id="formController" onSubmit={handleSubmit(onSubmit)}>
                   <Control>
@@ -435,7 +527,7 @@ const ManageProduct = () => {
                     </Label>
                     <div>
                       <select
-                        style={{ width: "100%", backgroundColor: "white" }}
+                        style={{ width: "100%", border: "1px solid black" }}
                         id="category"
                         {...register("category")}
                       >
@@ -568,39 +660,16 @@ const ManageProduct = () => {
 
                   <Td>{p.productCategory}</Td>
                   <Td style={{ width: "20%" }}>
-                    <button
+                    <Update
                       onClick={() => {
                         setUpdateProduct(p);
                         setShowUpdate(true);
                       }}
-                      style={{
-                        marginRight: "5px",
-                        border: "none",
-                        outline: "none",
-                        padding: "10px",
-                        borderRadius: "5px",
-                        backgroundColor: "green",
-                        color: "white",
-                        cursor: "pointer",
-                      }}
                     >
                       Update
-                    </button>
+                    </Update>
 
-                    <button
-                      style={{
-                        border: "none",
-                        outline: "none",
-                        padding: "10px",
-                        borderRadius: "5px",
-                        backgroundColor: "red",
-                        color: "white",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => handleDelete(p._id)}
-                    >
-                      Delete
-                    </button>
+                    <Delete onClick={() => handleDelete(p._id)}>Delete</Delete>
                   </Td>
                 </Tr>
               )
@@ -615,20 +684,23 @@ const ManageProduct = () => {
             onHide={() => setShowUpdate(false)}
           />
         </UpdateControl.Provider>
-        <PageControl>
-          <Pagination>
-            <Pagination.Prev onClick={handlePrev} />
-            {Allpage.map((page) => (
-              <Pagination.Item
-                active={page === activePage}
-                onClick={() => setActivePage(page)}
-              >
-                {page}
-              </Pagination.Item>
-            ))}
-            <Pagination.Next onClick={handleNext} />
-          </Pagination>
-        </PageControl>
+        {allProduct && (
+          <PageControl>
+            <Pagination>
+              <Pagination.Prev onClick={handlePrev} />
+              {Allpage.map((page) => (
+                <Pagination.Item
+                  key={page}
+                  active={page === activePage}
+                  onClick={() => setActivePage(page)}
+                >
+                  {page}
+                </Pagination.Item>
+              ))}
+              <Pagination.Next onClick={handleNext} />
+            </Pagination>
+          </PageControl>
+        )}
       </Function>
       <ToastContainer
         style={{ height: "500px" }}

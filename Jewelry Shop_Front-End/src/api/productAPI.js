@@ -26,9 +26,18 @@ const CollectionAPI = async (
   setFoundProducts,
   setLoading,
   toast,
-  navigate
+  navigate,
+  maxPriceValue
 ) => {
   try {
+    let maxPrice, minPrice;
+    if (maxPriceValue) {
+      maxPrice = JSON.parse(maxPriceValue);
+      minPrice = JSON.parse(0);
+    } else if (price) {
+      maxPrice = JSON.parse(price)?.maxPrice;
+      minPrice = JSON.parse(price)?.minPrice;
+    }
     console.log("ldmas", category);
     const categories = ["Dây Chuyền", "Vòng tay", "Hoa Tai", "Charm", "Nhẫn"];
     if (!categories.includes(category)) {
@@ -43,8 +52,8 @@ const CollectionAPI = async (
         category: category,
         color: color,
         material: material,
-        minPrice: JSON.parse(price)?.minPrice,
-        maxPrice: JSON.parse(price)?.maxPrice,
+        minPrice,
+        maxPrice,
         sort: JSON.parse(sort),
       },
       {
@@ -62,7 +71,6 @@ const CollectionAPI = async (
     setTotalpage(totalPage);
     setTotalSize(totalPro);
     setFoundProducts(data);
-    setLoading(false);
   } catch (error) {
     setLoading(false);
     console.error("Error fetching data:", error);
@@ -82,22 +90,30 @@ const CollectionAPISearch = async (
   setFoundProducts,
   setLoading,
   toast,
-  navigate
+  navigate,
+  setSpinsearch
 ) => {
   try {
+    // Create the base payload object
+    const payload = {
+      limit: limitP,
+      page: activePage,
+      isDeleted: false,
+      color,
+      material,
+      minPrice: JSON.parse(price)?.minPrice,
+      maxPrice: JSON.parse(price)?.maxPrice,
+      sort: JSON.parse(sort),
+    };
+
+    // Conditionally add the searchName property
+    if (searchName) {
+      payload.searchName = searchName;
+    }
+
     const response = await axios.post(
       `${import.meta.env.VITE_API_PRODUCTS}/view`,
-      {
-        limit: limitP,
-        page: activePage,
-        isDeleted: false,
-        searchName: searchName,
-        color: color,
-        material: material,
-        minPrice: JSON.parse(price)?.minPrice,
-        maxPrice: JSON.parse(price)?.maxPrice,
-        sort: JSON.parse(sort),
-      },
+      payload,
       {
         headers: {
           Authorization: `Bearer ${getAccessTokenFromCookie()}`,
@@ -105,16 +121,17 @@ const CollectionAPISearch = async (
         withCredentials: true,
       }
     );
+
     const data = response.data?.data?.products;
     const totalPage = response?.data?.data?.totalPages;
     const totalPro = response?.data?.data?.totalProducts;
     setTotalpage(totalPage);
     setTotalSize(totalPro);
     setFoundProducts(data);
-    setLoading(false);
+    setTimeout(() => {
+      setSpinsearch(false);
+    }, 2000);
   } catch (error) {
-    setLoading(false);
-
     if (error.response && error.response.status === 401) {
       navigate("/login");
     }
@@ -135,7 +152,8 @@ const CollectionFilterSearch = async (
   color,
   material,
   price,
-  sort
+  sort,
+  setSpinsearch
 ) => {
   try {
     const response = await axios.post(
@@ -154,6 +172,91 @@ const CollectionFilterSearch = async (
 
     const data = response.data?.data?.products;
     setFilterProduct(data);
+    setTimeout(() => {
+      setSpinsearch(false);
+    }, 2000);
+  } catch (error) {
+    console.error(
+      "Error fetching data:",
+      error.response?.data?.message || error.message
+    );
+  }
+};
+
+const CollectionFilterSearchAndPagination = async (
+  setFilterProduct,
+  searchName,
+  limitP,
+  setTotalpage,
+  activePage
+) => {
+  try {
+    const limit = limitP;
+    // const page = activePage;
+    var pageCheck = activePage;
+    if (activePage === 1) {
+      pageCheck = 1;
+    }
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_PRODUCTS}/view`,
+      {
+        isDeleted: false,
+        searchName: searchName,
+        limit,
+        page: pageCheck,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true,
+      }
+    );
+
+    const data = response.data?.data?.products;
+    setFilterProduct(data);
+    setTotalpage(response.data.data.totalPages);
+  } catch (error) {
+    console.error(
+      "Error fetching data:",
+      error.response?.data?.message || error.message
+    );
+  }
+};
+
+const CollectionFilterSearchDeleteAndPagination = async (
+  setFilterProduct,
+  searchName,
+  limitP,
+  setTotalpage,
+  activePage
+) => {
+  try {
+    const limit = limitP;
+    // const page = activePage;
+    var pageCheck = activePage;
+    if (activePage === 1) {
+      pageCheck = 1;
+    }
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_PRODUCTS}/view`,
+      {
+        isDeleted: true,
+        searchName: searchName,
+        limit,
+        page: pageCheck,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true,
+      }
+    );
+
+    const data = response.data?.data?.products;
+    setFilterProduct(data);
+    setTotalpage(response.data.data.totalPages);
   } catch (error) {
     console.error(
       "Error fetching data:",
@@ -168,7 +271,8 @@ const CollectionFilterCategory = async (
   color,
   material,
   price,
-  sort
+  sort,
+  maxPrice
 ) => {
   try {
     const response = await axios.post(
@@ -176,6 +280,8 @@ const CollectionFilterCategory = async (
       {
         isDeleted: false,
         category: category,
+        minPrice: 0,
+        maxPrice: maxPrice,
       },
       {
         headers: {
@@ -184,7 +290,7 @@ const CollectionFilterCategory = async (
         withCredentials: true,
       }
     );
-
+    console.log("123", response);
     const data = response.data?.data?.products;
     setFilterProduct(data);
   } catch (error) {
@@ -194,5 +300,32 @@ const CollectionFilterCategory = async (
     );
   }
 };
+const viewOrderDetail = async () => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_ORDER}/viewOrder`,
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true,
+      }
+    );
+    return response;
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: productAPI.js:214 ~ viewOrderDetail ~ error:",
+      error
+    );
+  }
+};
 
-export { CollectionAPI, CollectionAPISearch, CollectionFilterSearch ,CollectionFilterCategory};
+export {
+  CollectionAPI,
+  CollectionFilterSearchDeleteAndPagination,
+  CollectionAPISearch,
+  CollectionFilterSearch,
+  CollectionFilterCategory,
+  CollectionFilterSearchAndPagination,
+  viewOrderDetail,
+};

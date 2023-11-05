@@ -10,6 +10,8 @@ import { createContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { viewCartAPI } from "../api/connectApi.js";
 import { cartValue } from "../App.jsx";
+import { CircularProgress } from "@mui/material";
+import Box from "@mui/material/Box";
 const Container = styled.div`
   font-family: "Jost", sans-serif;
 `;
@@ -84,10 +86,11 @@ const Total = styled.div`
 
 const Products = () => {
   const navigate = useNavigate();
-  // var { number } = useContext(cartValue ? cartValue : 0);
+  var { number } = useContext(cartValue ? cartValue : 0);
   const { cartView, setViewCart, setShowCartPopup, showCartPopup } =
     useContext(cartValue);
   const { cartData, setCartData } = useContext(cartValue);
+  const [spine, setSpin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [product, setProduct] = useState({});
 
@@ -101,6 +104,7 @@ const Products = () => {
           `http://localhost:9999/api/v1/products/get/${id}`
         );
         const data = response.data.data;
+        setShowCartPopup(false);
         setProduct(data);
         setLoading(false);
       } catch (error) {
@@ -110,6 +114,12 @@ const Products = () => {
     }
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (showCartPopup === false) {
+      setSpin(true);
+    }
+  },[showCartPopup]);
 
   return (
     <>
@@ -128,88 +138,119 @@ const Products = () => {
       ) : (
         <Container>
           <Navbar />
+
           <Parent>
             <ViewCart style={{ display: showCartPopup ? "block" : "none" }}>
               <ViewCartNavbar>
                 <p style={{ fontWeight: "bolder" }}>Cart Info</p>
                 <Close onClick={() => setShowCartPopup(false)}>x</Close>
               </ViewCartNavbar>
-              <Body>
-                <CardItem>
-                  <table style={{ width: "650px" }}>
-                    <thead
-                      style={{
-                        backgroundColor: "#e5e0e0",
-                        position: "sticky",
-                        top: 0,
-                        zIndex: 1,
-                      }}
-                    >
-                      <tr style={{ textAlign: "center" }}>
-                        <th>#</th>
-                        <th>Image</th>
-                        <th>Color</th>
-                        <th>Material</th>
-                        <th>Size</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {cartView?.productList &&
-                        cartView?.productList.map((c) => (
-                          <tr style={{ borderBottom: "1px solid #e5e0e0" }}>
-                            <td style={{ width: "5%", textAlign: "center" }}>
-                              {/* {number++} */}
-                            </td>
-                            <td
-                              style={{
-                                width: "25%",
-                                height: "70px",
-                                textAlign: "center",
-                              }}
-                            >
-                              <img
-                                src={c?.productImage}
-                                width="100%"
-                                height="100%"
-                              />
-                            </td>
-                            <td style={{ width: "13%", textAlign: "center" }}>
-                              {c?.color}
-                            </td>
-                            <td style={{ width: "13%", textAlign: "center" }}>
-                              {c?.material}
-                            </td>
-                            <td style={{ width: "13%", textAlign: "center" }}>
-                              {c?.size}
-                            </td>
-                            <td style={{ width: "13%", textAlign: "center" }}>
-                              {c?.quantity}
-                            </td>
-                            <td style={{ width: "18%", textAlign: "center" }}>
-                              {c?.price?.toLocaleString("vi-VN")}đ
-                            </td>
+              {spine ? (
+                <div
+                  style={{
+                    display: "flex",
+                    marginTop: "15%",
+                    justifyContent: "center",
+                  }}
+                >
+                  <span>
+                    <CircularProgress />
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <Body>
+                    <CardItem>
+                      <table style={{ width: "650px" }}>
+                        <thead
+                          style={{
+                            backgroundColor: "#e5e0e0",
+                            position: "sticky",
+                            top: 0,
+                            zIndex: 1,
+                          }}
+                        >
+                          <tr style={{ textAlign: "center" }}>
+                            <th>#</th>
+                            <th>Image</th>
+                            <th>Color</th>
+                            <th>Material</th>
+                            <th>Size</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
                           </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                </CardItem>
-              </Body>
-              <Total>
-                {cartView && (
-                  <div style={{ textAlign: "center" }}>
-                    <p style={{ fontWeight: "bolder", marginTop: "10px" }}>
-                      {" "}
-                      Total:&nbsp;&nbsp;&nbsp;
-                      {cartView?.total?.toLocaleString("vi-VN")}đ
-                    </p>
-                  </div>
-                )}
-              </Total>
-              <CheckountElement onClick={() => navigate("/cart")}>
-                <p>Go to Cart page to edit and checkout</p>
-              </CheckountElement>
+                        </thead>
+
+                        <tbody>
+                          {cartView?.productList &&
+                            cartView?.productList.map((c) => (
+                              <tr style={{ borderBottom: "1px solid #e5e0e0" }}>
+                                <td
+                                  style={{ width: "5%", textAlign: "center" }}
+                                >
+                                  {number++}
+                                </td>
+                                <td
+                                  style={{
+                                    width: "25%",
+                                    height: "70px",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  <img
+                                    src={c?.productImage}
+                                    width="100%"
+                                    height="100%"
+                                  />
+                                </td>
+                                <td
+                                  style={{ width: "13%", textAlign: "center" }}
+                                >
+                                  {c?.color}
+                                </td>
+                                <td
+                                  style={{ width: "13%", textAlign: "center" }}
+                                >
+                                  {c?.material}
+                                </td>
+                                <td
+                                  style={{ width: "13%", textAlign: "center" }}
+                                >
+                                  {c?.size}
+                                </td>
+                                <td
+                                  style={{ width: "13%", textAlign: "center" }}
+                                >
+                                  {c?.quantity}
+                                </td>
+                                <td
+                                  style={{ width: "18%", textAlign: "center" }}
+                                >
+                                  {c?.price?.toLocaleString("vi-VN")}đ
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </CardItem>
+                  </Body>
+                  <Total>
+                    {cartView && (
+                      <div style={{ textAlign: "center" }}>
+                        <p style={{ fontWeight: "bolder", marginTop: "10px" }}>
+                          {" "}
+                          Total:&nbsp;&nbsp;&nbsp;
+                          {cartView?.total?.toLocaleString("vi-VN")}đ
+                        </p>
+                      </div>
+                    )}
+                  </Total>
+
+                  <CheckountElement onClick={() => navigate("/cart")}>
+                    <p>Go to Cart page to edit and checkout</p>
+                  </CheckountElement>
+                </>
+              )}
             </ViewCart>
             <Ptag>
               <p style={{ marginTop: "100px" }}>
@@ -217,7 +258,7 @@ const Products = () => {
                 <span style={{ opacity: "0.5" }}> {product.productName} </span>
               </p>
             </Ptag>
-            <ProductBody product={product} />
+            <ProductBody product={product} setSpin={setSpin} />
           </Parent>
           <Footer />
         </Container>
