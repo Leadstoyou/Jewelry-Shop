@@ -1,15 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../style/OrderDetail.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
+import { viewOrderDetail } from "../api/productAPI";
 
 const Checkouts = () => {
   const [inputNameValue, setInputNameValue] = useState("");
   const [inputEmailValue, setInputEmailValue] = useState("");
   const [inputPhoneValue, setInputPhoneValue] = useState("");
   const [inputAddressValue, setInputAddressValue] = useState("");
-
+  const [responseData, setResponseData] = useState({});
+  const [reRender, SetReRender] = useState(true);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await viewOrderDetail({});
+        setResponseData(res.data);
+        console.log(
+          "🚀 ~ file: Checkouts.jsx:20 ~ fetchData ~ res.data:",
+          res.data
+        );
+      } catch (error) {
+        console.log(
+          "🚀 ~ file: Checkouts.jsx:18 ~ asyncfetchData ~ error:",
+          error
+        );
+      }
+    }
+    fetchData();
+  }, []);
+  useEffect(() => {
+    setInputNameValue(responseData?.userInfo?.data?.userName);
+    setInputEmailValue(responseData?.userInfo?.data?.userEmail);
+    setInputPhoneValue(responseData?.userInfo?.data?.userPhoneNumber);
+    setInputAddressValue(responseData?.userInfo?.data?.userAddress);
+  }, [responseData]);
   const handleInputChange = (e, setInput) => {
     const modifiedValue =
       e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1);
@@ -25,7 +51,9 @@ const Checkouts = () => {
     ) {
       e.preventDefault();
       toast.error("Input all fields");
+      return;
     }
+    // await  
   };
   return (
     <div className="flexbox">
@@ -59,47 +87,51 @@ const Checkouts = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr
-                          className="product"
-                          data-product-id="1041518282"
-                          data-variant-id="1090587759"
-                        >
-                          <td className="product-image table-element-first-child">
-                            <div className="product-thumbnail">
-                              <div className="product-thumbnail-wrapper">
-                                <img
-                                  className="product-thumbnail-image"
-                                  alt="Dây chuyền bạc mạ vàng hồng 14k mặt hình chữ O với họa tiết trái tim trong suốt"
-                                  src="//product.hstatic.net/200000103143/product/anyconv.com__566_4dab5265aee2459cb486e3d35fee1123_198fd7fe4a3444519d5f2b6d05c59471_small.png"
-                                />
-                              </div>
-                              <span
-                                className="product-thumbnail-quantity"
-                                aria-hidden="true"
-                              >
-                                1
-                              </span>
-                            </div>
-                          </td>
-                          <td className="product-description table-element">
-                            <span className="product-description-name order-summary-emphasis">
-                              Dây chuyền bạc mạ vàng hồng 14k mặt hình chữ O với
-                              họa tiết trái tim trong suốt
-                            </span>
+                        {responseData?.cart?.productList?.map((product,index) => {
+                          return (
+                            <tr
+                              className="product"
+                              data-product-id="1041518282"
+                              data-variant-id="1090587759"
+                              key={index}
+                            >
+                              <td className="product-image table-element-first-child">
+                                <div className="product-thumbnail">
+                                  <div className="product-thumbnail-wrapper">
+                                    <img
+                                      className="product-thumbnail-image"
+                                      alt={product.productName}
+                                      src={product.productImage}
+                                    />
+                                  </div>
+                                  <span
+                                    className="product-thumbnail-quantity"
+                                    aria-hidden="true"
+                                  >
+                                    {product.quantity}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="product-description table-element">
+                                <span className="product-description-name order-summary-emphasis">
+                                {product.productName}
+                                </span>
 
-                            <span className="product-description-variant order-summary-small-text">
-                              45 / Hồng / Mạ vàng hồng 14K
-                            </span>
-                          </td>
-                          <td className="product-quantity visually-hidden table-element">
-                            1
-                          </td>
-                          <td className="product-price table-element-last-child">
-                            <span className="order-summary-emphasis">
-                              5,390,000₫
-                            </span>
-                          </td>
-                        </tr>
+                                <span className="product-description-variant order-summary-small-text">
+                                {product.size[0]} / {product.color[0]}  / {product.material[0]} 
+                                </span>
+                              </td>
+                              <td className="product-quantity visually-hidden table-element">
+                              {product.quantity}
+                              </td>
+                              <td className="product-price table-element-last-child">
+                                <span className="order-summary-emphasis">
+                                {product.price}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -124,9 +156,9 @@ const Checkouts = () => {
                           <td className="total-line-price">
                             <span
                               className="order-summary-emphasis"
-                              data-checkout-subtotal-price-target="539000000"
+                              data-checkout-subtotal-price-target={responseData?.cart?.total}
                             >
-                              5,390,000₫
+                              {responseData?.cart?.total}
                             </span>
                           </td>
                         </tr>
@@ -153,9 +185,9 @@ const Checkouts = () => {
                             <span className="payment-due-currency">VND</span>
                             <span
                               className="payment-due-price"
-                              data-checkout-payment-due-target="539000000"
+                              data-checkout-payment-due-target={responseData?.cart?.total}
                             >
-                              5,390,000₫
+                              {responseData?.cart?.total}
                             </span>
                           </td>
                         </tr>
@@ -241,18 +273,14 @@ const Checkouts = () => {
                           <div
                             className="logged-in-customer-information-avatar gravatar"
                             style={{
-                              backgroundImage: `url(${'https://ftw.usatoday.com/wp-content/uploads/sites/90/2022/09/genshin-impact-ganyu-1.jpg?w=1000&h=600&crop=1'})`,
-                              filter:
-                                "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
-                                'https://ftw.usatoday.com/wp-content/uploads/sites/90/2022/09/genshin-impact-ganyu-1.jpg?w=1000&h=600&crop=1' +
-                                "', sizingMethod='scale')",
+                              backgroundImage: `url(${responseData?.userInfo?.data?.userAvatar})`,
                             }}
                           ></div>
                         </div>
                         <p className="logged-in-customer-information-paragraph">
-                          Đạt Trịnh (trinhtiendat2510@gmail.com)
+                          {`${responseData?.userInfo?.data?.userName} (${responseData?.userInfo?.data?.userEmail})`}
                           <br />
-                          <Link to={"/login"}>Đăng xuất</Link>
+                          {/* <Link to={"/login"}>Đăng xuất</Link> */}
                         </p>
                       </div>
                       {/* Login*/}
@@ -278,6 +306,7 @@ const Checkouts = () => {
                               onChange={(e) => {
                                 handleInputChange(e, setInputNameValue);
                               }}
+                              disabled
                             />
                           </div>
                         </div>
@@ -304,6 +333,8 @@ const Checkouts = () => {
                               onChange={(e) => {
                                 handleInputChange(e, setInputEmailValue);
                               }}
+                              disabled
+
                             />
                           </div>
                         </div>
@@ -331,6 +362,8 @@ const Checkouts = () => {
                               onChange={(e) => {
                                 handleInputChange(e, setInputPhoneValue);
                               }}
+                              disabled
+
                             />
                           </div>
                         </div>
@@ -381,6 +414,7 @@ const Checkouts = () => {
                                         setInputAddressValue
                                       );
                                     }}
+                                    disabled
                                   />
                                 </div>
                               </div>
@@ -454,14 +488,16 @@ const Checkouts = () => {
                           <input name="utf8" type="hidden" value="✓" />
                           <form
                             id="createOrder"
-                            action={`${import.meta.env.VITE_API_PAYMENT}/create_payment_url`}
+                            action={`${
+                              import.meta.env.VITE_API_PAYMENT
+                            }/create_payment_url`}
                             method="POST"
                             target="_blank"
                           >
                             <input
                               type="text"
                               style={{ display: "none" }}
-                              value={30000}
+                              value={responseData?.cart?.total}
                               name="amount"
                             />
                             <button

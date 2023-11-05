@@ -30,13 +30,13 @@ const CollectionAPI = async (
   maxPriceValue
 ) => {
   try {
-    let maxPrice , minPrice;
-    if(maxPriceValue){
-      maxPrice = JSON.parse(maxPriceValue)
-      minPrice = JSON.parse(0)
-    }else if(price){
-      maxPrice = JSON.parse(price)?.maxPrice 
-      minPrice = JSON.parse(price)?.minPrice
+    let maxPrice, minPrice;
+    if (maxPriceValue) {
+      maxPrice = JSON.parse(maxPriceValue);
+      minPrice = JSON.parse(0);
+    } else if (price) {
+      maxPrice = JSON.parse(price)?.maxPrice;
+      minPrice = JSON.parse(price)?.minPrice;
     }
     console.log("ldmas", category);
     const categories = ["Dây Chuyền", "Vòng tay", "Hoa Tai", "Charm", "Nhẫn"];
@@ -71,7 +71,6 @@ const CollectionAPI = async (
     setTotalpage(totalPage);
     setTotalSize(totalPro);
     setFoundProducts(data);
-    setLoading(false);
   } catch (error) {
     setLoading(false);
     console.error("Error fetching data:", error);
@@ -91,7 +90,8 @@ const CollectionAPISearch = async (
   setFoundProducts,
   setLoading,
   toast,
-  navigate
+  navigate,
+  setSpinsearch
 ) => {
   try {
     // Create the base payload object
@@ -128,10 +128,10 @@ const CollectionAPISearch = async (
     setTotalpage(totalPage);
     setTotalSize(totalPro);
     setFoundProducts(data);
-    setLoading(false);
+    setTimeout(() => {
+      setSpinsearch(false);
+    }, 2000);
   } catch (error) {
-    setLoading(false);
-
     if (error.response && error.response.status === 401) {
       navigate("/login");
     }
@@ -152,7 +152,8 @@ const CollectionFilterSearch = async (
   color,
   material,
   price,
-  sort
+  sort,
+  setSpinsearch
 ) => {
   try {
     const response = await axios.post(
@@ -171,6 +172,9 @@ const CollectionFilterSearch = async (
 
     const data = response.data?.data?.products;
     setFilterProduct(data);
+    setTimeout(() => {
+      setSpinsearch(false);
+    }, 2000);
   } catch (error) {
     console.error(
       "Error fetching data:",
@@ -296,6 +300,25 @@ const CollectionFilterCategory = async (
     );
   }
 };
+const viewOrderDetail = async () => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_ORDER}/viewOrder`,
+      {
+        headers: {
+          Authorization: `Bearer ${getAccessTokenFromCookie()}`,
+        },
+        withCredentials: true,
+      }
+    );
+    return response;
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: productAPI.js:214 ~ viewOrderDetail ~ error:",
+      error
+    );
+  }
+};
 
 export {
   CollectionAPI,
@@ -304,4 +327,5 @@ export {
   CollectionFilterSearch,
   CollectionFilterCategory,
   CollectionFilterSearchAndPagination,
+  viewOrderDetail,
 };
