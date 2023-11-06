@@ -27,9 +27,11 @@ const CollectionAPI = async (
   setLoading,
   toast,
   navigate,
-  maxPriceValue
+  maxPriceValue,
+  setSpinsearch
 ) => {
   try {
+    
     let maxPrice, minPrice;
     if (maxPriceValue) {
       maxPrice = JSON.parse(maxPriceValue);
@@ -63,7 +65,10 @@ const CollectionAPI = async (
         withCredentials: true,
       }
     );
-
+    setSpinsearch(true)
+    setTimeout(() => {
+      setSpinsearch(false);
+    }, 2000);
     const data = response.data?.data?.products;
     const totalPage = response?.data?.data?.totalPages;
     const totalPro = response?.data?.data?.totalProducts;
@@ -71,6 +76,7 @@ const CollectionAPI = async (
     setTotalpage(totalPage);
     setTotalSize(totalPro);
     setFoundProducts(data);
+  
   } catch (error) {
     setLoading(false);
     console.error("Error fetching data:", error);

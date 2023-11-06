@@ -6,6 +6,7 @@ import family from "../../assets/family.jpg";
 import PageItem from "react-bootstrap/PageItem";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Product from "../collections/Product";
+import { CircularProgress } from "@mui/material";
 import Aos from "aos";
 import "aos/dist/aos.css";
 import { useEffect, useState } from "react";
@@ -121,6 +122,7 @@ const CollectionsCategory = (props) => {
     setPrice,
     setSort,
     filterPro,
+    spinSearch,setSpinsearch
   } = props;
   const navigate = useNavigate();
   const [foundProducts, setFoundProducts] = useState();
@@ -314,6 +316,21 @@ const CollectionsCategory = (props) => {
           </DropdownOne>
         </ItemOne>
       </SearchController>
+      {spinSearch ? (
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "200px",
+            marginBottom: "200px",
+          }}
+        >
+          <span>
+            <CircularProgress size={100} />
+          </span>
+        </div>
+      ) : (
       <Controller data-aos="fade-up" length={foundProducts?.length}>
         {foundProducts ? (
           foundProducts?.map((product, index) => (
@@ -324,7 +341,7 @@ const CollectionsCategory = (props) => {
             <h1>Not found product you have just filtered !!!</h1>
           </div>
         )}
-      </Controller>
+      </Controller>)}
       <PagingController data-aos="fade-up"></PagingController>
     </Container>
   );

@@ -97,9 +97,6 @@ function App() {
       >
         <BrowserRouter basename="/Jewelry-Shop">
           <Routes>
-            {user?.value?.userRole === 0 && (
-              <Route path="/order" element={<WatchOrder />} />
-            )}
             {user?.value?.userRole === 0 || user?.value?.userRole === 1 ? (
               <>
                 <Route path="/dashboard" element={<Dashboard />} />
@@ -111,6 +108,7 @@ function App() {
             user?.value?.userRole === 1 ||
             user?.value?.userRole === 2 ? (
               <>
+              <Route path="/order" element={<WatchOrder />} />
                 <Route path="/checkouts" element={<Checkouts />} />
                 <Route path="/success/:id" element={<Success />} />
                 <Route path="/thank-you" element={<ThankYou />} />

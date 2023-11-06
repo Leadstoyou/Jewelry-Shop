@@ -279,8 +279,9 @@ const makeAnNewOrder = async () => {
   }
 };
 //view order
-const viewOrder = async (toast, setOrderByUser) => {
+const viewOrder = async (toast, setOrderByUser , setLoading) => {
   try {
+    setLoading(true)
     const response = await axios.get(
       "http://localhost:9999/api/v1/order/view",
       {
@@ -293,6 +294,9 @@ const viewOrder = async (toast, setOrderByUser) => {
     console.log("Hiii:", response.data);
     if (response.status === 200) {
       setOrderByUser(response.data);
+      setTimeout(() => {
+        setLoading(false)
+      }, 1500);
     } else {
       toast?.error("Failed to fetch cart data");
     }
@@ -355,7 +359,7 @@ const updateCart = async (
   quantity,
   pricePro,
   setCartUpdate,
-  toast
+  toast, setSpin
 ) => {
   try {
     const price = Number(pricePro);
@@ -373,6 +377,10 @@ const updateCart = async (
       setCartUpdate(response.data.productList);
       console.log("Update cart successfully !!!");
       toast.success("Quantity updated successfully");
+      setSpin(true)
+      setTimeout(() => {
+        setSpin(false)
+      }, 2000);
     } else {
       console.log("Failed to update the cart");
       toast?.error("Failed to update the cart");
@@ -547,12 +555,16 @@ const deleteComment = async (fId, setDeleteData, toast) => {
   }
 };
 
-const getAllOrder = async (setAllOrder,setTotalpage,limitPage,pageActive)=>{
+const getAllOrder = async (setAllOrder,setTotalpage,limitPage,pageActive,setSpin)=>{
   try {
+    setSpin(true)
     const response = await axios.get(`http://localhost:9999/api/v1/order/getAll?page=${pageActive}&limit=${limitPage}`)
     if(response.status === 200){
       setAllOrder(response.data)
       setTotalpage(response.data.totalPage)
+      setTimeout(() => {
+        setSpin(false)
+      }, 1500);
     }else{
       console.log("Get all order failed: " + response.status);
     }

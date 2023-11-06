@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { useNavigate } from "react-router-dom";
-
+import RiseLoader from "react-spinners/RiseLoader";
 const Container = styled.div`
   font-family: "Jost", sans-serif;
   margin-top: 9%;
@@ -114,13 +114,14 @@ const ViewMoreInOrder = styled.button`
 `;
 
 const WatchOrder = () => {
+  const [loading, setLoading] = useState(false);
   const [backToTopVisible, setBackToTopVisible] = useState(false);
   const [numberProduct, setNumberProduct] = useState(3);
   const [numberOrder, setNumberOrder] = useState(2);
   const [allOrder, setOrderByUser] = useState();
   const navigate = useNavigate();
   useEffect(() => {
-    viewOrder(toast, setOrderByUser);
+    viewOrder(toast, setOrderByUser , setLoading);
   }, []);
 
   useEffect(() => {
@@ -177,6 +178,20 @@ const WatchOrder = () => {
   };
 
   return (
+    <>
+      {loading ? (
+        <Container
+          style={{
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <RiseLoader color={"#575855"} size={30} loading={loading} />
+        </Container>
+      ) : (
     <>
       <Navbar />
       <Container>
@@ -333,7 +348,9 @@ const WatchOrder = () => {
 
       <Footer />
     </>
-  );
+  )}
+  </>
+);
 };
 
 export default WatchOrder;

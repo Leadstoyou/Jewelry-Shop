@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CollectionAPI } from "../services/productAPI";
 import { CollectionFilterCategory } from "../services/productAPI";
+import { CircularProgress } from "@mui/material";
 const Spinner = styled.div`
   height: 100%;
   flex-direction: column;
@@ -34,7 +35,8 @@ const Collections = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const maxPrice = searchParams.get("maxPrice");
-
+  const [spinSearch, setSpinsearch] = useState(true);
+  
   console.log("maxPrice: " + maxPrice);
 
   const [foundProducts, setFoundProducts] = useState([]);
@@ -125,7 +127,8 @@ const Collections = () => {
       setLoading,
       toast,
       navigate,
-      maxPrice
+      maxPrice,
+      setSpinsearch
     );
   }, [activePage, filterPro, sort, material, color, price, sort]);
 
@@ -170,7 +173,7 @@ const Collections = () => {
         <Container>
           <Navbar />
 
-          <CollectionsHeader category={category} totalSize={totalSize} />
+          <CollectionsHeader spinSearch={spinSearch} category={category} totalSize={totalSize} />
           <CollectionsCategory
             color={color}
             material={material}
@@ -186,8 +189,10 @@ const Collections = () => {
             colorsArray={colorsArray}
             materialArray={materialArray}
             maxPrice={maxPrice}
+            spinSearch={spinSearch}
+            setSpinsearch={setSpinsearch}
           />
-          {foundProducts?.length > 0 && (
+          {!spinSearch && foundProducts?.length > 0 && (
             <PageControl>
               <Pagination>
                 <Pagination.Prev onClick={handlePrev} />

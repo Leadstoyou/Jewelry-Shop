@@ -7,7 +7,7 @@ import { amountInMonthAPI } from "../services/connectApi.js";
 import Table from "react-bootstrap/Table";
 import { getAllOrder } from "../services/connectApi.js";
 import RiseLoader from "react-spinners/RiseLoader";
-
+import { CircularProgress } from "@mui/material";
 const Container = styled.div`
   padding-left: 3%;
 `;
@@ -15,6 +15,7 @@ const PageControl = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: 5%;
   margin-top: 20px;
   margin-bottom: 20px;
 `;
@@ -39,6 +40,7 @@ const TableController = styled.div`
 const ElemetOne = styled.div``;
 const ElemetTwo = styled.div``;
 const Statistics = () => {
+  const [spin, setSpin] = useState(false);
   const [orderInMonth, setOrderInMonth] = useState([]);
   const [amountInMonth, setAmountInMonth] = useState([]);
   const [allOrder, setGetAllProduct] = useState();
@@ -72,7 +74,13 @@ const Statistics = () => {
   const [activePage, setActivePage] = useState(1);
   useEffect(() => {
     const fetchData = async () => {
-      await getAllOrder(setGetAllProduct, setTotalpage, limitP, activePage);
+      await getAllOrder(
+        setGetAllProduct,
+        setTotalpage,
+        limitP,
+        activePage,
+        setSpin
+      );
     };
     fetchData();
   }, [activePage]);
@@ -191,8 +199,23 @@ const Statistics = () => {
               </ElemetTwo>
             </ChartOne>
           </Chart>
-          <TableController >
+          <TableController>
             <h1>Thông tin về các order</h1>
+            {spin ? (
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: "50px",
+                    marginBottom:'50px',
+                  }}
+                >
+                  <span>
+                    <CircularProgress size={100} />
+                  </span>
+                </div>
+              ) : (
             <Table responsive border="1">
               <thead>
                 <tr>
@@ -205,21 +228,26 @@ const Statistics = () => {
                   <th>Time</th>
                 </tr>
               </thead>
-              <tbody>
-                {allOrder?.orders?.map((o, index) => (
-                  <tr key={index}>
-                    <td>{number++}</td>
-                    <td>{o?.userName}</td>
-                    <td>{o?.userAddress}</td>
-                    <td>{o?.userPhoneNumber}</td>
-                    <td>{o?.productList?.length}</td>
-                    <td>{parseInt(o?.totalAmount).toLocaleString('vn-VI')}đ</td>
-                    <td>{formatOrderDate(o?.orderDate)}</td>
 
-                  </tr>
-                ))}
-              </tbody>
+              
+                <tbody>
+                  {allOrder?.orders?.map((o, index) => (
+                    <tr key={index}>
+                      <td>{number++}</td>
+                      <td>{o?.userName}</td>
+                      <td>{o?.userAddress}</td>
+                      <td>{o?.userPhoneNumber}</td>
+                      <td>{o?.productList?.length}</td>
+                      <td>
+                        {parseInt(o?.totalAmount).toLocaleString("vn-VI")}đ
+                      </td>
+                      <td>{formatOrderDate(o?.orderDate)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+             
             </Table>
+             )}
           </TableController>
           {allOrder?.orders?.length > 0 && (
             <PageControl>
