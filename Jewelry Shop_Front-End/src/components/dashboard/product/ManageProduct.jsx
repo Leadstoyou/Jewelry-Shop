@@ -596,6 +596,8 @@ const ManageProduct = () => {
                             id="img"
                             style={{ width: "100%" }}
                             {...register("img")}
+                           
+                            accept="image/*"
                           />
                         </div>
                       </Control>
