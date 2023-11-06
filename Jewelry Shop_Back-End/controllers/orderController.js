@@ -4,6 +4,8 @@ import {
   userRepository,
 } from "../repositories/indexRepository.js";
 import { orderRepository } from "../repositories/indexRepository.js";
+import accountService from "../services/accountService.js";
+
 const createOrder = async (req, res) => {
   try {
     const cartToken = req.cookies.cart_token;
@@ -26,6 +28,7 @@ const createOrder = async (req, res) => {
     const order = await orderRepository.createOrder(userId, orderStatus);
 
     await cartRepository.removeCart(cart._id);
+    accountService.orderSendEmailService(order);
 
     return res.status(HttpStatusCode.OK).json(order);
   } catch (error) {
@@ -44,20 +47,19 @@ const getOrder = async (req, res) => {
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
       .json({ message: "Internal server error" });
   }
-
-}
+};
 const getAllOrder = async (req, res) => {
-    try {
-      const { page, limit } = req.query;
-      const skip = (page - 1) * limit;
-      const orders = await orderRepository.getAllOrder(skip, limit);
+  try {
+    const { page, limit } = req.query;
+    const skip = (page - 1) * limit;
+    const orders = await orderRepository.getAllOrder(skip, limit);
 
-      res.json(orders);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
+    res.json(orders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
+};
 
 const updateOrderStatus = async (req, res) => {
   const orderId = req.params.orderId;
