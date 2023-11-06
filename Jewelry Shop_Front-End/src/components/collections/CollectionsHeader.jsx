@@ -3,6 +3,7 @@ import collections from "../../assets/collections.jpg";
 import Aos from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
+import { CircularProgress } from "@mui/material";
 import { Link } from "react-router-dom";
 const Container = styled.div`
   margin-top: 70px;
@@ -45,7 +46,7 @@ const Image = styled.img`
   height: 40vh;
 `;
 const CollectionsHeader = (props) => {
-  const { category, totalSize } = props;
+  const { category, totalSize, spinSearch } = props;
 
   useEffect(() => {
     Aos.init({ duration: 2000 });
@@ -66,8 +67,14 @@ const CollectionsHeader = (props) => {
               {category}
             </TitleText>
             &nbsp;&nbsp;
-            {totalSize && (
-              <p style={{ display: "inline-block" }}>({totalSize})</p>
+            {spinSearch ? (
+              <span>
+                <CircularProgress size={20} />
+              </span>
+            ) : (
+              totalSize && (
+                <p style={{ display: "inline-block" }}> ({totalSize}) </p>
+              )
             )}
           </Title>
         </LeftController>

@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
+import RiseLoader from "react-spinners/RiseLoader";
 import "react-toastify/dist/ReactToastify.css";
 import MyVerticallyCenteredModal from "./AddDiscount";
 import { createContext } from "react";
@@ -181,6 +182,7 @@ const InputSearch = styled.input`
 export const UpdateControl = createContext();
 const ManageProduct = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState(null);
   const [idDelete, setIdDelete] = useState(null);
   const [updateData, setUpdateData] = useState(null);
@@ -190,6 +192,13 @@ const ManageProduct = () => {
   const [addData, setAddData] = useState({});
   const [existErr, setExist] = useState(false);
   const [modalShow, setModalShow] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
 
   const notify = (text) => {
     toast.error(text, {
@@ -397,325 +406,356 @@ const ManageProduct = () => {
   };
 
   return (
-    <Container>
-      <ControlHome onClick={() => navigate("/")}>
-        <button style={{ backgroundColor: "#c6c2c2", border: "none " }}>
-          <HomeIcon />
-          Back to home
-        </button>
-      </ControlHome>
-      <h1 style={{ padding: "1%" }}>Manage products</h1>
-      <Function>
-        <ControlAdd>
-          <AddController.Provider value={{ addData, setAddData }}>
-            <BtnControl>
-              <div>
-                <div style={{ backgroundColor: "white", marginTop: "20%" }}>
-                  <SearchIcon />
-                  <InputSearch
-                    onChange={(e) => setSearchText(e.target.value)}
-                  />
-                </div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <Button onClick={handleShow}>Add Product</Button>
-                <ButtonListDelete onClick={() => navigate("/listdelete")}>
-                  List product you have just deleted
-                </ButtonListDelete>
-              </div>
-            </BtnControl>
-            {/* modal add  */}
-            <Modal
-              show={show}
-              onHide={handleClose}
-              style={{ borderRadius: "5%", color: "white" }}
-            >
-              <Modal.Body
-                style={{
-                  color: "black",
-                  borderRadius: "1%",
-                }}
-              >
-                <Modal.Title>
-                  <h2 style={{ marginBottom: "8%", textAlign: "center" }}>
-                    Add new product
-                  </h2>
-                </Modal.Title>
-                <form id="formController" onSubmit={handleSubmit(onSubmit)}>
-                  <Control>
-                    <Label htmlFor="pname" style={{ fontWeight: "bolder" }}>
-                      Product name
-                    </Label>
-                    <div>
-                      <Input
-                        type="text"
-                        id="pname"
-                        style={{ width: "100%" }}
-                        {...register("pname")}
+    <>
+      {loading ? (
+        <Container
+          style={{
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <RiseLoader color={"#575855"} size={30} loading={loading} />
+        </Container>
+      ) : (
+        <Container>
+          <ControlHome onClick={() => navigate("/")}>
+            <button style={{ backgroundColor: "#c6c2c2", border: "none " }}>
+              <HomeIcon />
+              Back to home
+            </button>
+          </ControlHome>
+          <h1 style={{ padding: "1%" }}>Manage products</h1>
+          <Function>
+            <ControlAdd>
+              <AddController.Provider value={{ addData, setAddData }}>
+                <BtnControl>
+                  <div>
+                    <div style={{ backgroundColor: "white", marginTop: "20%" }}>
+                      <SearchIcon />
+                      <InputSearch
+                        onChange={(e) => setSearchText(e.target.value)}
                       />
                     </div>
-                  </Control>
-
-                  <Control>
-                    <Label htmlFor="quantity" style={{ fontWeight: "bolder" }}>
-                      Quantity
-                    </Label>
-                    <div>
-                      <Input
-                        type="text"
-                        id="quantity"
-                        style={{ width: "100%" }}
-                        {...register("quantity")}
-                      />
-                    </div>
-                  </Control>
-                  <Control>
-                    <Label htmlFor="price" style={{ fontWeight: "bolder" }}>
-                      Price
-                    </Label>
-                    <div>
-                      <Input
-                        type="text"
-                        id="price"
-                        style={{ width: "100%" }}
-                        {...register("price")}
-                      />
-                    </div>
-                  </Control>
-                  <Control>
-                    <Label htmlFor="size" style={{ fontWeight: "bolder" }}>
-                      Size
-                    </Label>
-                    <div>
-                      <Input
-                        type="text"
-                        id="size"
-                        style={{ width: "100%" }}
-                        {...register("size")}
-                      />
-                    </div>
-                  </Control>
-                  <Control>
-                    <Label htmlFor="color" style={{ fontWeight: "bolder" }}>
-                      Color
-                    </Label>
-                    <div>
-                      <Input
-                        type="text"
-                        id="color"
-                        style={{ width: "100%" }}
-                        {...register("color")}
-                      />
-                    </div>
-                  </Control>
-                  <Control>
-                    <Label htmlFor="material" style={{ fontWeight: "bolder" }}>
-                      Material
-                    </Label>
-                    <div>
-                      <Input
-                        type="text"
-                        id="material"
-                        style={{ width: "100%" }}
-                        {...register("material")}
-                      />
-                    </div>
-                  </Control>
-                  <Control>
-                    <Label htmlFor="category" style={{ fontWeight: "bolder" }}>
-                      Category
-                    </Label>
-                    <div>
-                      <select
-                        style={{ width: "100%", border: "1px solid black" }}
-                        id="category"
-                        {...register("category")}
-                      >
-                        {categories.map((category, index) => (
-                          <option key={index} value={category}>
-                            {category}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </Control>
-                  <Control>
-                    <Label htmlFor="desc" style={{ fontWeight: "bolder" }}>
-                      Description
-                    </Label>
-                    <div>
-                      <textarea
-                        type="text"
-                        id="desc"
-                        style={{ width: "100%" }}
-                        {...register("desc")}
-                      />
-                    </div>
-                  </Control>
-                  <Control>
-                    <Label htmlFor="img" style={{ fontWeight: "bolder" }}>
-                      Image
-                    </Label>
-                    <div style={{ backgroundColor: "white", color: "black" }}>
-                      <Input
-                        type="file"
-                        id="img"
-                        style={{ width: "100%" }}
-                        {...register("img")}
-                      />
-                    </div>
-                  </Control>
-                  <div
-                    style={{
-                      width: "100%",
-                      marginTop: "20px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Button
-                      variant="primary"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setModalShow(true);
-                      }}
-                    >
-                      Add discount
-                    </Button>
                   </div>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginTop: "50px",
-                    }}
-                  >
-                    <ButtonClose
-                      onClick={handleClose}
-                      style={{ fontWeight: "bolder" }}
-                    >
-                      Close
-                    </ButtonClose>
-                    <ButtonSave
-                      style={{ fontWeight: "bolder" }}
-                      type="submit"
-                      onClick={(e) => {
-                        if (Object.keys(errors).length >= 0) {
-                          setExist(true);
-                          setTimeout(() => {
-                            setExist(false);
-                          }, 1000);
-                        }
-                      }}
-                    >
-                      Add
-                    </ButtonSave>
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <Button onClick={handleShow}>Add Product</Button>
+                    <ButtonListDelete onClick={() => navigate("/listdelete")}>
+                      List product you have just deleted
+                    </ButtonListDelete>
                   </div>
-                </form>
-                <MyVerticallyCenteredModal
-                  show={modalShow}
-                  onHide={() => setModalShow(false)}
-                />
-              </Modal.Body>
-            </Modal>
-          </AddController.Provider>
-        </ControlAdd>
-        <ControlBody>
-          <Table>
-            <TrHead>
-              <Th>#</Th>
-              <Th>Name</Th>
-              <Th>Image</Th>
-              <Th>Quantity</Th>
-              <Th>Price</Th>
-              <Th>Category</Th>
-              <Th></Th>
-            </TrHead>
-
-            {allProduct?.map(
-              (p) => (
-                // !p.isDeleted && (
-                <Tr key={p._id}>
-                  <Td>{idNumber++}</Td>
-                  <Td>{p.productName}</Td>
-
-                  <Td style={{ width: "13%" }}>
-                    <img
-                      src={p.productImage}
-                      style={{
-                        width: "100%",
-                        height: "100px",
-                        objectFit: "cover",
-                        borderRadius: "50%",
-                      }}
-                    />
-                  </Td>
-
-                  <Td>{p.productQuantity}</Td>
-
-                  <Td>{p.productPrice.toLocaleString("vi-VN")}đ</Td>
-
-                  <Td>{p.productCategory}</Td>
-                  <Td style={{ width: "20%" }}>
-                    <Update
-                      onClick={() => {
-                        setUpdateProduct(p);
-                        setShowUpdate(true);
-                      }}
-                    >
-                      Update
-                    </Update>
-
-                    <Delete onClick={() => handleDelete(p._id)}>Delete</Delete>
-                  </Td>
-                </Tr>
-              )
-              // )
-            )}
-          </Table>
-        </ControlBody>
-        <UpdateControl.Provider value={{ updateData, setUpdateData }}>
-          <UpdateController
-            updateProduct={updateProduct}
-            show={showUpdate}
-            onHide={() => setShowUpdate(false)}
-          />
-        </UpdateControl.Provider>
-        {allProduct && (
-          <PageControl>
-            <Pagination>
-              <Pagination.Prev onClick={handlePrev} />
-              {Allpage.map((page) => (
-                <Pagination.Item
-                  key={page}
-                  active={page === activePage}
-                  onClick={() => setActivePage(page)}
+                </BtnControl>
+                {/* modal add  */}
+                <Modal
+                  show={show}
+                  onHide={handleClose}
+                  style={{ borderRadius: "5%", color: "white" }}
                 >
-                  {page}
-                </Pagination.Item>
-              ))}
-              <Pagination.Next onClick={handleNext} />
-            </Pagination>
-          </PageControl>
-        )}
-      </Function>
-      <ToastContainer
-        style={{ height: "500px" }}
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-    </Container>
+                  <Modal.Body
+                    style={{
+                      color: "black",
+                      borderRadius: "1%",
+                    }}
+                  >
+                    <Modal.Title>
+                      <h2 style={{ marginBottom: "8%", textAlign: "center" }}>
+                        Add new product
+                      </h2>
+                    </Modal.Title>
+                    <form id="formController" onSubmit={handleSubmit(onSubmit)}>
+                      <Control>
+                        <Label htmlFor="pname" style={{ fontWeight: "bolder" }}>
+                          Product name
+                        </Label>
+                        <div>
+                          <Input
+                            type="text"
+                            id="pname"
+                            style={{ width: "100%" }}
+                            {...register("pname")}
+                          />
+                        </div>
+                      </Control>
+
+                      <Control>
+                        <Label
+                          htmlFor="quantity"
+                          style={{ fontWeight: "bolder" }}
+                        >
+                          Quantity
+                        </Label>
+                        <div>
+                          <Input
+                            type="text"
+                            id="quantity"
+                            style={{ width: "100%" }}
+                            {...register("quantity")}
+                          />
+                        </div>
+                      </Control>
+                      <Control>
+                        <Label htmlFor="price" style={{ fontWeight: "bolder" }}>
+                          Price
+                        </Label>
+                        <div>
+                          <Input
+                            type="text"
+                            id="price"
+                            style={{ width: "100%" }}
+                            {...register("price")}
+                          />
+                        </div>
+                      </Control>
+                      <Control>
+                        <Label htmlFor="size" style={{ fontWeight: "bolder" }}>
+                          Size
+                        </Label>
+                        <div>
+                          <Input
+                            type="text"
+                            id="size"
+                            style={{ width: "100%" }}
+                            {...register("size")}
+                          />
+                        </div>
+                      </Control>
+                      <Control>
+                        <Label htmlFor="color" style={{ fontWeight: "bolder" }}>
+                          Color
+                        </Label>
+                        <div>
+                          <Input
+                            type="text"
+                            id="color"
+                            style={{ width: "100%" }}
+                            {...register("color")}
+                          />
+                        </div>
+                      </Control>
+                      <Control>
+                        <Label
+                          htmlFor="material"
+                          style={{ fontWeight: "bolder" }}
+                        >
+                          Material
+                        </Label>
+                        <div>
+                          <Input
+                            type="text"
+                            id="material"
+                            style={{ width: "100%" }}
+                            {...register("material")}
+                          />
+                        </div>
+                      </Control>
+                      <Control>
+                        <Label
+                          htmlFor="category"
+                          style={{ fontWeight: "bolder" }}
+                        >
+                          Category
+                        </Label>
+                        <div>
+                          <select
+                            style={{ width: "100%", border: "1px solid black" }}
+                            id="category"
+                            {...register("category")}
+                          >
+                            {categories.map((category, index) => (
+                              <option key={index} value={category}>
+                                {category}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </Control>
+                      <Control>
+                        <Label htmlFor="desc" style={{ fontWeight: "bolder" }}>
+                          Description
+                        </Label>
+                        <div>
+                          <textarea
+                            type="text"
+                            id="desc"
+                            style={{ width: "100%" }}
+                            {...register("desc")}
+                          />
+                        </div>
+                      </Control>
+                      <Control>
+                        <Label htmlFor="img" style={{ fontWeight: "bolder" }}>
+                          Image
+                        </Label>
+                        <div
+                          style={{ backgroundColor: "white", color: "black" }}
+                        >
+                          <Input
+                            type="file"
+                            id="img"
+                            style={{ width: "100%" }}
+                            {...register("img")}
+                           
+                            accept="image/*"
+                          />
+                        </div>
+                      </Control>
+                      <div
+                        style={{
+                          width: "100%",
+                          marginTop: "20px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Button
+                          variant="primary"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setModalShow(true);
+                          }}
+                        >
+                          Add discount
+                        </Button>
+                      </div>
+
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          marginTop: "50px",
+                        }}
+                      >
+                        <ButtonClose
+                          onClick={handleClose}
+                          style={{ fontWeight: "bolder" }}
+                        >
+                          Close
+                        </ButtonClose>
+                        <ButtonSave
+                          style={{ fontWeight: "bolder" }}
+                          type="submit"
+                          onClick={(e) => {
+                            if (Object.keys(errors).length >= 0) {
+                              setExist(true);
+                              setTimeout(() => {
+                                setExist(false);
+                              }, 1000);
+                            }
+                          }}
+                        >
+                          Add
+                        </ButtonSave>
+                      </div>
+                    </form>
+                    <MyVerticallyCenteredModal
+                      show={modalShow}
+                      onHide={() => setModalShow(false)}
+                    />
+                  </Modal.Body>
+                </Modal>
+              </AddController.Provider>
+            </ControlAdd>
+            <ControlBody>
+              <Table>
+                <TrHead>
+                  <Th>#</Th>
+                  <Th>Name</Th>
+                  <Th>Image</Th>
+                  <Th>Quantity</Th>
+                  <Th>Price</Th>
+                  <Th>Category</Th>
+                  <Th></Th>
+                </TrHead>
+
+                {allProduct?.map(
+                  (p) => (
+                    // !p.isDeleted && (
+                    <Tr key={p._id}>
+                      <Td>{idNumber++}</Td>
+                      <Td>{p.productName}</Td>
+
+                      <Td style={{ width: "13%" }}>
+                        <img
+                          src={p.productImage}
+                          style={{
+                            width: "100%",
+                            height: "100px",
+                            objectFit: "cover",
+                            borderRadius: "50%",
+                          }}
+                        />
+                      </Td>
+
+                      <Td>{p.productQuantity}</Td>
+
+                      <Td>{p.productPrice.toLocaleString("vi-VN")}đ</Td>
+
+                      <Td>{p.productCategory}</Td>
+                      <Td style={{ width: "20%" }}>
+                        <Update
+                          onClick={() => {
+                            setUpdateProduct(p);
+                            setShowUpdate(true);
+                          }}
+                        >
+                          Update
+                        </Update>
+
+                        <Delete onClick={() => handleDelete(p._id)}>
+                          Delete
+                        </Delete>
+                      </Td>
+                    </Tr>
+                  )
+                  // )
+                )}
+              </Table>
+            </ControlBody>
+            <UpdateControl.Provider value={{ updateData, setUpdateData }}>
+              <UpdateController
+                updateProduct={updateProduct}
+                show={showUpdate}
+                onHide={() => setShowUpdate(false)}
+              />
+            </UpdateControl.Provider>
+            {allProduct && (
+              <PageControl>
+                <Pagination>
+                  <Pagination.Prev onClick={handlePrev} />
+                  {Allpage.map((page) => (
+                    <Pagination.Item
+                      key={page}
+                      active={page === activePage}
+                      onClick={() => setActivePage(page)}
+                    >
+                      {page}
+                    </Pagination.Item>
+                  ))}
+                  <Pagination.Next onClick={handleNext} />
+                </Pagination>
+              </PageControl>
+            )}
+          </Function>
+          <ToastContainer
+            style={{ height: "500px" }}
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
+        </Container>
+      )}
+    </>
   );
 };
 

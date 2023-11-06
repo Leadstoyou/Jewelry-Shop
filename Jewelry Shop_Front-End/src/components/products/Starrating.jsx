@@ -16,8 +16,10 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-const StarRating = ({ value, onChange }) => {
-  const [hover, setHover] = useState(0);
+const StarRating = ({ defaultNumber ,value, onChange }) => {
+  console.log("defalut number: " + defaultNumber);
+  const num = Number(defaultNumber)
+  const [hover, setHover] = useState(num);
 
   return (
     <Controller className="star-rating">

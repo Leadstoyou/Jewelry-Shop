@@ -7,6 +7,7 @@ import ArrowLeftOutlined from "@mui/icons-material/ArrowLeftOutlined";
 import ArrowRightOutlined from "@mui/icons-material/ArrowRightOutlined";
 import { useState, useRef, useEffect } from "react";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import { getAllProducts } from "../../services/connectApi.js";
 const Container = styled.div`
   margin-top: 50px;
   position: relative;
@@ -42,7 +43,7 @@ const Text = styled.h1`
 const ListItem = styled.div`
   width: 500%;
   margin-left: 10px;
- 
+
   padding-right: 10px;
   display: flex;
 `;
@@ -53,7 +54,9 @@ const Wrapper = styled.div`
   transform: translateX(${(props) => props.translateX}px);
 `;
 
-const List = () => {
+const List = (props) => {
+  const {idPro, setIdPro}=props
+  const [allproducts, setAllproducts] = useState();
   const [opa, setOpa] = useState(0);
   const [translateX, setTranslateX] = useState(0);
   const containerRef = useRef(null);
@@ -65,6 +68,13 @@ const List = () => {
   const handleMouseLeave = () => {
     setOpa(0);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await getAllProducts(setAllproducts);
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -92,18 +102,17 @@ const List = () => {
   }, []);
   return (
     <Container
-      
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       ref={containerRef}
     >
-      <Title style={{textAlign:'center'}}>
+      <Title style={{ textAlign: "center" }}>
         <Text>Có thể bạn cũng thích</Text>
       </Title>
       <Wrapper translateX={translateX}>
         <ListItem>
-          {ProductPage.map((product) => (
-            <Product key={product.id} props={product} />
+          {allproducts?.map((product) => (
+            <Product idPro={idPro} setIdPro={setIdPro} key={product?._id} props={product}  />
           ))}
         </ListItem>
       </Wrapper>

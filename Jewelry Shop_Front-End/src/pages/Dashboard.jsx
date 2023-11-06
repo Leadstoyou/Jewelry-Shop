@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Button from "react-bootstrap/Button";
-
+import RiseLoader from "react-spinners/RiseLoader";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import styled from "styled-components";
 import Menu from "@mui/icons-material/Menu";
@@ -12,6 +12,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
 import jewelry from "../assets/jewelry.mp4";
 import Statistics from "./Statistics.jsx";
+import { useSelector } from "react-redux";
 
 const Container = styled.div`
   font-family: "Jost", sans-serif;
@@ -73,9 +74,18 @@ const DashboardItem = styled.div`
 `;
 
 function Dashboard() {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const user = useSelector((state) => state?.loginController);
   const [show, setShow] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState(null);
+
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
 
   const handleClose = () => {
     setShow(false);
@@ -90,6 +100,20 @@ function Dashboard() {
   };
 
   return (
+    <>
+    {loading ? (
+      <Container
+        style={{
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <RiseLoader color={"#575855"} size={30} loading={loading} />
+      </Container>
+    ) : (
     <Container>
       <ControlHome onClick={() => navigate("/")}>
         <button
@@ -130,12 +154,16 @@ function Dashboard() {
             <ItemIn onClick={() => renderComponent(<ManageProduct />)}>
               Manage Product
             </ItemIn>
-            <ItemIn onClick={() => renderComponent(<ManageStaff />)}>
-              Manage Staff
-            </ItemIn>
-            <ItemIn onClick={() => renderComponent(<Statistics />)}>
-              Statistics
-            </ItemIn>
+            {user?.value?.userRole === 0 && (
+              <>
+                <ItemIn onClick={() => renderComponent(<ManageStaff />)}>
+                  Manage Staff
+                </ItemIn>
+                <ItemIn onClick={() => renderComponent(<Statistics />)}>
+                  Statistics
+                </ItemIn>
+              </>
+            )}
           </DashboardItem>
         </Offcanvas.Body>
       </Offcanvas>
@@ -162,7 +190,9 @@ function Dashboard() {
         {selectedComponent}
       </InsideDashboard>
     </Container>
-  );
+  )}
+  </>
+);
 }
 
 export default Dashboard;

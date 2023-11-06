@@ -10,6 +10,7 @@ import * as yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MyVerticallyCenteredModal from "./AddDiscount";
+import RiseLoader from "react-spinners/RiseLoader";
 import { createContext } from "react";
 import UpdateController from "./UpdateController";
 import { getAllProducts } from "../../../services/connectApi.js";
@@ -90,11 +91,18 @@ const InputSearch = styled.input`
 `;
 
 const ListDeleteProduct = () => {
+  const [loading, setLoading] = useState(false);
   var idNumber = 1;
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState(null);
   const [updateData, setUpdateData] = useState(null);
   const [allProduct, setAllproduct] = useState(null);
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
   const notify = (text) => {
     toast.error(text, {
       position: "top-right",
@@ -189,108 +197,130 @@ const ListDeleteProduct = () => {
   };
 
   return (
-    <Container>
-      <Header>
-        <h1>List product in recycle</h1>
-        <ControlButton>
-          <button
-            style={{
-              border: "none",
-              padding: "10px",
-              cursor: "pointer",
-              backgroundColor: "#cfcdcd",
-            }}
-            onClick={() => navigate("/dashboard")}
-          >
-            Back to dashboard
-          </button>
-        </ControlButton>
-      </Header>
-      <div>
-        <div
+    <>
+      {loading ? (
+        <Container
           style={{
-            backgroundColor: "white",
-            border: "0.5px solid black",
-            width: "15%",
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <SearchIcon />
-          <InputSearch onChange={(e) => setSearchText(e.target.value)} />
-        </div>
-      </div>
-      <ControlBody>
-        <Table>
-          <TrHead>
-            <Th>#</Th>
-            <Th>Name</Th>
-            <Th>Image</Th>
-            <Th>Quantity</Th>
-            <Th>Price</Th>
-            <Th>Category</Th>
-            <Th></Th>
-          </TrHead>
-          {allProduct?.map((p) => {
-            if (p.isDeleted) {
-              return (
-                <Tr key={p._id}>
-                  <Td>{idNumber++}</Td>
-                  <Td>{p.productName}</Td>
-                  <Td style={{ width: "13%" }}>
-                    <img
-                      src={p.productImage}
-                      style={{
-                        width: "100%",
-                        height: "100px",
-                        objectFit: "cover",
-                        borderRadius: "50%",
-                      }}
-                    />
-                  </Td>
-                  <Td>{p.productQuantity}</Td>
-                  <Td>{p.productPrice.toLocaleString("vi-VN")}đ</Td>
-                  <Td>{p.productCategory}</Td>
-                  <Td style={{ width: "10%" }}>
-                    <Restore onClick={() => handleRestore(p._id)}>
-                      Restore
-                    </Restore>
-                  </Td>
-                </Tr>
-              );
-            }
-            return null; // Don't render if isDeleted is true
-          })}
-        </Table>
-      </ControlBody>
-      {allProduct && (
-        <PageControl>
-          <Pagination>
-            <Pagination.Prev onClick={handlePrev} />
-            {Allpage.map((page) => (
-              <Pagination.Item
-                active={page === activePage}
-                onClick={() => setActivePage(page)}
+          <RiseLoader color={"#575855"} size={30} loading={loading} />
+        </Container>
+      ) : (
+        <Container>
+          <Header>
+            <h1>List product in recycle</h1>
+            <ControlButton>
+              <button
+                style={{
+                  border: "none",
+                  padding: "10px",
+                  cursor: "pointer",
+                  backgroundColor: "#cfcdcd",
+                }}
+                onClick={() => navigate("/dashboard")}
               >
-                {page}
-              </Pagination.Item>
-            ))}
-            <Pagination.Next onClick={handleNext} />
-          </Pagination>
-        </PageControl>
+                Back to dashboard
+              </button>
+            </ControlButton>
+          </Header>
+          <div>
+            <div
+              style={{
+                backgroundColor: "white",
+                border: "0.5px solid black",
+                width: "15%",
+              }}
+            >
+              <SearchIcon />
+              <InputSearch onChange={(e) => setSearchText(e.target.value)} />
+            </div>
+          </div>
+          <ControlBody>
+            <Table>
+              <TrHead>
+                <Th>#</Th>
+                <Th>Name</Th>
+                <Th>Image</Th>
+                <Th>Quantity</Th>
+                <Th>Price</Th>
+                <Th>Category</Th>
+                <Th></Th>
+              </TrHead>
+              {allProduct?.map((p) => {
+                if (p.isDeleted) {
+                  return (
+                    <Tr key={p._id}>
+                      <Td>{idNumber++}</Td>
+                      <Td>{p.productName}</Td>
+                      <Td style={{ width: "13%" }}>
+                        <img
+                          src={p.productImage}
+                          style={{
+                            width: "100%",
+                            height: "100px",
+                            objectFit: "cover",
+                            borderRadius: "50%",
+                          }}
+                        />
+                      </Td>
+                      <Td>{p.productQuantity}</Td>
+                      <Td>{p.productPrice.toLocaleString("vi-VN")}đ</Td>
+                      <Td>{p.productCategory}</Td>
+                      <Td style={{ width: "10%" }}>
+                        <Restore onClick={() => handleRestore(p._id)}>
+                          Restore
+                        </Restore>
+                      </Td>
+                    </Tr>
+                  );
+                }
+                return null; // Don't render if isDeleted is true
+              })}
+            </Table>
+          </ControlBody>
+          {allProduct && (
+            <PageControl>
+              <Pagination>
+                <Pagination.Prev onClick={handlePrev} />
+                {Allpage.map((page) => (
+                  <Pagination.Item
+                    active={page === activePage}
+                    onClick={() => setActivePage(page)}
+                  >
+                    {page}
+                  </Pagination.Item>
+                ))}
+                <Pagination.Next onClick={handleNext} />
+              </Pagination>
+            </PageControl>
+          )}
+           {!allProduct && (
+            <div style={{textAlign:'center', marginTop:'50px'}}>
+             <h1>Không có sản phẩm nào ở trong thùng rác !!!</h1>
+             </div>
+           )}
+
+          <ToastContainer
+            style={{ height: "500px" }}
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
+        </Container>
       )}
-      <ToastContainer
-        style={{ height: "500px" }}
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-    </Container>
+    </>
   );
 };
 

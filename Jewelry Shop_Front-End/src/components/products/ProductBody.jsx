@@ -131,7 +131,7 @@ const CommentAction = styled.div`
 const CommentDisplay = styled.div``;
 const CommentController = styled.div``;
 const ProductBody = (props) => {
-  const {setSpin} = props
+  const {setSpin, idPro ,setIdPro} = props
   const numberCart = useSelector((state) => state?.getNumber?.value);
   const user = useSelector((state) => state?.loginController);
   const { cartView, setViewCart } = useContext(cartValue);
@@ -169,9 +169,9 @@ const ProductBody = (props) => {
       theme: "colored",
     });
   };
-  useEffect(() => {
-    setProductDetail(product);
-  }, []);
+  // useEffect(() => {
+  //   setProductDetail(product);
+  // }, []);
   const handleDisplay = () => {
     setCom(!comdisplay);
   };
@@ -408,12 +408,12 @@ const ProductBody = (props) => {
           </IconTwo>
         </CommentAction>
         <CommentDisplay style={{ display: comdisplay ? "block" : "none" }}>
-          <Comment />
+          <Comment idPro={product?._id}/>
         </CommentDisplay>
       </CommentController>
       <hr />
       <FooterProduct>
-        <List />
+        <List idPro={idPro} setIdPro={setIdPro}/>
       </FooterProduct>
       <ToastContainer
         style={{ height: "500px" }}

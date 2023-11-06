@@ -156,24 +156,13 @@ const Navbar = (props) => {
     dispatch(getNumber(0));
     navigate("/");
   };
-  const notify = () => {
-    toast.error("Vui lòng không để trống trường tìm kiếm !!!", {
-      position: "top-center",
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-    });
-  };
+  
 
   // Function to handle Enter key press
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       if (searchQuery.trim() === "") {
-        notify();
+        toast.error("Please enter a search")
       } else {
         navigate(`/search/${searchQuery.trim()}`);
       }
@@ -181,7 +170,7 @@ const Navbar = (props) => {
   };
   const handleSubmit = () => {
     if (searchQuery.trim() === "") {
-      notify();
+      toast.error("Please enter a search")
     } else {
       navigate(`/search/${searchQuery}`);
     }
@@ -314,18 +303,7 @@ const Navbar = (props) => {
           </ItemController>
         </Right>
       </Container>
-      <ToastContainer
-        position="top-right"
-        autoClose={1000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+      
     </Nav>
   );
 };

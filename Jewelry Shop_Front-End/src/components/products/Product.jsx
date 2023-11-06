@@ -2,6 +2,8 @@ import styled from "styled-components";
 import imgP from "../../assets/product.jpg";
 import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
 import { useState } from "react";
+import { useLocation, useNavigate , Link } from "react-router-dom";
+import { set } from "date-fns";
 
 const Container = styled.div`
   position: relative;
@@ -86,17 +88,23 @@ const Front = styled.div`
   }
 `;
 
-const Product = ({ props }) => {
+
+
+const Product = ({ props , idPro ,setIdPro }) => {
+  const navigate = useNavigate()
+  
+
   return (
-    <Container>
+    
+    <Container onClick={()=>setIdPro(props._id)}>
       <RootElement>
         <BackgroundElement>
           <ImageController>
-            <Image src={imgP} />
+            <Image src={props?.productImage} />
           </ImageController>
           <TextController>
-            <Title>{props.product_name}</Title>
-            <Price>{props.price}đ</Price>
+            <Title>{props?.productName?.slice(0,14)}...</Title>
+            <Price>{props?.productPrice.toLocaleString('vn-VI')}đ</Price>
           </TextController>
         </BackgroundElement>
         <Front>
@@ -109,6 +117,7 @@ const Product = ({ props }) => {
         </Front>
       </RootElement>
     </Container>
+
   );
 };
 

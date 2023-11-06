@@ -8,6 +8,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import Pagination from "react-bootstrap/Pagination"; // Import React-Bootstrap Pagination
 import axios from "axios";
 import Switch from "react-switch";
+import RiseLoader from "react-spinners/RiseLoader";
 import "../style/ManagerStaff.scss";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +21,7 @@ const ControlHome = styled.div`
 `;
 
 const ManageStaff = () => {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [userData, setUserData] = useState([]);
   const [search, setSearch] = useState("");
@@ -36,6 +38,12 @@ const ManageStaff = () => {
   const [userIds, setUserIds] = useState(null);
 
   const size = 10;
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
 
 //Connect api to take all user
   const connectAPI = (search, filterRole, filterAction, activePage) => {
@@ -218,6 +226,20 @@ setBlock(block);
   });
 
   return (
+    <>
+    {loading ? (
+      <div
+        style={{
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <RiseLoader color={"#575855"} size={30} loading={loading} />
+      </div>
+    ) : (
     <div className="all" style={{ position: "relative" }}>
       <ControlHome onClick={() => navigate("/")}>
         <button
@@ -361,7 +383,9 @@ setBlock(block);
  
    
     </div>
-  );
+   )}
+   </>
+);
 };
 
 export default ManageStaff;
