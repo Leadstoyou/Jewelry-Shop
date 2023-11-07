@@ -501,12 +501,18 @@ const viewComment = async (productId, setCommentsList) => {
       console.log("View success");
       setCommentsList(response.data.data);
     } else {
-      console.log("Not has comment in this product ");
+      console.log("Not has comment in this product");
     }
   } catch (error) {
-    console.log("Internal error ");
+    if (error.response && error.response.status === 400) {
+      setCommentsList([]);
+      console.log("Bad Request");
+    } else {
+      console.log("Internal error");
+    }
   }
 };
+
 
 //update comment
 const updateCommentAPI = async (fId, setUpdateData, data, toast) => {

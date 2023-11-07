@@ -20,6 +20,7 @@ import { useSelector } from "react-redux";
 const Controller = styled.div``;
 const Control = styled.div`
   display: flex;
+  margin-bottom: 10%;
 `;
 const Avatar = styled.div`
   flex-basis: 15%;
@@ -57,15 +58,14 @@ const ButtonTwo = styled.button`
 `;
 
 const Showcomment = styled.div`
+  flex-basis: 80%;
   position: relative;
-  margin-top: 2%;
-  margin-bottom: 2%;
-  padding: 20px;
-  box-shadow: 5px 5px 10px #bfbebe, -5px -5px 2px #bfbebe, 5px -5px 2px #bfbebe,
+    box-shadow: 5px 5px 10px #bfbebe, -5px -5px 2px #bfbebe, 5px -5px 2px #bfbebe,
     -5px 5px 2px #bfbebe;
   display: flex;
+  padding: 5px;
   align-items: center;
-  gap: 2%;
+  
 `;
 const DivComment = styled.div`
   display: flex;
@@ -74,11 +74,11 @@ const DivComment = styled.div`
   justify-content: start;
 `;
 const ControllerButton = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: flex;
-  gap: 20px;
+  margin-top: 10px;
+  margin-bottom: 50px;
+   margin-left: 20%;
+   display: flex;
+   gap: 10px;
 `;
 const ButtonUpdate = styled.button`
   border: none;
@@ -260,33 +260,42 @@ const Comment = (props) => {
       <div>
         {commentsList &&
           commentsList?.slice(0, view)?.map((item, index) => (
+            <div  style={{marginBottom:'5%'}}>
+            <div style={{display:'flex',alignContent:'center',justifyContent:'space-evenly'}}> 
+            <div style={{marginTop:'auto',marginBottom:'auto'}}>
+            <img
+            src={item?.user?.userAvatar}
+            width="100"
+            height="100"
+            style={{
+              borderRadius: "50%",
+            }}
+          />
+          </div>
             <Showcomment key={index}>
-              <img
-                src={item?.user?.userAvatar}
-                width="80"
-                height="80"
-                style={{
-                  borderRadius: "50%",
-                }}
-              />
+             
 
               <DivComment>
+              <p>
+                  <span style={{ fontWeight: "bolder" , fontSize:'20px' }}>{item?.user?.userName}</span>
+                </p>
                 <p>
-                  <span style={{ fontWeight: "bolder" }}>Rating</span>:{" "}
+                  
                   <Star number={item?.star} />
                 </p>
                 <p>
-                  <span style={{ fontWeight: "bolder" }}>Comment</span>:{" "}
                   {item?.review}
                 </p>
-                <p>
-                  <span style={{ fontWeight: "bolder" }}>Time:</span>
+                <p style={{position:'absolute',top:'8%', right:'2%'}}>
                   {item?.createdAt
                     ? new Date(item.createdAt).toLocaleString("en-US")
                     : ""}
                 </p>
               </DivComment>
-              {user?.value?._id === item?.user?._id && (
+              
+            </Showcomment>
+            </div>
+            {user?.value?._id === item?.user?._id && (
                 <ControllerButton>
                   <ButtonUpdate>
                     <div>
@@ -308,7 +317,7 @@ const Comment = (props) => {
                   </ButtonDelete>
                 </ControllerButton>
               )}
-            </Showcomment>
+            </div>
           ))}
         <ModalController>
           <Modal show={show} onHide={handleClose}>
