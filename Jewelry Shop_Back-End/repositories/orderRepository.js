@@ -146,7 +146,11 @@ const getOrdersByUsername = async (username) => {
   try {
     const cleanedUsername = username.trim();
     const orders = await Order.find({ userName: { $regex: cleanedUsername, $options: "i" } });
-    return orders;
+    const orderCount = orders.length;
+    return {
+      orders,
+      orderCount
+    }
   } catch (error) {
     throw new Error(`Failed to get orders for username: ${username}`);
   }
