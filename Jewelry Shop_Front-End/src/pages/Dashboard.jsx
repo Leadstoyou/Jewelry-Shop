@@ -157,7 +157,7 @@ function Dashboard() {
             {user?.value?.userRole === 0 && (
               <>
                 <ItemIn onClick={() => renderComponent(<ManageStaff />)}>
-                  Manage Staff
+                  Manage Account
                 </ItemIn>
                 <ItemIn onClick={() => renderComponent(<Statistics />)}>
                   Statistics
