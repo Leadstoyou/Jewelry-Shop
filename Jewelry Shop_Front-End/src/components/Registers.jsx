@@ -66,7 +66,8 @@ const Register = () => {
           toast.error("Registration failed");
         }
       } catch (error) {
-        console.error("An error occurred:", error);
+        toast.error(error.response.data.message);
+
       }
     }
   };
@@ -108,7 +109,7 @@ const Register = () => {
       return false;
     }
     if (!formData.phoneNumber.match(phoneNumberRegex)) {
-      toast.error("PhoneNumber do not match");
+      toast.error("PhoneNumber must Vietnamese Phone Number");
       return false;
     }
     return true;
