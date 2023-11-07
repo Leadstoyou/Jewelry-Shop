@@ -156,13 +156,12 @@ const Navbar = (props) => {
     dispatch(getNumber(0));
     navigate("/");
   };
-  
 
   // Function to handle Enter key press
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       if (searchQuery.trim() === "") {
-        toast.error("Please enter a search")
+        toast.error("Please enter a search");
       } else {
         navigate(`/search/${searchQuery.trim()}`);
       }
@@ -170,7 +169,7 @@ const Navbar = (props) => {
   };
   const handleSubmit = () => {
     if (searchQuery.trim() === "") {
-      toast.error("Please enter a search")
+      toast.error("Please enter a search");
     } else {
       navigate(`/search/${searchQuery}`);
     }
@@ -242,13 +241,18 @@ const Navbar = (props) => {
                 </div>
               ) : (
                 <>
-                  <Item
-                    onClick={() => navigate("/dashboard")}
-                    style={{ marginRight: "0" }}
-                  >
-                    <DashboardIcon />
-                  </Item>
-
+                  {user?.value?.userRole === 0 ||
+                  user?.value?.userRole === 1 ||
+                  user?.value?.userRole === 2 ? (
+                    <>
+                      <Item
+                        onClick={() => navigate("/dashboard")}
+                        style={{ marginRight: "0" }}
+                      >
+                        <DashboardIcon />
+                      </Item>
+                    </>
+                  ) : null}
                   <div
                     style={{
                       position: "relative",
@@ -303,7 +307,6 @@ const Navbar = (props) => {
           </ItemController>
         </Right>
       </Container>
-      
     </Nav>
   );
 };
