@@ -12,6 +12,7 @@ import { login } from "../redux/Login";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import {axiosConfig} from "../config/acessToken.js"
 
+
 const Profile = () => {
   const dispatch = useDispatch();
   const [name, setName] = useState("");
@@ -88,6 +89,7 @@ const Profile = () => {
   const handleSaveInformation = async (e) => {
     e.preventDefault();
     console.log("123");
+    if(window.confirm("Are you sure you want to save")){
     try {
       const response = await axios.put(
         "http://localhost:9999/api/v1/users/updateProfile",
@@ -112,12 +114,12 @@ const Profile = () => {
     } catch (error) {
       toast.error("Registration failed");
 
-    }
+    }}
   };
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
-
+if(window.confirm('Are you sure you want to change your password')){
     const isValid = validation();
 
     if (isValid) {
@@ -142,7 +144,13 @@ const Profile = () => {
         toast.error("Save failed");
       }
     }
+  }
   };
+  const handleResetPassword = () =>{
+    setCurrentPassword("");
+    setNewPassword("");
+    setCheckPassword("");
+  }
   const validation = () => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
@@ -311,7 +319,16 @@ const Profile = () => {
         >
           Lưu mật khẩu
         </Button>
+        <Button
+          style={{ margin: "  0px 10px" }}
+          variant="contained"
+          color="error"
+          onClick={handleResetPassword}
+        >
+          Hủy Bỏ
+        </Button>
       </form>
+      <ToastContainer position="top-right" autoClose="1000" />
     </Container>
   );
 };

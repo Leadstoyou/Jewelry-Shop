@@ -18,12 +18,16 @@ const ForgotPasswords = () => {
       try {
         const response = await axios.get(`http://localhost:9999/api/v1/account/forgotPassword?userEmail=${email}` );
         if (response.status === 200) {
-          toast(" Success"); 
+          toast(" Check your email to take OTP"); 
+          setTimeout(()=>{
           navigate('/newpass')
+          },1500)
+          
           
         } 
       } catch (error) {
-        console.error("An error occurred:", error);
+        toast.error(error.response.data.message);
+
       }
     }
   };

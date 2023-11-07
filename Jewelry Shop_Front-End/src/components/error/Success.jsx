@@ -5,7 +5,7 @@ import Navbar from "../Navbar.jsx";
 import Footer from "../Footer.jsx";
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Container = styled.div`
   font-family: "Jost", sans-serif;
@@ -22,6 +22,7 @@ const Inside = styled.div`
   
 function Success() {
   const {id} = useParams();
+  const navigation =useNavigate();
 const connectApi = async () => {
   try {
     const response = await axios.get(
@@ -34,6 +35,7 @@ const connectApi = async () => {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     connectApi();
+    navigation("/login")
     setLoading(true);
     setTimeout(() => {
       setLoading(false);

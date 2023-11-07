@@ -58,8 +58,11 @@ const Register = () => {
 
         if (response.status === 201) {
           console.log("Registration successful");
-          toast("Registration successful");
-          navigate("/login"); 
+          toast("Check email to active account")
+          setTimeout(()=>{
+            navigate("/login"); 
+          },3000)
+        
           
         } else {
           console.log("check");

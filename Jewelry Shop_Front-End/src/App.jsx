@@ -110,7 +110,6 @@ function App() {
               <>
               <Route path="/order" element={<WatchOrder />} />
                 <Route path="/checkouts" element={<Checkouts />} />
-                <Route path="/success/:id" element={<Success />} />
                 <Route path="/thank-you" element={<ThankYou />} />
               </>
             ) : null}
@@ -126,6 +125,8 @@ function App() {
             <Route path="/forgot" element={<Forgot />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/newpass" element={<NewPass />} />
+            <Route path="/success/:id" element={<Success />} />
+
           </Routes>
         </BrowserRouter>
       </cartValue.Provider>
