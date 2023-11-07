@@ -18,15 +18,17 @@ const navigate = useNavigate();
               newPassword:password,
               userPasswordResetToken:token,
             });
-            if (response.status === 200) {
-              toast(" Success"); 
-              navigate("/login")
+            if (response.status === 200) {          
+              toast.success(" Success"); 
+              setTimeout(()=>{navigate("/login")},1500
+              )
               
             } else {
               toast.error("Login failed");
             }
           } catch (error) {
-            console.error("An error occurred:", error);
+            toast.error(error.response.data.message);
+
           }
         
       };
@@ -57,16 +59,12 @@ const navigate = useNavigate();
           <input
         className="email"
           type="text"
-          placeholder="Token to check password"
+          placeholder="OTP in your email"
           value={token}
           onChange={(e) => setToken(e.target.value)}
         />
       </div>
-      <div className="note">
-        <span>
-          <Link to="/login">Đăng nhập</Link>
-        </span>
-        </div>
+     
       <div className="action_button">
         <input type="submit" value={"Xác nhận"} className="btn" />
       </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../style/Login.scss";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/Login.jsx";
@@ -84,6 +84,7 @@ const Logins = () => {
 
   return (
     <div className="containers">
+      <img style={{width:"100px",height:"50px",marginLeft:"110px",marginBottom:"10px"}} src="https://scontent.fsgn2-11.fna.fbcdn.net/v/t1.15752-9/363545588_642060478122697_1685312086456599481_n.png?_nc_cat=105&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeEcGKfCuOv6Yx5vlB-pd7JUBMTv73JrKm8ExO_vcmsqbzVunpviXuiiPAdSnQ1H0eTDFpLgj7wvhX2y3oAqBcrt&_nc_ohc=REGgVRYgRnoAX-vtgB-&_nc_ht=scontent.fsgn2-11.fna&oh=03_AdRWQ1yaonMyD3Jk9N-9DFsQsTzX7ImRcnrdP0WK7-JKPA&oe=6571B1F1"/>
       <div className="header-page">
         <h1>Đăng nhập</h1>
       </div>
@@ -112,7 +113,7 @@ const Logins = () => {
             <Link to="/forgot">Quên mật khẩu</Link>
           </span>
           ?
-          <span>
+          <span style={{marginLeft:"10px"}}>
             <Link to="/register">Đăng kí</Link>
           </span>
         </div>
@@ -120,6 +121,8 @@ const Logins = () => {
           <input type="submit" value={"Đăng Nhập"} className="btn" />
         </div>
       </form>
+      <ToastContainer position="top-right" autoClose="1000" />
+
     </div>
   );
 };

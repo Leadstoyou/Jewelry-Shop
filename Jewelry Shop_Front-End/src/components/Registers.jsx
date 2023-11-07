@@ -58,21 +58,26 @@ const Register = () => {
 
         if (response.status === 201) {
           console.log("Registration successful");
-          toast("Registration successful");
-          navigate("/login"); 
+          toast("Check email to active account")
+          setTimeout(()=>{
+            navigate("/login"); 
+          },3000)
+        
           
         } else {
           console.log("check");
           toast.error("Registration failed");
         }
       } catch (error) {
-        console.error("An error occurred:", error);
+        toast.error(error.response.data.message);
+
       }
     }
   };
 
   const validate = () => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
+    const phoneNumberRegex = /^0\d{9}$/;
     if (
       formData.fullName === "" ||
       formData.age === "" || 
@@ -106,7 +111,10 @@ const Register = () => {
       toast.error("Passwords do not match");
       return false;
     }
-
+    if (!formData.phoneNumber.match(phoneNumberRegex)) {
+      toast.error("PhoneNumber must Vietnamese Phone Number");
+      return false;
+    }
     return true;
   };
 
@@ -208,7 +216,7 @@ const Register = () => {
         <Button type="submit" variant="contained" color="primary" fullWidth>
           Đăng Ký
         </Button>
-      {/* <ToastContainer position="top-right" autoClose="1000" /> */}
+      <ToastContainer position="top-right" autoClose="1000" />
 
       </form>
     </Container>
