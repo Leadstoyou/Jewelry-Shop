@@ -134,6 +134,17 @@ const getAllOrdersInMonth = async (req, res) => {
       .json({ message: "Internal server error" });
   }
 };
+
+const searchOrdersByUsername = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const orders = await orderRepository.getOrdersByUsername(username);
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 export default {
   createOrder,
   getOrder,
@@ -142,4 +153,5 @@ export default {
   getAmountInMonth,
   getAllOrdersInMonth,
   viewOrder,
+  searchOrdersByUsername
 };
