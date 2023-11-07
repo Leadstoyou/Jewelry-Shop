@@ -20,6 +20,7 @@ import { useSelector } from "react-redux";
 const Controller = styled.div``;
 const Control = styled.div`
   display: flex;
+  margin-bottom: 10%;
 `;
 const Avatar = styled.div`
   flex-basis: 15%;
@@ -57,28 +58,28 @@ const ButtonTwo = styled.button`
 `;
 
 const Showcomment = styled.div`
+  flex-basis: 80%;
   position: relative;
-  margin-top: 2%;
-  margin-bottom: 2%;
-  padding: 20px;
-  box-shadow: 5px 5px 10px #bfbebe, -5px -5px 2px #bfbebe, 5px -5px 2px #bfbebe,
+    box-shadow: 5px 5px 10px #bfbebe, -5px -5px 2px #bfbebe, 5px -5px 2px #bfbebe,
     -5px 5px 2px #bfbebe;
   display: flex;
+  padding: 5px;
   align-items: center;
-  gap: 2%;
+  
 `;
 const DivComment = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: start;
   justify-content: start;
 `;
 const ControllerButton = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: flex;
-  gap: 20px;
+  margin-top: 10px;
+  margin-bottom: 50px;
+   margin-left: 20%;
+   display: flex;
+   gap: 10px;
 `;
 const ButtonUpdate = styled.button`
   border: none;
@@ -169,7 +170,7 @@ const Comment = (props) => {
       await viewComment(idPro, setCommentsList);
     };
     getDataComment();
-  }, [addData, deleteData]);
+  }, [ deleteData]);
 
   console.log(commentsList);
 
@@ -184,15 +185,20 @@ const Comment = (props) => {
   };
 
   const handleSubmit = async () => {
-    const newComment = {
-      productId: idPro,
-      star: rating,
-      review: comment,
-    };
-    await addComment(newComment, setAddData, toast);
-    setComment("");
+    if (comment.length > 200) {
+      toast.error("Please comment less than 200 characters");
+    } else {
+      const newComment = {
+        productId: idPro,
+        star: rating,
+        review: comment,
+      };
+      await addComment(newComment, setAddData, toast);
+      setComment("");
+      await viewComment(idPro, setCommentsList);
+    }
   };
-
+  
   const handleCancel = () => {
     setComment("");
   };
@@ -205,6 +211,7 @@ const Comment = (props) => {
   const handleDeleteComment = async (id) => {
     if (confirm("Are you sure you want to delete ?")) {
       await deleteComment(id, setDeleteData, toast);
+      await viewComment(idPro, setCommentsList);
     }
   };
 
@@ -217,14 +224,16 @@ const Comment = (props) => {
       star: rating,
       review: reviewData,
     };
-
+    if (comment.length > 200) {
+      toast.error("Please comment less than 200 characters");
+    } else {
     if (rating > 0 && reviewData !== "") {
       await updateCommentAPI(updateComment?._id, setUpdateData, data, toast);
       handleClose();
       await viewComment(idPro, setCommentsList);
     } else {
       toast?.error("Please input a complete update for the comment.");
-    }
+    }}
   };
 
   return (
@@ -260,33 +269,42 @@ const Comment = (props) => {
       <div>
         {commentsList &&
           commentsList?.slice(0, view)?.map((item, index) => (
+            <div  style={{marginBottom:'5%'}}>
+            <div style={{display:'flex',alignContent:'center',justifyContent:'space-evenly'}}> 
+            <div style={{marginTop:'auto',marginBottom:'auto'}}>
+            <img
+            src={item?.user?.userAvatar}
+            width="100"
+            height="100"
+            style={{
+              borderRadius: "50%",
+            }}
+          />
+          </div>
             <Showcomment key={index}>
-              <img
-                src={item?.user?.userAvatar}
-                width="80"
-                height="80"
-                style={{
-                  borderRadius: "50%",
-                }}
-              />
+             
 
               <DivComment>
+              <p>
+                  <span style={{ fontWeight: "bolder" , fontSize:'20px' }}>{item?.user?.userName}</span>
+                </p>
                 <p>
-                  <span style={{ fontWeight: "bolder" }}>Rating</span>:{" "}
+                  
                   <Star number={item?.star} />
                 </p>
                 <p>
-                  <span style={{ fontWeight: "bolder" }}>Comment</span>:{" "}
                   {item?.review}
                 </p>
-                <p>
-                  <span style={{ fontWeight: "bolder" }}>Time:</span>
+                <p style={{position:'absolute',top:'8%', right:'2%'}}>
                   {item?.createdAt
                     ? new Date(item.createdAt).toLocaleString("en-US")
                     : ""}
                 </p>
               </DivComment>
-              {user?.value?._id === item?.user?._id && (
+              
+            </Showcomment>
+            </div>
+            {user?.value?._id === item?.user?._id && (
                 <ControllerButton>
                   <ButtonUpdate>
                     <div>
@@ -308,7 +326,7 @@ const Comment = (props) => {
                   </ButtonDelete>
                 </ControllerButton>
               )}
-            </Showcomment>
+            </div>
           ))}
         <ModalController>
           <Modal show={show} onHide={handleClose}>
