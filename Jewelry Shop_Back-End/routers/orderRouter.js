@@ -14,6 +14,7 @@ router.post('/checkouts', checkUser, orderController.createOrder);
 router.patch('/update/:orderId',orderController.updateOrderStatus);
 router.get("/allAmountInMonth/:month", orderController.getAmountInMonth);
 router.get("/allOrdersInMonth/:month", orderController.getAllOrdersInMonth);
+router.get("/search/:username", orderController.searchOrdersByUsername);
 
 
 router.use(routeUnknown);
