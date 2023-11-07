@@ -26,8 +26,8 @@ const createOrder = async (req, res) => {
     }
 
     const order = await orderRepository.createOrder(userId, orderStatus);
-
-    accountService.orderSendEmailService(order);
+    
+    accountService.orderSendEmailService(order.order);
     await cartRepository.removeCart(cart._id);
 
     return res.status(HttpStatusCode.OK).json(order);

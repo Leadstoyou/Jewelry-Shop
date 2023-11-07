@@ -48,7 +48,7 @@ const getFeedbackByProductId = async (productId) => {
     return {
       success: true,
       message: Exception.FEEDBACK_SUCCESS,
-      data: feedbacks,
+      data: feedbacks.reverse(),
     };
   } catch (exception) {
     throw new Exception(exception.message);
