@@ -2,9 +2,7 @@ import { User } from "../models/indexModel.js";
 import Exception from "../constant/Exception.js";
 import SuccessConstants from "../constant/SuccessConstants.js";
 import bcrypt from "bcrypt";
-import {
-  jwtService,
-} from "../services/indexService.js";
+import { jwtService } from "../services/indexService.js";
 import jwt from "jsonwebtoken";
 
 const userGetAllUsersRepository = async () => {
@@ -59,6 +57,13 @@ const userSearchRepository = async ({
     const totalUsers = await User.countDocuments(matchQuery);
     if (!size) {
       size = totalUsers;
+    }
+
+    if (totalUsers == 0) {
+      return {
+        success: false,
+        message: Exception.CANNOT_FIND_USER,
+      };
     }
 
     let filteredUsers = await User.aggregate([
