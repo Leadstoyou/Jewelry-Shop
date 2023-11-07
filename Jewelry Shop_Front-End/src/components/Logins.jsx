@@ -48,8 +48,8 @@ const Logins = () => {
         if (response.status === 200) {
           console.log("Login successful");
           
-          dispatch(getNumber(dataCart?.productList?.length));
-          dispatch(login(response?.data?.data));
+          await dispatch(getNumber(dataCart?.productList?.length));
+          await dispatch(login(response?.data?.data));
           navigate("/");
         
         }
