@@ -26,7 +26,8 @@ const navigate = useNavigate();
               toast.error("Login failed");
             }
           } catch (error) {
-            console.error("An error occurred:", error);
+            toast.error(error.response.data.message);
+
           }
         
       };
@@ -57,7 +58,7 @@ const navigate = useNavigate();
           <input
         className="email"
           type="text"
-          placeholder="Token to check password"
+          placeholder="OTP in your email"
           value={token}
           onChange={(e) => setToken(e.target.value)}
         />

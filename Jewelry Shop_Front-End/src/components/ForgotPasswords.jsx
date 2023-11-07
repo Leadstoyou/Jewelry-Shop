@@ -21,9 +21,7 @@ const ForgotPasswords = () => {
           toast(" Success"); 
           navigate('/newpass')
           
-        } else {
-          toast.error("Login failed");
-        }
+        } 
       } catch (error) {
         console.error("An error occurred:", error);
       }
@@ -66,6 +64,8 @@ const ForgotPasswords = () => {
           <input type="submit" value={"Xác nhận"} className="btn" />
         </div>
       </form>
+      <ToastContainer position="top-right" autoClose="1000" />
+
     </div>
     );
 }

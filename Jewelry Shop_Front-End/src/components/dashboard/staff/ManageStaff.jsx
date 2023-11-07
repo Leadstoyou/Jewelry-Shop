@@ -215,7 +215,7 @@ setBlock(block);
  const handleFilterRole = (e) => {
   const role = e.target.value;
   setFilterRole(role);
-  connectAPI(search, role, filterAction, activePage);
+  connectAPI(search, role, filterAction, 1);
 }
 
   useEffect(() => {
@@ -269,7 +269,7 @@ setBlock(block);
           style={{ width: "30%", height: "40px" }}
           onChange={(e) => {
             setSearch(e.target.value);
-            connectAPI(e.target.value, filterRole, filterAction, activePage);
+            connectAPI(e.target.value, filterRole, filterAction, 1);
           }}
         />
         <Button
@@ -297,7 +297,7 @@ setBlock(block);
           value={filterAction}
           onChange={(e) => {
             setFilterAction(e.target.value);
-            connectAPI(search, filterRole, e.target.value, activePage);
+            connectAPI(search, filterRole, e.target.value, 1);
           }}
         >
           <option value="">All</option>

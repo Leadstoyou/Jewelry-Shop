@@ -73,6 +73,7 @@ const Register = () => {
 
   const validate = () => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
+    const phoneNumberRegex = /^0\d{9}$/;
     if (
       formData.fullName === "" ||
       formData.age === "" || 
@@ -106,7 +107,10 @@ const Register = () => {
       toast.error("Passwords do not match");
       return false;
     }
-
+    if (!formData.phoneNumber.match(phoneNumberRegex)) {
+      toast.error("PhoneNumber do not match");
+      return false;
+    }
     return true;
   };
 
@@ -208,7 +212,7 @@ const Register = () => {
         <Button type="submit" variant="contained" color="primary" fullWidth>
           Đăng Ký
         </Button>
-      {/* <ToastContainer position="top-right" autoClose="1000" /> */}
+      <ToastContainer position="top-right" autoClose="1000" />
 
       </form>
     </Container>
