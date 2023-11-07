@@ -10,7 +10,7 @@ import "../style/Profile.scss";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/Login";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import {axiosConfig} from "../config/acessToken.js"
+// import {axiosConfig} from "../config/acessToken.js"
 
 
 const Profile = () => {
@@ -27,9 +27,27 @@ const Profile = () => {
   const [checkPassword, setCheckPassword] = useState("");
   const [calledApi, setCalledApi] = useState(false);
 
+  function getCookieValue(cookieName) {
+    const cookies = document.cookie.split("; ");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].split("=");
+      if (cookie[0] === cookieName) {
+        return decodeURIComponent(cookie[1]);
+      }
+    }
+    return null;
+  }
+  
+  
+  const axiosConfig = {
+    headers: {
+      Authorization: `Bearer ${getCookieValue("accessToken")}`,
+    },
+  };
 
     useEffect(() => {
       async function fetchData() {
+        console.log("debug" + calledApi);
         if (!calledApi) {
           try {
             const response = await axios.get(
@@ -68,7 +86,7 @@ const Profile = () => {
           setCalledApi(true);
         }
       }
-
+  
       fetchData();
     }, [calledApi]);
  
