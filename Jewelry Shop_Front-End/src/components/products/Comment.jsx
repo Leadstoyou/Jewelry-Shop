@@ -68,6 +68,7 @@ const Showcomment = styled.div`
   
 `;
 const DivComment = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: start;
@@ -169,7 +170,7 @@ const Comment = (props) => {
       await viewComment(idPro, setCommentsList);
     };
     getDataComment();
-  }, [addData, deleteData]);
+  }, [ deleteData]);
 
   console.log(commentsList);
 
@@ -184,15 +185,20 @@ const Comment = (props) => {
   };
 
   const handleSubmit = async () => {
-    const newComment = {
-      productId: idPro,
-      star: rating,
-      review: comment,
-    };
-    await addComment(newComment, setAddData, toast);
-    setComment("");
+    if (comment.length > 200) {
+      toast.error("Please comment less than 200 characters");
+    } else {
+      const newComment = {
+        productId: idPro,
+        star: rating,
+        review: comment,
+      };
+      await addComment(newComment, setAddData, toast);
+      setComment("");
+      await viewComment(idPro, setCommentsList);
+    }
   };
-
+  
   const handleCancel = () => {
     setComment("");
   };
@@ -205,6 +211,7 @@ const Comment = (props) => {
   const handleDeleteComment = async (id) => {
     if (confirm("Are you sure you want to delete ?")) {
       await deleteComment(id, setDeleteData, toast);
+      await viewComment(idPro, setCommentsList);
     }
   };
 
@@ -217,14 +224,16 @@ const Comment = (props) => {
       star: rating,
       review: reviewData,
     };
-
+    if (comment.length > 200) {
+      toast.error("Please comment less than 200 characters");
+    } else {
     if (rating > 0 && reviewData !== "") {
       await updateCommentAPI(updateComment?._id, setUpdateData, data, toast);
       handleClose();
       await viewComment(idPro, setCommentsList);
     } else {
       toast?.error("Please input a complete update for the comment.");
-    }
+    }}
   };
 
   return (
