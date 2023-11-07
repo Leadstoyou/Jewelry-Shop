@@ -58,7 +58,6 @@ const PageControl = styled.div`
   justify-content: center;
   padding: 20px;
   height: 100%;
-  background-color: #c6c3c3;
 `;
 
 const Header = styled.div`
@@ -106,7 +105,7 @@ const ListDeleteProduct = () => {
   const notify = (text) => {
     toast.error(text, {
       position: "top-right",
-      autoClose: 3000,
+      autoClose: 500,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -119,7 +118,7 @@ const ListDeleteProduct = () => {
   const success = (text) => {
     toast.success(text, {
       position: "top-right",
-      autoClose: 5000,
+      autoClose: 500,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -242,7 +241,7 @@ const ListDeleteProduct = () => {
           </div>
           <ControlBody>
             <Table>
-              <TrHead>
+            <TrHead style={{ position: 'sticky', top: '0' , backgroundColor:'#e3e0e0'}}>
                 <Th>#</Th>
                 <Th>Name</Th>
                 <Th>Image</Th>
@@ -308,7 +307,7 @@ const ListDeleteProduct = () => {
           <ToastContainer
             style={{ height: "500px" }}
             position="top-center"
-            autoClose={5000}
+            autoClose={500}
             hideProgressBar={false}
             newestOnTop={false}
             closeOnClick

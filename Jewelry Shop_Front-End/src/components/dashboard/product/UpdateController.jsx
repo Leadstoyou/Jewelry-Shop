@@ -75,7 +75,7 @@ const UpdateController = (props) => {
   const notify = (text) => {
     toast.error(text, {
       position: "top-right",
-      autoClose: 3000,
+      autoClose: 500,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -88,7 +88,7 @@ const UpdateController = (props) => {
   const success = (text) => {
     toast.success(text, {
       position: "top-right",
-      autoClose: 5000,
+      autoClose: 500,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -431,7 +431,7 @@ const UpdateController = (props) => {
       <ToastContainer
         style={{ height: "500px" }}
         position="top-center"
-        autoClose={5000}
+        autoClose={500}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick

@@ -104,6 +104,7 @@ const Table = styled.table`
 `;
 const TrHead = styled.tr`
   border-collapse: collapse;
+  z-index: 1;
 `;
 const Tr = styled.tr`
   border-collapse: collapse;
@@ -203,7 +204,7 @@ const ManageProduct = () => {
   const notify = (text) => {
     toast.error(text, {
       position: "top-right",
-      autoClose: 3000,
+      autoClose: 500,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -216,7 +217,7 @@ const ManageProduct = () => {
   const success = (text) => {
     toast.success(text, {
       position: "top-right",
-      autoClose: 5000,
+      autoClose: 500,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -661,7 +662,7 @@ const ManageProduct = () => {
             </ControlAdd>
             <ControlBody>
               <Table>
-                <TrHead>
+              <TrHead style={{ position: 'sticky', top: '0' , backgroundColor:'#e3e0e0'}}>
                   <Th>#</Th>
                   <Th>Name</Th>
                   <Th>Image</Th>
@@ -743,7 +744,7 @@ const ManageProduct = () => {
           <ToastContainer
             style={{ height: "500px" }}
             position="top-center"
-            autoClose={5000}
+            autoClose={500}
             hideProgressBar={false}
             newestOnTop={false}
             closeOnClick

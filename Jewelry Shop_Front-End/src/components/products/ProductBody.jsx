@@ -415,19 +415,7 @@ const ProductBody = (props) => {
       <FooterProduct>
         <List idPro={idPro} setIdPro={setIdPro}/>
       </FooterProduct>
-      <ToastContainer
-        style={{ height: "500px" }}
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+      
     </Container>
   );
 };

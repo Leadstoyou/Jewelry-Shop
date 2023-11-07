@@ -8,6 +8,7 @@ import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { useNavigate } from "react-router-dom";
 import RiseLoader from "react-spinners/RiseLoader";
+import * as XLSX from "xlsx";
 const Container = styled.div`
   font-family: "Jost", sans-serif;
   margin-top: 9%;
@@ -66,12 +67,12 @@ const Img = styled.img`
 `;
 const ButtonBuyAgain = styled.button`
   border: none;
-  background-color: green;
+  background-color: #d81111;
   padding: 10px;
   border-radius: 5%;
   color: white;
   &:hover {
-    background-color: #68e668;
+    background-color: #e66868;
   }
 `;
 const ViewMore = styled.button`
@@ -122,6 +123,17 @@ const Button = styled.button`
     background-color: #8e8ef8;
   }
 `;
+
+const ButtonExport = styled.button`
+  border: none;
+  padding: 5px;
+  background-color: #0e8c0e;
+  color: white;
+  font-weight: bolder;
+  &:hover{
+    background-color: #54ff7937;
+  }
+`
 
 const WatchOrder = () => {
   const [loading, setLoading] = useState(false);
@@ -191,6 +203,51 @@ const WatchOrder = () => {
     setNumberProduct(3)
   }
 
+
+  const handleExportExcel = (order) => {
+    console.log(order);
+  
+    const wb = XLSX.utils.book_new();
+  
+    const allData = [];
+    let totalOrderAmount = 0; // Initialize totalOrderAmount
+  
+    order.productList.forEach((product) => {
+      const totalAmount = product.quantity * product.price;
+      totalOrderAmount += totalAmount; // Accumulate the totalAmount
+  
+      allData.push({
+        userId: order.user_id,
+        userName: order.userName,
+        userAddress: order.userAddress,
+        userEmail: order.userEmail,
+        userPhoneNumber: order.userPhoneNumber,
+        productName: product.productName,
+        productCategory: product.productCategory,
+        size: product.size.join(", "),
+        color: product.color.join(", "),
+        material: product.material.join(", "),
+        quantity: product.quantity,
+        price: product.price,
+        productDescription: product.productDescription,
+        productImage: product.productImage,
+        totalAmount: totalAmount,
+        orderDate: formatOrderDate(order.orderDate),
+      });
+    });
+  
+   
+    allData.push({
+      productDescription: "Total Amount:", 
+      totalAmount: totalOrderAmount,
+    });
+  
+    const ws = XLSX.utils.json_to_sheet(allData);
+    XLSX.utils.book_append_sheet(wb, ws, `Order của ${order?.userName}`);
+    XLSX.writeFile(wb, `Order của ${order?.userName}.xlsx`);
+  };
+  
+
   return (
     <>
       {loading ? (
@@ -236,13 +293,20 @@ const WatchOrder = () => {
                       padding: "15px",
                       border: "1px solid #dfdddd",
                       backgroundColor: "#d6d4d4c9",
+                      display:'flex',
+                      justifyContent: 'space-between'
                     }}
                   >
+                    <div>
                     <span style={{ fontWeight: "bolder" }}>
                       <AccessTimeFilledIcon />
                       Order Date:{" "}
                     </span>
                     {formatOrderDate(order.orderDate)}
+                    </div>
+                    <div>
+                      <ButtonExport onClick={()=>handleExportExcel(order)}>Export to EXCEL</ButtonExport>
+                    </div>
                   </div>
                   <Detail>
                     <table>

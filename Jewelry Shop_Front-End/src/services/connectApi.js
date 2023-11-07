@@ -561,16 +561,30 @@ const deleteComment = async (fId, setDeleteData, toast) => {
   }
 };
 
-const getAllOrder = async (setAllOrder,setTotalpage,limitPage,pageActive,setSpin)=>{
+const getAllOrder = async (setAllOrder,setTotalpage,limitPage,pageActive,textSearch,setSpin)=>{
   try {
     setSpin(true)
-    const response = await axios.get(`http://localhost:9999/api/v1/order/getAll?page=${pageActive}&limit=${limitPage}`)
+    const response = await axios.get(`http://localhost:9999/api/v1/order/getAll?page=${pageActive}&limit=${limitPage}&username=${textSearch}`)
     if(response.status === 200){
       setAllOrder(response.data)
       setTotalpage(response.data.totalPage)
       setTimeout(() => {
         setSpin(false)
       }, 1500);
+    }else{
+      console.log("Get all order failed: " + response.status);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+const getAllOrderToExcel = async (setChangeToExcel)=>{
+  try {
+    const response = await axios.get("http://localhost:9999/api/v1/order/getAllExport")
+    if(response.status === 200){
+      setChangeToExcel(response.data)
     }else{
       console.log("Get all order failed: " + response.status);
     }
@@ -601,5 +615,6 @@ export {
   viewComment,
   updateCommentAPI,
   deleteComment,
-  getAllOrder
+  getAllOrder,
+  getAllOrderToExcel
 };

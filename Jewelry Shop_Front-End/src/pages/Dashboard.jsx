@@ -101,98 +101,98 @@ function Dashboard() {
 
   return (
     <>
-    {loading ? (
-      <Container
-        style={{
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <RiseLoader color={"#575855"} size={30} loading={loading} />
-      </Container>
-    ) : (
-    <Container>
-      <ControlHome onClick={() => navigate("/")}>
-        <button
+      {loading ? (
+        <Container
           style={{
-            backgroundColor: "#c6c2c2",
-            border: "none ",
+            height: "100vh",
             display: "flex",
-            alignContent: "center",
+            flexDirection: "column",
+            alignItems: "center",
             justifyContent: "center",
-            gap: "5px",
           }}
         >
-          <span>
-            <HomeIcon />
-          </span>
-          <span style={{ marginTop: "2px" }}>Back to home</span>
-        </button>
-      </ControlHome>
-      <SidebarContainer>
-        <ButtonController variant="primary" onClick={handleShow}>
-          <Menu style={{ color: "white" }} />
-        </ButtonController>
-      </SidebarContainer>
-
-      <Offcanvas show={show} onHide={handleClose}>
-        <Offcanvas.Header
-          style={{ backgroundColor: "grey", color: "white" }}
-          closeButton
-        >
-          <Offcanvas.Title>
-            <DiamondIcon />
-            Jewelry
-            <DiamondIcon />
-          </Offcanvas.Title>
-        </Offcanvas.Header>
-        <Offcanvas.Body>
-          <DashboardItem>
-            <ItemIn onClick={() => renderComponent(<ManageProduct />)}>
-              Manage Product
-            </ItemIn>
-            {user?.value?.userRole === 0 && (
-              <>
-                <ItemIn onClick={() => renderComponent(<ManageStaff />)}>
-                  Manage Staff
-                </ItemIn>
-                <ItemIn onClick={() => renderComponent(<Statistics />)}>
-                  Statistics
-                </ItemIn>
-              </>
-            )}
-          </DashboardItem>
-        </Offcanvas.Body>
-      </Offcanvas>
-      <InsideDashboard>
-        {!selectedComponent && (
-          <>
-            <VideoUpdate muted autoPlay loop>
-              <source src={jewelry} />
-            </VideoUpdate>
-            <div
+          <RiseLoader color={"#575855"} size={30} loading={loading} />
+        </Container>
+      ) : (
+        <Container>
+          <ControlHome onClick={() => navigate("/")}>
+            <button
               style={{
-                position: "absolute",
-                bottom: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)", // Center both horizontally and vertically
+                backgroundColor: "#c6c2c2",
+                border: "none ",
+                display: "flex",
+                alignContent: "center",
+                justifyContent: "center",
+                gap: "5px",
               }}
             >
-              <h1 style={{ color: "white", fontSize: "50px" }}>
-                Welcome Back To Dashboard
-              </h1>
-            </div>
-          </>
-        )}
-        {selectedComponent}
-      </InsideDashboard>
-    </Container>
-  )}
-  </>
-);
+              <span>
+                <HomeIcon />
+              </span>
+              <span style={{ marginTop: "2px" }}>Back to home</span>
+            </button>
+          </ControlHome>
+          <SidebarContainer>
+            <ButtonController variant="primary" onClick={handleShow}>
+              <Menu style={{ color: "white" }} />
+            </ButtonController>
+          </SidebarContainer>
+
+          <Offcanvas show={show} onHide={handleClose}>
+            <Offcanvas.Header
+              style={{ backgroundColor: "grey", color: "white" }}
+              closeButton
+            >
+              <Offcanvas.Title>
+                <DiamondIcon />
+                Jewelry
+                <DiamondIcon />
+              </Offcanvas.Title>
+            </Offcanvas.Header>
+            <Offcanvas.Body>
+              <DashboardItem>
+                <ItemIn onClick={() => renderComponent(<ManageProduct />)}>
+                  Manage Product
+                </ItemIn>
+                {user?.value?.userRole === 0 && (
+                  <>
+                    <ItemIn onClick={() => renderComponent(<ManageStaff />)}>
+                      Manage Account
+                    </ItemIn>
+                    <ItemIn onClick={() => renderComponent(<Statistics />)}>
+                      Statistics
+                    </ItemIn>
+                  </>
+                )}
+              </DashboardItem>
+            </Offcanvas.Body>
+          </Offcanvas>
+          <InsideDashboard>
+            {!selectedComponent && (
+              <>
+                <VideoUpdate muted autoPlay loop>
+                  <source src={jewelry} />
+                </VideoUpdate>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)", // Center both horizontally and vertically
+                  }}
+                >
+                  <h1 style={{ color: "white", fontSize: "50px" }}>
+                    Welcome Back To Dashboard
+                  </h1>
+                </div>
+              </>
+            )}
+            {selectedComponent}
+          </InsideDashboard>
+        </Container>
+      )}
+    </>
+  );
 }
 
 export default Dashboard;

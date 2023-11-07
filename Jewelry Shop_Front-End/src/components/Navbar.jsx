@@ -242,8 +242,7 @@ const Navbar = (props) => {
               ) : (
                 <>
                   {user?.value?.userRole === 0 ||
-                  user?.value?.userRole === 1 ||
-                  user?.value?.userRole === 2 ? (
+                  user?.value?.userRole === 1 ? (
                     <>
                       <Item
                         onClick={() => navigate("/dashboard")}
@@ -307,6 +306,8 @@ const Navbar = (props) => {
           </ItemController>
         </Right>
       </Container>
+      <ToastContainer autoClose={500} />
+
     </Nav>
   );
 };

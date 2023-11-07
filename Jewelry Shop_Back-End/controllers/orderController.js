@@ -51,10 +51,31 @@ const getOrder = async (req, res) => {
 };
 const getAllOrder = async (req, res) => {
   try {
-    const { page, limit } = req.query;
+    const { page, limit, username } = req.query;
     const skip = (page - 1) * limit;
-    const orders = await orderRepository.getAllOrder(skip, limit);
 
+    let orders;
+    let totalPage;
+
+    if (username) {
+      const { orders: searchedOrders, total } = await orderRepository.getOrdersByUsername(username, skip, limit);
+      orders = searchedOrders;
+      totalPage = Math.ceil(total / limit);
+    } else {
+      const { orders: allOrders, total } = await orderRepository.getAllOrder(skip, limit);
+      orders = allOrders;
+      totalPage = Math.ceil(total / limit);
+    }
+
+    res.json({ orders, totalPage });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+const getAllExport = async (req, res) => {
+  try {
+    const orders = await orderRepository.getAllExport();
     res.json(orders);
   } catch (error) {
     console.error(error);
@@ -136,16 +157,7 @@ const getAllOrdersInMonth = async (req, res) => {
   }
 };
 
-const searchOrdersByUsername = async (req, res) => {
-  const { username } = req.params;
 
-  try {
-    const orders = await orderRepository.getOrdersByUsername(username);
-    res.status(200).json(orders);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
 export default {
   createOrder,
   getOrder,
@@ -154,5 +166,5 @@ export default {
   getAmountInMonth,
   getAllOrdersInMonth,
   viewOrder,
-  searchOrdersByUsername
+  getAllExport
 };

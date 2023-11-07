@@ -304,7 +304,7 @@ const ShoppingCart = (props) => {
   const notify = (text) => {
     toast.error(text, {
       position: "top-right",
-      autoClose: 3000,
+      autoClose: 500,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -521,19 +521,6 @@ const ShoppingCart = (props) => {
           </PolicyRow>
         </div>
       </PoliciesContainer>
-      <ToastContainer
-        style={{ height: "500px" }}
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
     </div>
   );
 };
