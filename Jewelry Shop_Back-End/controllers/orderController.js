@@ -27,8 +27,8 @@ const createOrder = async (req, res) => {
 
     const order = await orderRepository.createOrder(userId, orderStatus);
 
-    await cartRepository.removeCart(cart._id);
     accountService.orderSendEmailService(order);
+    await cartRepository.removeCart(cart._id);
 
     return res.status(HttpStatusCode.OK).json(order);
   } catch (error) {
@@ -37,6 +37,7 @@ const createOrder = async (req, res) => {
       .json({ message: "Internal server error" });
   }
 };
+
 const getOrder = async (req, res) => {
   try {
     const userId = req.user?.userId;

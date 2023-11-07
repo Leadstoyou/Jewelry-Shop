@@ -23,27 +23,28 @@ const forgotPasswordSendEmailService = (userData) => {
 };
 
 const orderSendEmailService = (userData) => {
+  console.log("debug", userData);
   const emailSubject = "Bạn mới đặt một đơn hàng";
 
-  const productList = userData.productList;
+  const productList1 = userData.productList;
+  console.log("debug2", productList1);
   let productListHTML = "";
-  for (const product of productList) {
+  for (const product of productList1) {
     productListHTML += `
         <tr>
-          <td>${product.productname}</td>
-          <td><img src="${product.productimage}" alt="Product Image"></td>
-          <td>${product.productquantity}</td>
-          <td>${product.productprice}</td>
+          <td>${product.productName}</td>
+          <td><img src="${product.productImage}" alt="Product Image"></td>
+          <td>${product.productQuantity}</td>
+          <td>${product.productPrice}</td>
         </tr>
       `;
   }
-
   const emailBody = `
-  <p>Đơn hàng đã đặt</p>
-  <p>Tên khách hàng ${userData.userName}</p>
-  <p>Email khách hàng ${userData.userEmail}</p>
-  <p>Số điện thoại khách hàng ${userData.userPhoneNumber}</p>
-  <p>Ngày đặt hàng ${userData.orderDate}</p>
+  <h1>Đơn hàng đã đặt</h1>
+  <p>Tên khách hàng: ${userData.userName}</p>
+  <p>Email khách hàng: ${userData.userEmail}</p>
+  <p>Số điện thoại: ${userData.userPhoneNumber}</p>
+  <p>Ngày đặt hàng: ${userData.orderDate}</p>
   <table border="1">
     <tr>
       <th>Product Name</th>
@@ -53,6 +54,8 @@ const orderSendEmailService = (userData) => {
     </tr>
     ${productListHTML}
   </table>
+  <p>Cảm ơn bạn đã lựa chọn dịch vụ của chúng tôi.</p>
+  <p>From JEWELRY SHOP WITH LOVE!</p>
 `;
   sendEmailService.sendEmailService(
     userData.userEmail,
@@ -61,4 +64,8 @@ const orderSendEmailService = (userData) => {
   );
 };
 
-export default { verifySendEmailService, forgotPasswordSendEmailService ,orderSendEmailService};
+export default {
+  verifySendEmailService,
+  forgotPasswordSendEmailService,
+  orderSendEmailService,
+};
