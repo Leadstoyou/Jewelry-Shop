@@ -162,6 +162,9 @@ if(window.confirm('Are you sure you want to change your password')){
         toast.error("Save failed");
       }
     }
+    setCurrentPassword("");
+    setNewPassword("");
+    setCheckPassword("");
   }
   };
   const handleResetPassword = () =>{

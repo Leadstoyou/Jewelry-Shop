@@ -272,7 +272,7 @@ setBlock(block);
         </button>
       </ControlHome>
       <div className="titile">
-        <h1>Manager User</h1>
+        <h1>Manager Account</h1>
       </div>
       <div
         className="search"
