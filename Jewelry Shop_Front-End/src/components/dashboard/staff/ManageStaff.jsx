@@ -12,7 +12,7 @@ import RiseLoader from "react-spinners/RiseLoader";
 import "../style/ManagerStaff.scss";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import {axiosConfig} from "../../../config/acessToken.js"
+// import {axiosConfig} from "../../../config/acessToken.js"
 
 const ControlHome = styled.div`
   position: absolute;
@@ -36,6 +36,24 @@ const ManageStaff = () => {
   const [totalPage, setTotalPage] = useState(10);
   const [total, setTotal] = useState("");
   const [userIds, setUserIds] = useState(null);
+
+  function getCookieValue(cookieName) {
+    const cookies = document.cookie.split("; ");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].split("=");
+      if (cookie[0] === cookieName) {
+        return decodeURIComponent(cookie[1]);
+      }
+    }
+    return null;
+  }
+  
+  
+  const axiosConfig = {
+    headers: {
+      Authorization: `Bearer ${getCookieValue("accessToken")}`,
+    },
+  };
 
   const size = 10;
   useEffect(() => {
@@ -254,7 +272,7 @@ setBlock(block);
         </button>
       </ControlHome>
       <div className="titile">
-        <h1>Manager User</h1>
+        <h1>Manager Account</h1>
       </div>
       <div
         className="search"

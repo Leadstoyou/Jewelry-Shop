@@ -23,19 +23,19 @@ const forgotPasswordSendEmailService = (userData) => {
 };
 
 const orderSendEmailService = (userData) => {
-  console.log("debug", userData);
+
   const emailSubject = "Bạn mới đặt một đơn hàng";
 
   const productList1 = userData.productList;
-  console.log("debug2", productList1);
+
   let productListHTML = "";
   for (const product of productList1) {
     productListHTML += `
-        <tr>
+        <tr style="text-align: center;">
           <td>${product.productName}</td>
-          <td><img src="${product.productImage}" alt="Product Image"></td>
-          <td>${product.productQuantity}</td>
-          <td>${product.productPrice}</td>
+          <td><img src="${product.productImage}" alt="Product Image" style="width:150px"></td>
+          <td>${product.quantity}</td>
+          <td>${product.price.toLocaleString('vn-VI')}đ</td>
         </tr>
       `;
   }
@@ -55,7 +55,7 @@ const orderSendEmailService = (userData) => {
     ${productListHTML}
   </table>
   <p>Cảm ơn bạn đã lựa chọn dịch vụ của chúng tôi.</p>
-  <p>From JEWELRY SHOP WITH LOVE!</p>
+  <p>From JEWELRY SHOP with love!</p>
 `;
   sendEmailService.sendEmailService(
     userData.userEmail,
