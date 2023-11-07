@@ -112,7 +112,7 @@ const ListProduct = () => {
       </Title>
       <Wrapper translateX={translateX}>
         <ListItem>
-          {allproducts?.map((product) => (
+          {allproducts?.slice(0,12)?.map((product) => (
             <Product key={product?._id} product={product} />
           ))}
         </ListItem>

@@ -110,9 +110,9 @@ function App() {
               <>
               <Route path="/order" element={<WatchOrder />} />
                 <Route path="/checkouts" element={<Checkouts />} />
-                <Route path="/thank-you" element={<ThankYou />} />
               </>
             ) : null}
+              <Route path="/thank-you" element={<ThankYou />} />
             <Route path="/" element={<Homepage cartView={cartView} />} />
             <Route path="/search/:searchName" element={<SearchPage />} />
             <Route path="/collections/:category" element={<Collections />} />

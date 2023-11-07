@@ -111,7 +111,7 @@ const List = (props) => {
       </Title>
       <Wrapper translateX={translateX}>
         <ListItem>
-          {allproducts?.map((product) => (
+          {allproducts?.slice(0,10)?.map((product) => (
             <Product idPro={idPro} setIdPro={setIdPro} key={product?._id} props={product}  />
           ))}
         </ListItem>
