@@ -94,6 +94,14 @@ const Register = () => {
     ) {
       toast.error("Please enter a valid email");
       return false;
+    } 
+    if (formData.age > 0 && formData.age < 99) {
+      toast.error("Age must integer number");
+      return false;
+    }
+    if (!formData.phoneNumber.match(phoneNumberRegex)) {
+      toast.error("PhoneNumber must Vietnamese Phone Number");
+      return false;
     }
 
     if (
@@ -111,10 +119,7 @@ const Register = () => {
       toast.error("Passwords do not match");
       return false;
     }
-    if (!formData.phoneNumber.match(phoneNumberRegex)) {
-      toast.error("PhoneNumber must Vietnamese Phone Number");
-      return false;
-    }
+   
     return true;
   };
 
