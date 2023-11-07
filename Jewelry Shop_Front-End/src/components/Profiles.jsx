@@ -109,10 +109,10 @@ const Profile = () => {
         dispatch(login(response.data.data));
         toast(response.data.message);
       } else {
-        toast.error("Registration failed");
+        toast.error("Save failed");
       }
     } catch (error) {
-      toast.error("Registration failed");
+      toast.error("Save failed");
 
     }}
   };
