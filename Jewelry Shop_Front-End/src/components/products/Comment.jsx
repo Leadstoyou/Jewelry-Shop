@@ -203,9 +203,23 @@ const Comment = (props) => {
     setComment("");
   };
 
+ 
+  
   const handleUpdateComment = async (id) => {
     setUpdateComment(commentsList?.find((comment) => comment._id === id));
     handleShow();
+  };
+
+
+  const [updateState,setUpdateState] = useState()
+  const [updateStar,setUpdateStar] = useState()
+
+  const handleUpdateCommentChange = (event) => {
+    setUpdateState(event.target.value);
+  };
+
+  const handleUpdateRatingChange = (newRating) => {
+    setUpdateStar(newRating);
   };
 
   const handleDeleteComment = async (id) => {
@@ -221,13 +235,13 @@ const Comment = (props) => {
     const reviewData = updateCommentRef.current.value;
 
     const data = {
-      star: rating,
-      review: reviewData,
+      star: updateStar,
+      review: updateState,
     };
     if (comment.length > 200) {
       toast.error("Please comment less than 200 characters");
     } else {
-    if (rating > 0 && reviewData !== "") {
+    if (updateStar > 0 && updateState !== "") {
       await updateCommentAPI(updateComment?._id, setUpdateData, data, toast);
       handleClose();
       await viewComment(idPro, setCommentsList);
@@ -340,7 +354,7 @@ const Comment = (props) => {
                   rows="4"
                   cols="50"
                   defaultValue={updateComment?.review}
-                  onChange={handleCommentChange}
+                  onChange={handleUpdateCommentChange}
                   ref={updateCommentRef}
                 ></Textarea>
               </div>
@@ -348,8 +362,8 @@ const Comment = (props) => {
                 <h4>Star Rating:</h4>
                 <StarRating
                   defaultNumber={updateComment?.star}
-                  value={rating}
-                  onChange={handleRatingChange}
+                  value={updateStar}
+                  onChange={handleUpdateRatingChange}
                 />
               </div>
             </ControlUpdate>

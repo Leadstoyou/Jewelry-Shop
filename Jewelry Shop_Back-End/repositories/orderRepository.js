@@ -28,6 +28,24 @@ const createOrder = async (userId, orderStatus) => {
   }
 };
 
+const getAllExport = async (skip, limit) => {
+  try {
+    const orders = await Order.find()
+    return orders;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getAllOrderByUserID = async (userId) => {
+  try {
+    const orders = await Order.find({ user_id: userId });
+    return orders;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const createOrderDetail = async (
   orderId,
   productId,
@@ -51,14 +69,7 @@ const createOrderDetail = async (
     throw error;
   }
 };
-const getAllOrderByUserID = async (userId) => {
-  try {
-    const orders = await Order.find({ user_id: userId });
-    return orders;
-  } catch (error) {
-    throw error;
-  }
-};
+
 const getAllOrder = async (skip, limit) => {
   try {
     const orders = await Order.find()
@@ -67,11 +78,26 @@ const getAllOrder = async (skip, limit) => {
       .sort({ createdAt: -1 });
 
     const total = await Order.countDocuments();
-    const totalPage = Math.ceil(total / limit);
-    return { orders, totalPage };
-    return orders;
+
+    return { orders, total };
   } catch (error) {
     throw error;
+  }
+};
+
+const getOrdersByUsername = async (username, skip, limit) => {
+  try {
+    const cleanedUsername = username.trim();
+    const orders = await Order.find({ userName: { $regex: cleanedUsername, $options: "i" } })
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    const total = await Order.countDocuments({ userName: { $regex: cleanedUsername, $options: "i" } });
+
+    return { orders, total };
+  } catch (error) {
+    throw new Error(`Failed to get orders for username: ${username}`);
   }
 };
 
@@ -142,19 +168,7 @@ const isUserBoughtProduct = async (userId, productId) => {
     throw new Exception(exception.message);
   }
 };
-const getOrdersByUsername = async (username) => {
-  try {
-    const cleanedUsername = username.trim();
-    const orders = await Order.find({ userName: { $regex: cleanedUsername, $options: "i" } });
-    const orderCount = orders.length;
-    return {
-      orders,
-      orderCount
-    }
-  } catch (error) {
-    throw new Error(`Failed to get orders for username: ${username}`);
-  }
-};
+
 export default {
   createOrder,
   createOrderDetail,
@@ -164,5 +178,6 @@ export default {
   getAmountInMonth,
   getAllOrdersInMonth,
   isUserBoughtProduct,
-  getOrdersByUsername
+  getOrdersByUsername,
+  getAllExport
 };
